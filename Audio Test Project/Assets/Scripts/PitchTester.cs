@@ -1,10 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 [RequireComponent(typeof(AudioSource))]
 public class PitchTester : MonoBehaviour {
-    public float volThreshold = 1.0f;
+//    public float volThreshold = 1.0f;
+	public float volThreshold = 0.0f;
+	public float specFlatnessThreshold = 0.2f;
 
     private int samplerate;
     private const int bins = 8192;
@@ -56,22 +59,41 @@ public class PitchTester : MonoBehaviour {
             Debug.Log("Break");
         }
 
-        // Find out which frequency bin, within desired range, has the strongest signal
-        int minBin = minFreq * (2 * bins) / samplerate;
-        int maxBin = maxFreq * (2 * bins) / samplerate;
+		// Loop over frequency bins within human range:
+		// 	 - Calculate spectral flatness to determine if sound is noise/tone
+        //   - Find out which frequency bin, within desired range, has the strongest signal
+		int minBin = minFreq * (2 * bins) / samplerate;
+		int maxBin = maxFreq * (2 * bins) / samplerate;
+
+		double geometricMean = 0;
+		float arithmeticMean = 0;
         int maxIndex = 0;
         float maxVal = 0.0f;
+
         for (int i=minBin; i<maxBin; i++)
         {
+			// Update sums
+			if (freqSamples[i] != 0)
+			{
+				geometricMean += Mathf.Log(freqSamples [i]);
+				arithmeticMean += freqSamples [i];
+			}
+
+			// Update max frequency
             if (freqSamples[i] >= maxVal)
             {
                 maxIndex = i;
                 maxVal = freqSamples[i];
             }
         }
+			
+		arithmeticMean /= (maxBin - minBin);
+		geometricMean /= (maxBin - minBin);
+		geometricMean = Math.Exp (geometricMean);
+		Debug.Log ("Specular flatness = " + geometricMean / arithmeticMean);
 
         // Exclude frequencies outside of range
-        if (maxIndex==0)
+		if (maxIndex==0 || (geometricMean/arithmeticMean > specFlatnessThreshold))
         {
             Debug.Log("- - - -");
             return;
@@ -79,11 +101,9 @@ public class PitchTester : MonoBehaviour {
 
         // Log frequency
         float frequency = (float)maxIndex * samplerate / (2 * bins);
-        Debug.Log("frequency = " + frequency);
 
         // Log note
         string note = guide.GetClosestNote(frequency);
-        Debug.Log(note);
 
         text.text = note;
 	}
