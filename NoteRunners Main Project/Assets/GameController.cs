@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour {
     public PlayerMovement Player;
     public float CameraSpeed = 0.5f;
 
+    internal float speedMultiplier = 1f;
 
 	// Use this for initialization
 	void Start () 
@@ -20,29 +21,22 @@ public class GameController : MonoBehaviour {
 	void Update ()
     {
         movePlayerAndCamera();
-
-        
 	}
 
     void spawnWall()
     {
-
         Vector3 newWallWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0f, 5f));
         newWallWorldPosition.z = 0;
+        newWallWorldPosition.x += (newWallWorldPosition.x * speedMultiplier * CameraSpeed) / 5;
+
         Debug.Log(newWallWorldPosition);
         GameObject instantiatedWall = Instantiate(Wall, newWallWorldPosition, Quaternion.identity);
-        //instantiatedWall.transform.position = new Vector3(newWallWorldPosition.x, instantiatedWall.transform.position.y, 0f);
-
-
-        //yield break;
     }
 
     void movePlayerAndCamera()
     {
-        Vector3 deltaPos = (Vector3.right * CameraSpeed * Time.deltaTime);
+        Vector3 deltaPos = (Vector3.right * CameraSpeed *  speedMultiplier * Time.deltaTime);
         Camera.main.transform.position += deltaPos;
         Player.transform.position += deltaPos;
     }
-
-
 }
