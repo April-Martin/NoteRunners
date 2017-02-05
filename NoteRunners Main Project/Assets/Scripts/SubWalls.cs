@@ -16,11 +16,9 @@ public class SubWalls : MonoBehaviour {
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("Hey!");
         if (other.gameObject.name == "Player")
         {
             float speedMultiplierReference = GameObject.Find("Game Controller").GetComponent<GameController>().speedMultiplier;
-
             GameObject.Find("Game Controller").GetComponent<GameController>().speedMultiplier = speedMultiplierReference - 2f <= 1f ? 1f : speedMultiplierReference - 2f;
         }
     }

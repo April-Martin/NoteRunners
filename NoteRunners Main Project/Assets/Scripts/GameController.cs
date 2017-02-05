@@ -28,12 +28,14 @@ public class GameController : MonoBehaviour {
     {
 
         Vector3 newWallWorldPosition = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0f, 10f));
-        newWallWorldPosition.z = 0;
-        Debug.Log(newWallWorldPosition);
+        // Offset by half of wall size; makes sure wall spawns fully offscreen
+        newWallWorldPosition.x += Wall.transform.GetChild(0).GetComponent<SpriteRenderer>().bounds.size.x / 2;  
         GameObject instantiatedWall = Instantiate(Wall, newWallWorldPosition, Quaternion.identity);
-        //instantiatedWall.transform.position = new Vector3(newWallWorldPosition.x, instantiatedWall.transform.position.y, 0f);
 
-        //yield break;
+
+        float hoopCenter = .5f * Random.Range(-1, 9);
+        float hoopRange = Random.Range(1, 3);
+        instantiatedWall.GetComponent<Wall>().SetAttributes(hoopCenter, hoopRange);
     }
 
     void movePlayerAndCamera()
