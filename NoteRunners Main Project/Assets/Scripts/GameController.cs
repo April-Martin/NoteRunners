@@ -10,11 +10,13 @@ public class GameController : MonoBehaviour {
     public float CameraSpeed = 0.5f;
 
     internal float speedMultiplier = 1f;
-
+    private Dictionary<string, float> NotePosLookup;
 
 	// Use this for initialization
 	void Start () 
     {
+        NotePosLookup = new Dictionary<string, float>();
+        FillNoteLookup();
         InvokeRepeating("spawnWall", 0f, 3f);
 	}
 	
@@ -44,6 +46,22 @@ public class GameController : MonoBehaviour {
         Camera.main.transform.position += deltaPos;
         Player.transform.position += deltaPos;
     }
+
+    void FillNoteLookup()
+    {
+        NotePosLookup.Add("D4", -.5f);
+        NotePosLookup.Add("E4", 0f);
+        NotePosLookup.Add("F4", .5f);
+        NotePosLookup.Add("G4", 1f);
+        NotePosLookup.Add("A4", 1.5f);
+        NotePosLookup.Add("B4", 2f);
+        NotePosLookup.Add("C5", 2.5f);
+        NotePosLookup.Add("D5", 3f);
+        NotePosLookup.Add("E5", 3.5f);
+        NotePosLookup.Add("F5", 4f);
+        NotePosLookup.Add("G5", 4.5f);
+	}
+
 
 
 }
