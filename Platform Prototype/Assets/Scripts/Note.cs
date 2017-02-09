@@ -6,7 +6,6 @@ public class Note {
 
     public string name;
     public float duration;
-    public int frequency;
     public float yOffset;
     public float actualTime;
 
@@ -14,7 +13,6 @@ public class Note {
     {
         name = _name;
         duration = _duration;
-        frequency = 0;
         yOffset = 0;
         actualTime = 0;
     }

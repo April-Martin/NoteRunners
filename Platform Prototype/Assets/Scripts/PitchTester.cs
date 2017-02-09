@@ -46,6 +46,7 @@ public class PitchTester : MonoBehaviour {
         avg = avg / volSamples.Length;
         if (avg * 100 < volThreshold) 
         {
+            MainNote = "";
             return;
         }
         
@@ -92,6 +93,7 @@ public class PitchTester : MonoBehaviour {
         // Exclude frequencies outside of range
 		if (maxIndex==0 || (geometricMean/arithmeticMean > specFlatnessThreshold))
         {
+            MainNote = "";
             return;
         }
 
