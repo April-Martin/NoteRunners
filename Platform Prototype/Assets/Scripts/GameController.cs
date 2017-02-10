@@ -49,7 +49,7 @@ public class GameController : MonoBehaviour {
         spawnPosOffset = screenWidthInWorldUnits;
 
         // Fill song with first two notes
-        Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));
+        Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
         SpawnPlatform(0);
         StartCoroutine("AddRandomNote");
         StartCoroutine("HandleJump");
@@ -119,8 +119,7 @@ public class GameController : MonoBehaviour {
     void movePlayerAndCamera()
     {
         Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
-        if (!isJumping) 
-            Player.transform.position = new Vector3(currPos, Player.transform.position.y);
+        Player.transform.position = new Vector3(currPos, Player.transform.position.y);
     }
 
     IEnumerator AddRandomNote()
@@ -141,8 +140,6 @@ public class GameController : MonoBehaviour {
             // Fill in note properties
             Note newNote = new Note(newNoteName, newNoteDur);
             newNote.yOffset = notePosLookup[newNoteName];
-            newNote.actualTime = ((Note)Song[lastNoteIndex]).actualTime
-                                + ((Note)Song[lastNoteIndex]).duration * 60 / BPM;
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
