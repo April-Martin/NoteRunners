@@ -42,6 +42,8 @@ public class GameController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        Player.GetComponent<SpriteRenderer>().color = Color.black;
+
         // Initialize vars
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         FillNoteColorLookup();
@@ -73,10 +75,14 @@ public class GameController : MonoBehaviour
     {
         // Update player color
         string playerPitch = pt.MainNote;
-        if (playerPitch == "")
-            Player.GetComponent<SpriteRenderer>().color = Color.black;
-        else
+        if (string.IsNullOrEmpty(playerPitch))
+        {
+            //Player.GetComponent<SpriteRenderer>().color = Color.black;
+        }
+        else if (noteColorLookup.ContainsKey(playerPitch))
+        {
             Player.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
+        }
 
         // Permit grace period
         if (!isChecking)
@@ -92,7 +98,6 @@ public class GameController : MonoBehaviour
         {
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
-            
         }
     }
 
