@@ -64,10 +64,15 @@ public class FrequencyGuide {
     public string GetClosestNote(float freq)
     {
         int tempkey = (int)freq;
+
+		// If they hit the exact pitch, this is easy
         if (freqToNote.Contains(tempkey))
         {
             return (string) freqToNote.GetByIndex(freqToNote.IndexOfKey(tempkey));
         }
+
+
+		// Otherwise, find the closest valid pitch (i.e., it's hard)
 
         freqToNote.Add(tempkey, null);
 
