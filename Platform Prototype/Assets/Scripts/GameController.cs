@@ -159,7 +159,7 @@ public class GameController : MonoBehaviour
 
             // Fill in note properties
             Note newNote = new Note(newNoteName, newNoteDur);
-            newNote.yOffset = notePosLookup[newNoteName];
+            newNote.yOffset = newNoteName == "REST" ? Song[lastNoteIndex].yOffset : notePosLookup[newNoteName];
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
@@ -183,8 +183,8 @@ public class GameController : MonoBehaviour
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
 
             // Handle jump
-            float jumpHeight = Song[currNoteIndex + 1].yOffset - Song[currNoteIndex].yOffset;
-            Player.transform.position += Vector3.up * jumpHeight;
+            float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+            Player.transform.position = Vector3.up * jumpHeight;
             currNoteIndex++;
         }
     }
@@ -237,6 +237,9 @@ public class GameController : MonoBehaviour
 
     internal void RespawnPlayer()
     {
+        //Halt momentum of player
+        Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + 1); //(playerHeight / 2));
         
