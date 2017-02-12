@@ -8,10 +8,13 @@ public class PlayerMovement : MonoBehaviour {
     public float LerpSpeed = 1f;
     private Dictionary<string, float> NotePosLookup;
 
+    GameController gc;
+
     PitchTester pt;
 	// Use this for initialization
 	void Start () 
     {
+        gc = GameObject.Find("Game Controller").GetComponent<GameController>(); 
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         FillNoteLookup();
 	}
@@ -34,6 +37,10 @@ public class PlayerMovement : MonoBehaviour {
              * */
 	}
 
+    void OnBecameInvisible()
+    {
+        gc.RespawnPlayer();
+    }
 
     void FillNoteLookup()
     {

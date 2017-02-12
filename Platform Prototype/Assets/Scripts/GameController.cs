@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameController : MonoBehaviour {
+public class GameController : MonoBehaviour
+{
 
     // Settings
     public float TimeOnScreen;
@@ -17,6 +18,7 @@ public class GameController : MonoBehaviour {
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
+    
     private float currPos = 0;
     private float currTime = 0;
     private int currNoteIndex = 0;
@@ -33,10 +35,12 @@ public class GameController : MonoBehaviour {
 
     internal float speedMultiplier = 1f;
 
+    int deathIndex = 0;
 
 
-	// Use this for initialization
-	void Start () 
+
+    // Use this for initialization
+    void Start()
     {
         // Initialize vars
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
@@ -53,18 +57,17 @@ public class GameController : MonoBehaviour {
         SpawnPlatform(0);
         StartCoroutine("AddRandomNote");
         StartCoroutine("HandleJump");
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    // Update is called once per frame
+    void Update()
     {
-        CheckPitch();   
+        CheckPitch();
 
         currTime += Time.deltaTime;
         currPos += Time.deltaTime * worldUnitsPerSec;
         movePlayerAndCamera();
-        
-	}
+    }
 
     void CheckPitch()
     {
@@ -85,10 +88,11 @@ public class GameController : MonoBehaviour {
             return;
 
         // Compare player pitch to target note
-        if ( playerPitch != targetNote)
+        if (playerPitch != targetNote)
         {
-            Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
+            //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+            
         }
     }
 
@@ -106,7 +110,17 @@ public class GameController : MonoBehaviour {
 
         // Set it at the position corresponding to the note's start time.
         if (index != 0)
-            plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index].yOffset);
+        {
+            if (Song[index].name == "REST") //If Rest, set Y of rest platform to previous note's Y
+            {
+                plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index - 1].yOffset);
+            }
+            else
+            {
+                plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index].yOffset);
+            }
+
+        }
 
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
@@ -119,7 +133,7 @@ public class GameController : MonoBehaviour {
     void movePlayerAndCamera()
     {
         Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
-        if (!isJumping) 
+        if (!isJumping)
             Player.transform.position = new Vector3(currPos, Player.transform.position.y);
     }
 
@@ -162,11 +176,11 @@ public class GameController : MonoBehaviour {
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
-            Invoke("StartGracePeriod", dur - GracePeriod/2);
+            Invoke("StartGracePeriod", dur - GracePeriod / 2);
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
 
             // Handle jump
-            float jumpHeight = Song[currNoteIndex+1].yOffset - Song[currNoteIndex].yOffset;
+            float jumpHeight = Song[currNoteIndex + 1].yOffset - Song[currNoteIndex].yOffset;
             Player.transform.position += Vector3.up * jumpHeight;
             currNoteIndex++;
         }
@@ -215,8 +229,22 @@ public class GameController : MonoBehaviour {
         notePosLookup.Add("F5", 4f);
         notePosLookup.Add("G5", 4.5f);
         notePosLookup.Add("REST", 0);
-	}
+    }
 
 
+    internal void RespawnPlayer()
+    {
+        float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
+        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + 1); //(playerHeight / 2));
+        
+        isChecking = false;
+        Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
 
+        Invoke("toggleIsChecking", 60/BPM );
+    }
+
+    void toggleIsChecking()
+    {
+        isChecking = !isChecking;
+    }
 }

@@ -102,6 +102,6 @@ public class PitchTester : MonoBehaviour {
 
         // Log note
         MainNote = guide.GetClosestNote(frequency);
-        Debug.Log(MainNote);
+        //Debug.Log(MainNote);
 	}
 }
