@@ -6,10 +6,12 @@ public class GameController : MonoBehaviour
 {
 
     // Settings
+    public bool DEBUG_InvincibleMode = false;
     public float TimeOnScreen;
     public string[] NotesAllowed;
     public float BPM;
-    public float GracePeriod;
+    public float TransitionGracePeriod;
+    public float SustainedGracePeriod;
 
     // Dependencies
     public PlayerMovement Player;
@@ -27,8 +29,9 @@ public class GameController : MonoBehaviour
     float worldUnitsPerBeat = 0;
 
     private bool isJumping = false;
-    private bool isChecking = true;
+    private bool isChecking = true; 
     private bool isFalling = false;
+    private bool isCorrect = true;
 
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
@@ -38,6 +41,7 @@ public class GameController : MonoBehaviour
 
     int deathIndex = 0;
 
+    private float elapsedIncorrectTime = 0;
 
 
     // Use this for initialization
@@ -86,7 +90,7 @@ public class GameController : MonoBehaviour
         }
 
         // Permit grace period
-        if (!isChecking)
+        if (!isChecking || DEBUG_InvincibleMode)
             return;
 
         // Ignore rests
@@ -97,10 +101,25 @@ public class GameController : MonoBehaviour
         // Compare player pitch to target note
         if (playerPitch != targetNote)
         {
+            // If they just deviated from the pitch, start keeping track of the time.
+            if (isCorrect)
+            {
+                elapsedIncorrectTime = 0;
+                isCorrect = false;
+            }
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
-            Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
-            isFalling = true;
+            // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
+            else if (elapsedIncorrectTime > SustainedGracePeriod)
+            {
+                Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+                isFalling = true;
+            }
+            // Add elapsed incorrect time
+            else
+                elapsedIncorrectTime += Time.deltaTime;
         }
+        else
+            isCorrect = true;
     }
 
     void SpawnPlatform(int index)
@@ -177,16 +196,22 @@ public class GameController : MonoBehaviour
 
     IEnumerator HandleJump()
     {
-        while (!isFalling)
+        while(true)
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
-            Invoke("StartGracePeriod", dur - GracePeriod / 2);
+            Invoke("StartGracePeriod", dur - TransitionGracePeriod / 2);
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
 
             // Handle jump
-            float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-            Player.transform.position = Vector3.up * jumpHeight;
+            if (!isFalling)
+            {
+                float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+                float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
+                float platHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
+                Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+            }
+           
             currNoteIndex++;
         }
     }
@@ -194,7 +219,7 @@ public class GameController : MonoBehaviour
     void StartGracePeriod()
     {
         isChecking = false;
-        Invoke("EndGracePeriod", GracePeriod);
+        Invoke("EndGracePeriod", TransitionGracePeriod);
     }
 
     void EndGracePeriod()
@@ -245,16 +270,13 @@ public class GameController : MonoBehaviour
         Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
 
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight); //(playerHeight / 2));
+        float platformHeight = platform.GetComponent<SpriteRenderer>().bounds.size.y;
+        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight/2 + platformHeight/2); 
         
         isChecking = false;
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
 
-        Invoke("toggleIsChecking", 60/BPM );
+        Invoke("EndGracePeriod", 60/BPM);
     }
 
-    void toggleIsChecking()
-    {
-        isChecking = !isChecking;
-    }
 }
