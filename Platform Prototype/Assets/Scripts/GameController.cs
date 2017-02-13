@@ -28,10 +28,11 @@ public class GameController : MonoBehaviour
     float worldUnitsPerSec = 0;
     float worldUnitsPerBeat = 0;
 
-    private bool isJumping = false;
+    private bool isRespawning = false;
     private bool isChecking = true; 
     private bool isFalling = false;
     private bool isCorrect = true;
+    private bool colIsFlashing = false;
 
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
@@ -80,7 +81,11 @@ public class GameController : MonoBehaviour
     {
         // Update player color
         string playerPitch = pt.MainNote;
-        if (string.IsNullOrEmpty(playerPitch))
+        if (colIsFlashing)
+        {
+            return;
+        }
+        else if (string.IsNullOrEmpty(playerPitch))
         {
             Player.GetComponent<SpriteRenderer>().color = Color.black;
         }
@@ -200,8 +205,12 @@ public class GameController : MonoBehaviour
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
-            Invoke("StartGracePeriod", dur - TransitionGracePeriod / 2);
+
+            // Handle transition grace period
+            Invoke("StartTransitionGracePeriod", dur - TransitionGracePeriod / 2);
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
+
+
 
             // Handle jump
             if (!isFalling)
@@ -216,14 +225,24 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void StartGracePeriod()
+    void StartTransitionGracePeriod()
     {
         isChecking = false;
-        Invoke("EndGracePeriod", TransitionGracePeriod);
+        Invoke("EndTransitionGracePeriod", TransitionGracePeriod);
     }
 
-    void EndGracePeriod()
+    void EndTransitionGracePeriod()
     {
+        // This is a bit tricky:
+        // Jumps need to enable and disable checking. But they should NOT override death grace periods!
+        // So, a new bool (isRespawning) is necessary so that we can give respawning priority.
+        if (!isRespawning)
+            isChecking = true;
+    }
+
+    void EndDeathGracePeriod()
+    {
+        isRespawning = false;
         isChecking = true;
     }
 
@@ -266,17 +285,39 @@ public class GameController : MonoBehaviour
     {
         isFalling = false;
 
-        //Halt momentum of player
+        // Halt momentum of player
         Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
 
+        // Respawn player
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<SpriteRenderer>().bounds.size.y;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight/2 + platformHeight/2); 
         
-        isChecking = false;
+        // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
 
-        Invoke("EndGracePeriod", 60/BPM);
+        // Grant brief invulnerability
+        float deathGracePeriod = 60 / BPM * 2;
+        isChecking = false;
+        isRespawning = true;
+        Invoke("EndDeathGracePeriod", deathGracePeriod);
+        IEnumerator coroutine = FlashColor(deathGracePeriod / 4);
+        StartCoroutine(coroutine);
     }
 
+    IEnumerator FlashColor(float interval)
+    {
+        for (int i=0; i<4; i++)
+        {
+            colIsFlashing = true;
+            Player.GetComponent<SpriteRenderer>().color = Color.white;
+            Invoke("EndColorFlash", interval/3);
+            yield return new WaitForSeconds(interval);
+        }
+    }
+    
+    void EndColorFlash()
+    {
+        colIsFlashing = false;
+    }
 }
