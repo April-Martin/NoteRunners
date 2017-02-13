@@ -28,6 +28,7 @@ public class GameController : MonoBehaviour
 
     private bool isJumping = false;
     private bool isChecking = true;
+    private bool isFalling = false;
 
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
@@ -77,7 +78,7 @@ public class GameController : MonoBehaviour
         string playerPitch = pt.MainNote;
         if (string.IsNullOrEmpty(playerPitch))
         {
-            //Player.GetComponent<SpriteRenderer>().color = Color.black;
+            Player.GetComponent<SpriteRenderer>().color = Color.black;
         }
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
@@ -98,6 +99,7 @@ public class GameController : MonoBehaviour
         {
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+            isFalling = true;
         }
     }
 
@@ -175,7 +177,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator HandleJump()
     {
-        while (true)
+        while (!isFalling)
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
@@ -237,11 +239,13 @@ public class GameController : MonoBehaviour
 
     internal void RespawnPlayer()
     {
+        isFalling = false;
+
         //Halt momentum of player
         Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
 
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + 1); //(playerHeight / 2));
+        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight); //(playerHeight / 2));
         
         isChecking = false;
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
