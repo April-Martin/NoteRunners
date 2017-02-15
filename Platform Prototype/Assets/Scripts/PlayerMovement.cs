@@ -46,6 +46,15 @@ public class PlayerMovement : MonoBehaviour {
     {
         NotePosLookup = new Dictionary<string, float>();
 
+        NotePosLookup.Add("E2", -7f);
+        NotePosLookup.Add("F2", -6.5f);
+        NotePosLookup.Add("G2", -6f);
+        NotePosLookup.Add("A2", -5.5f);
+        NotePosLookup.Add("B2", -5f);
+        NotePosLookup.Add("C3", -4.5f);
+        NotePosLookup.Add("D3", -4f);
+        NotePosLookup.Add("E3", -3.5f);
+        //Start of original list. 
         NotePosLookup.Add("F3", -3f);
         NotePosLookup.Add("G3", -2.5f);
         NotePosLookup.Add("A3", -2f);
@@ -62,6 +71,10 @@ public class PlayerMovement : MonoBehaviour {
         NotePosLookup.Add("E5", 3.5f);
         NotePosLookup.Add("F5", 4f);
         NotePosLookup.Add("G5", 4.5f);
+        //End of original list.
+        NotePosLookup.Add("A5", 5f);
+        NotePosLookup.Add("B5", 5.5f);
+        NotePosLookup.Add("C6", 6f);
 
     }
 

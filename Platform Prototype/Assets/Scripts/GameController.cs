@@ -252,6 +252,21 @@ public class GameController : MonoBehaviour
     void FillNoteColorLookup()
     {
         noteColorLookup = new Dictionary<string, Color>();
+
+        noteColorLookup.Add("E2", Color.red);
+        noteColorLookup.Add("F2", new Color(1f, .5f, 0f));
+        noteColorLookup.Add("G2", Color.yellow);
+        noteColorLookup.Add("A2", Color.green);
+        noteColorLookup.Add("B2", Color.cyan);
+        noteColorLookup.Add("C3", Color.blue);
+        noteColorLookup.Add("D3", new Color(.8f, .2f, .8f));
+        noteColorLookup.Add("E3", Color.red);
+        noteColorLookup.Add("F3", new Color(1f, .5f, 0f));
+        noteColorLookup.Add("G3", Color.yellow);
+        noteColorLookup.Add("A3", Color.green);
+        noteColorLookup.Add("B3", Color.cyan);
+
+        // Original list
         noteColorLookup.Add("D4", new Color(.8f, .2f, .8f));
         noteColorLookup.Add("E4", Color.red);
         noteColorLookup.Add("F4", new Color(1f, .5f, 0f));
@@ -264,11 +279,32 @@ public class GameController : MonoBehaviour
         noteColorLookup.Add("F5", new Color(1f, .5f, 0f));
         noteColorLookup.Add("G5", Color.yellow);
         noteColorLookup.Add("REST", Color.black);
+        //End of original list
+
+        noteColorLookup.Add("A5", Color.green);
+        noteColorLookup.Add("B5", Color.cyan);
+        noteColorLookup.Add("C6", Color.blue);
     }
 
     void FillNotePosLookup()
     {
         notePosLookup = new Dictionary<string, float>();
+
+        notePosLookup.Add("E2", -7f);
+        notePosLookup.Add("F2", -6.5f);
+        notePosLookup.Add("G2", -6f);
+        notePosLookup.Add("A2", -5.5f);
+        notePosLookup.Add("B2", -5f);
+        notePosLookup.Add("C3", -4.5f);
+        notePosLookup.Add("D3", -4f);
+        notePosLookup.Add("E3", -3.5f);
+        notePosLookup.Add("F3", -3f);
+        notePosLookup.Add("G3", -2.5f);
+        notePosLookup.Add("A3", -2f);
+        notePosLookup.Add("B3", -1.5f);
+        notePosLookup.Add("C4", -1f);
+
+        // Original list
         notePosLookup.Add("D4", -.5f);
         notePosLookup.Add("E4", 0f);
         notePosLookup.Add("F4", .5f);
@@ -281,6 +317,11 @@ public class GameController : MonoBehaviour
         notePosLookup.Add("F5", 4f);
         notePosLookup.Add("G5", 4.5f);
         notePosLookup.Add("REST", 0);
+        // End of original list.
+
+        notePosLookup.Add("A5", 5f);
+        notePosLookup.Add("B5", 5.5f);
+        notePosLookup.Add("C6", 6f);
     }
 
 

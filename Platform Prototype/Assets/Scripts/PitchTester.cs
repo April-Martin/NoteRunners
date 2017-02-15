@@ -11,8 +11,8 @@ public class PitchTester : MonoBehaviour {
 
     private int samplerate;
     private const int bins = 8192;
-    private const int minFreq = 80;
-    private const int maxFreq = 1060;
+    private const int minFreq = 75;
+    private const int maxFreq = 1075;
 
     public String MainNote;
     public Text text;
@@ -27,6 +27,7 @@ public class PitchTester : MonoBehaviour {
 
         // Start realtime audio input / playback
         samplerate = AudioSettings.outputSampleRate;
+        //samplerate = 44100;
         src.clip = Microphone.Start(null, true, 10, samplerate);
         src.loop = true;
         while (Microphone.GetPosition(null) <= 0) { }   // Wait for recording to start

@@ -9,8 +9,14 @@ public class FrequencyGuide {
 
 	// Use this for initialization
 	public FrequencyGuide() {
-		// Do we want to go the full general vocal range of E2 - C6 (Low Bass to High Soprano)?
-		// Or do we want a smaller range and work with transposing lower/higher notes?
+        freqToNote.Add(82, "E2");
+        freqToNote.Add(87, "F2");
+        //freqToNote.Add(93, "F#2");
+        freqToNote.Add(98, "G2");
+        //freqToNote.Add(104, "G#2");
+        freqToNote.Add(110, "A2");
+        //freqToNote.Add(117, "A#2");
+        freqToNote.Add(123, "B2");
         freqToNote.Add(131, "C3");
         //freqToNote.Add(139, "C#3");
         freqToNote.Add(147, "D3");
@@ -43,7 +49,20 @@ public class FrequencyGuide {
         freqToNote.Add(698, "F5");
         //freqToNote.Add(740, "F#5");
         freqToNote.Add(784, "G5");
+        //freqToNote.Add(831, "G#5");
+        freqToNote.Add(880, "A5");
+        //freqToNote.Add(932, "A#5");
+        freqToNote.Add(988, "B5");
+        freqToNote.Add(1047, "C6");
 
+        noteToFreq.Add("E2", 82);
+        noteToFreq.Add("F2", 87);
+        //noteToFreq.Add("F#2", 93);
+        noteToFreq.Add("G2", 98);
+        //noteToFreq.Add("G#2",104);
+        noteToFreq.Add("A2", 110);
+        //noteToFreq.Add("A#2", 117);
+        noteToFreq.Add("B2", 123);
         noteToFreq.Add("C3", 131);
         //noteToFreq.Add("C#3", 139);
         noteToFreq.Add("D3", 147);
@@ -76,6 +95,11 @@ public class FrequencyGuide {
         noteToFreq.Add("F5", 698);
         //noteToFreq.Add("F#5", 740);
         noteToFreq.Add("G5", 784);
+        //noteToFreq.Add("G#5", 831);
+        noteToFreq.Add("A5", 880);
+        //noteToFreq.Add("A#5", 932);
+        noteToFreq.Add("B5", 988);
+        noteToFreq.Add("C6", 1047);
     }
 	
 
