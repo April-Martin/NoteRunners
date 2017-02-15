@@ -12,7 +12,7 @@ public class PitchTester : MonoBehaviour {
     private int samplerate;
     private const int bins = 8192;
     private const int minFreq = 80;
-    private const int maxFreq = 2000;
+    private const int maxFreq = 1060;
 
     public String MainNote;
     public Text text;

@@ -107,21 +107,24 @@ public class GameController : MonoBehaviour
         if (playerPitch != targetNote)
         {
             // If they just deviated from the pitch, start keeping track of the time.
-            if (isCorrect)
-            {
-                elapsedIncorrectTime = 0;
-                isCorrect = false;
-            }
+			if (isCorrect) {
+				elapsedIncorrectTime = 0;
+				isCorrect = false;
+
+				Player.GetComponent<SpriteRenderer> ().color = noteColorLookup [targetNote];
+			}
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
-            else if (elapsedIncorrectTime > SustainedGracePeriod)
-            {
-                Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
-                isFalling = true;
-            }
+            else if (elapsedIncorrectTime > SustainedGracePeriod) {
+				Physics2D.IgnoreCollision (platforms [currNoteIndex], Player.GetComponent<Collider2D> ());
+				isFalling = true;
+			}
             // Add elapsed incorrect time
             else
-                elapsedIncorrectTime += Time.deltaTime;
+			{
+				Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+				elapsedIncorrectTime += Time.deltaTime;
+			}	
         }
         else
             isCorrect = true;

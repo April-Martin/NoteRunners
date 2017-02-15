@@ -9,6 +9,8 @@ public class FrequencyGuide {
 
 	// Use this for initialization
 	public FrequencyGuide() {
+		// Do we want to go the full general vocal range of E2 - C6 (Low Bass to High Soprano)?
+		// Or do we want a smaller range and work with transposing lower/higher notes?
         freqToNote.Add(131, "C3");
         //freqToNote.Add(139, "C#3");
         freqToNote.Add(147, "D3");
