@@ -104,7 +104,8 @@ public class GameController : MonoBehaviour
             return;
 
         // Compare player pitch to target note
-        if (playerPitch != targetNote)
+        //if (playerPitch != targetNote)
+        if (string.IsNullOrEmpty(playerPitch) || playerPitch[0] != targetNote[0])
         {
             // If they just deviated from the pitch, start keeping track of the time.
 			if (isCorrect) {
