@@ -11,12 +11,13 @@ public class PitchTester : MonoBehaviour {
 
     private int samplerate;
     private const int bins = 8192;
-    private const int minFreq = 75;
-    private const int maxFreq = 1075;
+
+    internal int minFreq = 75;
+    internal int maxFreq = 1075;
 
     public String MainNote;
     public Text text;
-    private FrequencyGuide guide = new FrequencyGuide();
+    internal FrequencyGuide guide = new FrequencyGuide();
     private AudioSource src;
     private float[] volSamples = new float[64];
     private float[] freqSamples = new float[bins];

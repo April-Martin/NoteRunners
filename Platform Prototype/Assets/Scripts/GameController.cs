@@ -17,6 +17,7 @@ public class GameController : MonoBehaviour
     // Dependencies
     public PlayerMovement Player;
     public GameObject platform;
+    private PitchTester pt;
 
     // Private vars
     private List<Note> Song = new List<Note>(50);
@@ -39,7 +40,8 @@ public class GameController : MonoBehaviour
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
     private List<string> NotesAllowed;
-    private PitchTester pt;
+    
+    
 
     internal float speedMultiplier = 1f;
 
@@ -58,6 +60,10 @@ public class GameController : MonoBehaviour
         FillNoteColorLookup();
         FillNotePosLookup();
         FillNotesAllowed();
+
+        pt.minFreq = pt.guide.noteToFreq.TryGetValue(NotesRange[0], out pt.minFreq) ? pt.minFreq : 75;
+        pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NotesRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
+
         float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
                                          - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
         worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;

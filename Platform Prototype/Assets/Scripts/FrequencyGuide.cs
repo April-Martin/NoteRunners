@@ -5,7 +5,8 @@ using System.Collections.Generic;
 public class FrequencyGuide {
 
     private SortedList freqToNote = new SortedList();
-    private Dictionary<string, int> noteToFreq = new Dictionary<string, int>();
+
+    internal Dictionary<string, int> noteToFreq = new Dictionary<string, int>();
 
 	// Use this for initialization
 	public FrequencyGuide() {
