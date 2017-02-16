@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,7 +9,7 @@ public class GameController : MonoBehaviour
     // Settings
     public bool DEBUG_InvincibleMode = false;
     public float TimeOnScreen;
-    public string[] NotesAllowed;
+    public List<string> NotesRange; 
     public float BPM;
     public float TransitionGracePeriod;
     public float SustainedGracePeriod;
@@ -20,7 +21,8 @@ public class GameController : MonoBehaviour
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
-    
+
+
     private float currPos = 0;
     private float currTime = 0;
     private int currNoteIndex = 0;
@@ -36,6 +38,7 @@ public class GameController : MonoBehaviour
 
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
+    private List<string> NotesAllowed;
     private PitchTester pt;
 
     internal float speedMultiplier = 1f;
@@ -54,11 +57,14 @@ public class GameController : MonoBehaviour
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         FillNoteColorLookup();
         FillNotePosLookup();
+        FillNotesAllowed();
         float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
                                          - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
         worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
+
+        
 
         // Fill song with first two notes
         Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
@@ -182,9 +188,9 @@ public class GameController : MonoBehaviour
             string newNoteName = lastNoteName;
             while (newNoteName == lastNoteName)
             {
-                newNoteName = NotesAllowed[Random.Range(0, NotesAllowed.Length)];
+                newNoteName = NotesAllowed[UnityEngine.Random.Range(0, NotesAllowed.Count - 1)];
             }
-            float newNoteDur = Random.Range(1, 4);
+            float newNoteDur = UnityEngine.Random.Range(1, 4);
 
 
             // Fill in note properties
@@ -266,6 +272,7 @@ public class GameController : MonoBehaviour
         noteColorLookup.Add("G3", Color.yellow);
         noteColorLookup.Add("A3", Color.green);
         noteColorLookup.Add("B3", Color.cyan);
+        noteColorLookup.Add("C4", Color.blue);
 
         // Original list
         noteColorLookup.Add("D4", new Color(.8f, .2f, .8f));
@@ -323,6 +330,23 @@ public class GameController : MonoBehaviour
         notePosLookup.Add("A5", 5f);
         notePosLookup.Add("B5", 5.5f);
         notePosLookup.Add("C6", 6f);
+    }
+
+    private void FillNotesAllowed()
+    {
+        NotesAllowed = new List<string>();
+        NotesAllowed.Add("REST");
+
+        float notesRangeMinPos; float notesRangeMaxPos;
+        notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out notesRangeMinPos) ? notesRangeMinPos : -0.5f;
+        notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out notesRangeMaxPos) ? notesRangeMaxPos : 4.5f;
+        foreach (string Note in Player.NotePosLookup.Keys)
+        {
+            if (Player.NotePosLookup[Note] >= notesRangeMinPos && Player.NotePosLookup[Note] <= notesRangeMaxPos)
+            {
+                NotesAllowed.Add(Note);
+            }
+        }
     }
 
 

@@ -6,7 +6,7 @@ public class PlayerMovement : MonoBehaviour {
 
     public float ArrowSpeed = .2f;
     public float LerpSpeed = 1f;
-    private Dictionary<string, float> NotePosLookup;
+    internal Dictionary<string, float> NotePosLookup;
 
     GameController gc;
 
