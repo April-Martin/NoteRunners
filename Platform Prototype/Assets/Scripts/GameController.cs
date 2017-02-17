@@ -9,6 +9,7 @@ public class GameController : MonoBehaviour
     // Settings
     public bool DEBUG_InvincibleMode = false;
     public float TimeOnScreen;
+	public List<string> NoteDetectionRange;
     public List<string> NotesRange; 
     public float BPM;
     public float TransitionGracePeriod;
@@ -61,8 +62,8 @@ public class GameController : MonoBehaviour
         FillNotePosLookup();
         FillNotesAllowed();
 
-        pt.minFreq = pt.guide.noteToFreq.TryGetValue(NotesRange[0], out pt.minFreq) ? pt.minFreq : 75;
-        pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NotesRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
+        pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
+        pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
 
         float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
                                          - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
