@@ -24,7 +24,6 @@ public class GameController : MonoBehaviour
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
 
-
     private float currPos = 0;
     private float currTime = 0;
     private int currNoteIndex = 0;
@@ -42,8 +41,6 @@ public class GameController : MonoBehaviour
     private Dictionary<string, Color> noteColorLookup;
     private List<string> NotesAllowed;
     
-    
-
     internal float speedMultiplier = 1f;
 
     int deathIndex = 0;
@@ -206,6 +203,7 @@ public class GameController : MonoBehaviour
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
+            ReaderWriter.WriteSong(Song, "test1.txt");
 
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
@@ -226,7 +224,6 @@ public class GameController : MonoBehaviour
             // Handle transition grace period
             Invoke("StartTransitionGracePeriod", dur - TransitionGracePeriod / 2);
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
-
 
 
             // Handle jump
