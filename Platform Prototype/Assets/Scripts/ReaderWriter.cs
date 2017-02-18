@@ -29,15 +29,16 @@ public class ReaderWriter : MonoBehaviour
         string path = Application.dataPath + "/Songs/";
         string line = "";
         string[] vals = new string[2];
-        int i = 1;
+
         using (StreamReader reader = new StreamReader(File.Open( path + name, FileMode.Open)))
         {
             bpm = float.Parse(reader.ReadLine());
-
+            // Discard initial rest
+            reader.ReadLine();
             while ((line = reader.ReadLine()) != null)
             {
                 vals = line.Split(',');
-                Song.Insert(i, new Note(vals[0], float.Parse(vals[1])) );
+                Song.Add( new Note(vals[0], float.Parse(vals[1])) );
             }
         }
 

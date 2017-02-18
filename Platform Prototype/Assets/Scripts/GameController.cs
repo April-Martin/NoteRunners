@@ -72,7 +72,6 @@ public class GameController : MonoBehaviour
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
 
-
         Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
         SpawnPlatform(0);
 
@@ -217,7 +216,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator AddNoteFromSong()
     {
-        while (true)
+        while (lastSpawnedNoteIndex < (Song.Count-1))
         {
             // Spawn corresponding platform
             SpawnPlatform(++lastSpawnedNoteIndex);
@@ -263,7 +262,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator HandleJump()
     {
-        while (true)
+        while (currNoteIndex < Song.Count)
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
