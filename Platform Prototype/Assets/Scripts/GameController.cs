@@ -9,11 +9,13 @@ public class GameController : MonoBehaviour
     // Settings
     public bool DEBUG_InvincibleMode = false;
     public float TimeOnScreen;
-	public List<string> NoteDetectionRange;
-    public List<string> NotesRange; 
+    public List<string> NoteDetectionRange;
+    public List<string> NotesRange;
     public float BPM;
     public float TransitionGracePeriod;
     public float SustainedGracePeriod;
+    public bool SongMode = false;
+    public string filename;
 
     // Dependencies
     public PlayerMovement Player;
@@ -27,12 +29,13 @@ public class GameController : MonoBehaviour
     private float currPos = 0;
     private float currTime = 0;
     private int currNoteIndex = 0;
+    private int lastSpawnedNoteIndex = 0;
     float spawnPosOffset = 0;
     float worldUnitsPerSec = 0;
     float worldUnitsPerBeat = 0;
 
     private bool isRespawning = false;
-    private bool isChecking = true; 
+    private bool isChecking = true;
     private bool isFalling = false;
     private bool isCorrect = true;
     private bool colIsFlashing = false;
@@ -40,7 +43,7 @@ public class GameController : MonoBehaviour
     private Dictionary<string, float> notePosLookup;
     private Dictionary<string, Color> noteColorLookup;
     private List<string> NotesAllowed;
-    
+
     internal float speedMultiplier = 1f;
 
     int deathIndex = 0;
@@ -59,6 +62,7 @@ public class GameController : MonoBehaviour
         FillNotePosLookup();
         FillNotesAllowed();
 
+
         pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
         pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
 
@@ -68,13 +72,40 @@ public class GameController : MonoBehaviour
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
 
-        
 
-        // Fill song with first two notes
         Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
         SpawnPlatform(0);
-        StartCoroutine("AddRandomNote");
-        StartCoroutine("HandleJump");
+
+        // If infinite mode:
+        if (!SongMode)
+        {
+            StartCoroutine("AddRandomNote");
+            StartCoroutine("HandleJump");
+        }
+
+        // If song mode:
+        else
+        {
+            // Read information from file into Song array
+            ReaderWriter.ReadSong(ref Song, filename, ref BPM);
+            for (int i = 1; i < Song.Count; i++)
+            {
+                if (Song[i].name == "REST")
+                {
+                    Song[i].yOffset = Song[i - 1].yOffset;
+                }
+                else
+                {
+                    Song[i].yOffset = notePosLookup[Song[i].name];
+                }
+            }
+
+            StartCoroutine("AddNoteFromSong");
+            StartCoroutine("HandleJump");
+        }
+
+
+
     }
 
     // Update is called once per frame
@@ -118,24 +149,26 @@ public class GameController : MonoBehaviour
         if (string.IsNullOrEmpty(playerPitch) || playerPitch[0] != targetNote[0])
         {
             // If they just deviated from the pitch, start keeping track of the time.
-			if (isCorrect) {
-				elapsedIncorrectTime = 0;
-				isCorrect = false;
+            if (isCorrect)
+            {
+                elapsedIncorrectTime = 0;
+                isCorrect = false;
 
-				Player.GetComponent<SpriteRenderer> ().color = noteColorLookup [targetNote];
-			}
+                Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+            }
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
-            else if (elapsedIncorrectTime > SustainedGracePeriod) {
-				Physics2D.IgnoreCollision (platforms [currNoteIndex], Player.GetComponent<Collider2D> ());
-				isFalling = true;
-			}
+            else if (elapsedIncorrectTime > SustainedGracePeriod)
+            {
+                Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+                isFalling = true;
+            }
             // Add elapsed incorrect time
             else
-			{
-				Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
-				elapsedIncorrectTime += Time.deltaTime;
-			}	
+            {
+                Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                elapsedIncorrectTime += Time.deltaTime;
+            }
         }
         else
             isCorrect = true;
@@ -182,6 +215,20 @@ public class GameController : MonoBehaviour
 
     }
 
+    IEnumerator AddNoteFromSong()
+    {
+        while (true)
+        {
+            // Spawn corresponding platform
+            SpawnPlatform(++lastSpawnedNoteIndex);
+
+            // Set the next new note to spawn as soon as this new one's duration has elapsed
+            float delay = Song[lastSpawnedNoteIndex].duration * 60 / BPM;
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+
     IEnumerator AddRandomNote()
     {
         while (true)
@@ -203,7 +250,7 @@ public class GameController : MonoBehaviour
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
-            ReaderWriter.WriteSong(Song, "test1.txt");
+            ReaderWriter.WriteSong(Song, "HELLO.txt", 60);
 
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
@@ -216,7 +263,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator HandleJump()
     {
-        while(true)
+        while (true)
         {
             // Wait till end of note
             float dur = Song[currNoteIndex].duration * 60 / BPM;
@@ -234,7 +281,7 @@ public class GameController : MonoBehaviour
                 float platHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                 Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
             }
-           
+
             currNoteIndex++;
         }
     }
@@ -364,8 +411,8 @@ public class GameController : MonoBehaviour
         // Respawn player
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<SpriteRenderer>().bounds.size.y;
-        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight/2 + platformHeight/2); 
-        
+        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
+
         // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
 
@@ -380,15 +427,15 @@ public class GameController : MonoBehaviour
 
     IEnumerator FlashColor(float interval)
     {
-        for (int i=0; i<4; i++)
+        for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
             Player.GetComponent<SpriteRenderer>().color = Color.white;
-            Invoke("EndColorFlash", interval/3);
+            Invoke("EndColorFlash", interval / 3);
             yield return new WaitForSeconds(interval);
         }
     }
-    
+
     void EndColorFlash()
     {
         colIsFlashing = false;
