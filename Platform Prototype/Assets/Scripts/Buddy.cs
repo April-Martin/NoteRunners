@@ -28,6 +28,13 @@ public class Buddy : MonoBehaviour
     {
         spriteRenderer.color = Random.ColorHSV();
 
+        //Remove this line for buddy trail effect. Buddy will struggle to catch up to the player as the player moves faster. Keep this line to lock at xOffset.
+        transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
+
+        Vector3 targetPos;
+        if (!string.IsNullOrEmpty(pt.MainNote))
+        {
+            targetPos = new Vector3(playerTransform.position.x + xOffset, gc.notePosLookup[pt.MainNote], 0f);
         }
         else
         {
