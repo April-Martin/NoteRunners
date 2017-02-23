@@ -40,8 +40,9 @@ public class GameController : MonoBehaviour
     private bool isCorrect = true;
     private bool colIsFlashing = false;
 
-    private Dictionary<string, float> notePosLookup;
-    private Dictionary<string, Color> noteColorLookup;
+    internal Dictionary<string, float> notePosLookup;
+    internal Dictionary<string, Color> noteColorLookup;
+
     private List<string> NotesAllowed;
 
     internal float speedMultiplier = 1f;
