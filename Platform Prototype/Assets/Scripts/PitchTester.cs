@@ -27,8 +27,8 @@ public class PitchTester : MonoBehaviour {
         src = GetComponent<AudioSource>();
 
         // Start realtime audio input / playback
-        samplerate = AudioSettings.outputSampleRate;
-        //samplerate = 44100;
+        //samplerate = AudioSettings.outputSampleRate;
+        samplerate = 8000;
         src.clip = Microphone.Start(null, true, 10, samplerate);
         src.loop = true;
         while (Microphone.GetPosition(null) <= 0) { }   // Wait for recording to start
