@@ -437,7 +437,7 @@ public class GameController : MonoBehaviour
                                  - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
         worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
-        spawnPosOffset = screenWidthInWorldUnits;
+        spawnPosOffset = screenWidthInWorldUnits*speedMult;
 
 
 
@@ -453,6 +453,11 @@ public class GameController : MonoBehaviour
 
         for (int i=minIndex; i < platforms.Count; i++)
         {
+            if (platforms[i] == null)
+            {
+                continue;
+            }
+
             Platform plat = platforms[i].GetComponent<Platform>();
 
             // Resize the platform's width so it matches the note's duration
