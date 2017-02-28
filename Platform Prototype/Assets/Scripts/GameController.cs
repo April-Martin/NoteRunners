@@ -46,6 +46,7 @@ public class GameController : MonoBehaviour
     private List<string> NotesAllowed;
 
     public float speedMult = 1f;
+    public float scrollingInterpolation = 0.01f;
 
     private float elapsedIncorrectTime = 0;
 
@@ -217,7 +218,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator AddNoteFromSong()
     {
-        while (lastSpawnedNoteIndex < (Song.Count-1))
+        while (lastSpawnedNoteIndex < (Song.Count - 1))
         {
             // Spawn corresponding platform
             SpawnPlatform(++lastSpawnedNoteIndex);
@@ -425,58 +426,77 @@ public class GameController : MonoBehaviour
         StartCoroutine(coroutine);
     }
 
-    void ChangeScrollingSpeed(float speedMultiplier)
+    // FACADE FUNCTION 
+    void ChangeScrollingSpeed(float changeToSpeedMultiplier)
     {
-        speedMult *= speedMultiplier;
+        float targetSpeedMultiplier = speedMult * changeToSpeedMultiplier;
 
-        // Update time on screen
-        TimeOnScreen /= speedMultiplier;
-
-        // Recalculate conversions between time, beats, and screen space
-        float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
-                                 - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
-        worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
-        worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
-        spawnPosOffset = screenWidthInWorldUnits*speedMult;
-
-
-
-        // Resize and offset existing platforms
-
-        // Note: this skips over any platforms we've already deleted.
-        int minIndex = currNoteIndex;
-        while (minIndex > -1 && platforms[minIndex] != null)
+        if (changeToSpeedMultiplier > 1)
         {
-            minIndex--;
+            IEnumerator coroutine = ChangeScrollingSpeedIncremental(1 + scrollingInterpolation, (sm) => sm < targetSpeedMultiplier);
+            StartCoroutine(coroutine);
         }
-        minIndex++;
-
-        for (int i=minIndex; i < platforms.Count; i++)
+        else
         {
-            if (platforms[i] == null)
+            IEnumerator coroutine = ChangeScrollingSpeedIncremental(1 - scrollingInterpolation, (sm) => sm > targetSpeedMultiplier);
+            StartCoroutine(coroutine);
+        }
+
+    }
+
+    IEnumerator ChangeScrollingSpeedIncremental(float speedMultiplier, Func<float, bool> whileDelegate)
+    {
+        while (whileDelegate(speedMult))
+        {
+            speedMult *= speedMultiplier;
+
+            // Update time on screen
+            TimeOnScreen /= speedMultiplier;
+
+            // Recalculate conversions between time, beats, and screen space
+            float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
+                                     - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
+            worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
+            worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
+            spawnPosOffset = screenWidthInWorldUnits * speedMult;
+
+
+
+            // Resize and offset existing platforms
+
+            // Note: this skips over any platforms we've already deleted.
+            int minIndex = currNoteIndex;
+            while (minIndex > -1 && platforms[minIndex] != null)
             {
-                continue;
+                minIndex--;
+            }
+            minIndex++;
+
+            for (int i = minIndex; i < platforms.Count; i++)
+            {
+
+                Platform plat = platforms[i].GetComponent<Platform>();
+
+                // Resize the platform's width so it matches the note's duration
+                float platWidth = Song[i].duration * worldUnitsPerBeat;
+                float startWidth = plat.GetComponent<SpriteRenderer>().bounds.size.x;
+                // WHAT. WHY DOES THIS NOT WORK.
+                // If you're not going to work, Unity, then give me an error, dammit!
+                //plat.transform.localScale.Scale( new Vector3(platWidth/startWidth, 1, 1) );
+                plat.transform.localScale = new Vector3(plat.transform.localScale.x * (platWidth / startWidth), plat.transform.localScale.y, plat.transform.localScale.z);
+
+                // Reposition the platform so that it's still at the right timing.
+
+                // Essentially, we get the original distance between the player and the platform,
+                // then we multiply that by a conversion factor to get the new distance.
+                // The conversion factor is easy - it's just the speed multiplier!
+
+                float oldOffset = plat.transform.position.x - currPos;
+                float newOffset = oldOffset * speedMultiplier;
+                plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
             }
 
-            Platform plat = platforms[i].GetComponent<Platform>();
-
-            // Resize the platform's width so it matches the note's duration
-            float platWidth = Song[i].duration * worldUnitsPerBeat;
-            float startWidth = plat.GetComponent<SpriteRenderer>().bounds.size.x;
-            // WHAT. WHY DOES THIS NOT WORK.
-            // If you're not going to work, Unity, then give me an error, dammit!
-            //plat.transform.localScale.Scale( new Vector3(platWidth/startWidth, 1, 1) );
-            plat.transform.localScale = new Vector3(plat.transform.localScale.x * (platWidth / startWidth), plat.transform.localScale.y, plat.transform.localScale.z);
-
-            // Reposition the platform so that it's still at the right timing.
-
-            // Essentially, we get the original distance between the player and the platform,
-            // then we multiply that by a conversion factor to get the new distance.
-            // The conversion factor is easy - it's just the speed multiplier!
-
-            float oldOffset = plat.transform.position.x - currPos;
-            float newOffset = oldOffset * speedMultiplier;
-            plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
+            yield return null;
         }
     }
 

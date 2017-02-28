@@ -13,14 +13,23 @@ public class Buddy : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Transform playerTransform;
 
+    TrailRenderer trailRenderer;
+
+    Color startGoal, endGoal = Color.black;
+
+    string lastNote;
 	// Use this for initialization
 	void Start ()
     {
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         gc = GameObject.Find("Game Controller").GetComponent<GameController>();
 
-        spriteRenderer = GameObject.Find("Buddy").GetComponent<SpriteRenderer>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         playerTransform = GameObject.Find("Player").GetComponent<Transform>();
+
+        trailRenderer = GetComponent<TrailRenderer>();
+        trailRenderer.startColor = Color.black;
+        trailRenderer.endColor = Color.white;
     }
 	
 	// Update is called once per frame
@@ -29,16 +38,30 @@ public class Buddy : MonoBehaviour
         spriteRenderer.color = Random.ColorHSV();
 
         //Remove this line for buddy trail effect. Buddy will struggle to catch up to the player as the player moves faster. Keep this line to lock at xOffset.
-        transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
+        //transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
 
         Vector3 targetPos;
         if (!string.IsNullOrEmpty(pt.MainNote))
         {
-            targetPos = new Vector3(playerTransform.position.x + xOffset, gc.notePosLookup[pt.MainNote], 0f);
+            string currentNote = pt.MainNote;
+            if(lastNote != currentNote)
+            {
+                endGoal = trailRenderer.startColor;
+                startGoal = gc.noteColorLookup[currentNote];
+
+                lastNote = currentNote;
+            }
+
+            trailRenderer.endColor = Color.Lerp(trailRenderer.endColor, endGoal, 0.05f);
+            trailRenderer.startColor = Color.Lerp(trailRenderer.startColor, startGoal, 0.05f);
+
+            targetPos = new Vector3(playerTransform.position.x + xOffset, gc.notePosLookup[currentNote], 0f);
         }
         else
         {
             targetPos = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
+            //transform.Rotate(new Vector3(0, 0, transform.position.y * 15)); Monish's dream is dead.
+            
         }
 
         transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
