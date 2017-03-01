@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
     public float BPM;
     public float TransitionGracePeriod;
     public float SustainedGracePeriod;
+	public int LeniencyRange = 0;
     public bool SongMode = false;
     public string filename;
 
@@ -25,6 +26,7 @@ public class GameController : MonoBehaviour
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
+	private FrequencyGuide fg;
 
     private float currPos = 0;
     private float currTime = 0;
@@ -145,10 +147,21 @@ public class GameController : MonoBehaviour
         if (targetNote == "REST")
             return;
 
-        // Compare player pitch to target note
-        //if (playerPitch != targetNote)
+		// Compare player pitch to target note
+		// If the pitch is incorrect:
         if (string.IsNullOrEmpty(playerPitch) || playerPitch[0] != targetNote[0])
         {
+			// Allow recognition of a tolerance range.
+			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
+			foreach (string note in acceptableRanges) 
+			{
+				if (playerPitch [0] == targetNote [0]) 
+				{
+					isCorrect = true;
+					return;
+				}
+			}
+
             // If they just deviated from the pitch, start keeping track of the time.
             if (isCorrect)
             {
@@ -171,6 +184,8 @@ public class GameController : MonoBehaviour
                 elapsedIncorrectTime += Time.deltaTime;
             }
         }
+
+		// If they got the note right:
         else
             isCorrect = true;
     }

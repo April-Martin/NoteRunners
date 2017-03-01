@@ -113,6 +113,21 @@ public class FrequencyGuide {
             return -1;
     }
 
+	public List<string> GetLeniencyRange ( string targetNote, float range )
+	{
+		List<string> notes = new List<string> ();
+		if (range == 0)
+			return notes;
+
+		int targetIndex = freqToNote.IndexOfKey (targetNote);
+		for (int i = 1; i <= range; i++) 
+		{
+			notes.Add ((string) freqToNote.GetByIndex (targetIndex + i));
+			notes.Add ((string) freqToNote.GetByIndex (targetIndex - i));
+		}
+		return notes;
+	}
+
 
     public string GetClosestNote(float freq)
     {
