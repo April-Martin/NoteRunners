@@ -19,7 +19,7 @@ public class GameController : MonoBehaviour
 
     // Dependencies
     public PlayerMovement Player;
-    public GameObject platform;
+    public GameObject platform, platformText;
     private PitchTester pt;
 
     // Private vars
@@ -179,8 +179,9 @@ public class GameController : MonoBehaviour
     {
         GameObject plat = Instantiate(platform);
 
+		Color platColor = noteColorLookup [Song [index].name];
         // Set the platform's color
-        plat.GetComponent<SpriteRenderer>().color = noteColorLookup[Song[index].name];
+        plat.GetComponent<SpriteRenderer>().color = platColor;
 
         // Resize the platform's width so it matches the note's duration
         float platWidth = Song[index].duration * worldUnitsPerBeat;
@@ -201,8 +202,17 @@ public class GameController : MonoBehaviour
 
         }
 
+		// Create Note Text for the platform.
+		GameObject txtobj = Instantiate (platformText);
+		TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
+		txtmsh.text = Song [index].name;
+		txtmsh.color = new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
+		txtobj.transform.position = plat.transform.position + new Vector3(0.05f, 0.3f, 0);
+		//txtobj.transform.position += new Vector3 (0, 1, 0);
+
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
+
 
         // Add it to our list of platforms
         platforms.Insert(index, plat.GetComponent<BoxCollider2D>());
