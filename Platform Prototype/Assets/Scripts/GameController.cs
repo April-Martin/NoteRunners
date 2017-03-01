@@ -26,7 +26,6 @@ public class GameController : MonoBehaviour
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
-	private FrequencyGuide fg;
 
     private float currPos = 0;
     private float currTime = 0;
@@ -44,6 +43,7 @@ public class GameController : MonoBehaviour
 
     internal Dictionary<string, float> notePosLookup;
     internal Dictionary<string, Color> noteColorLookup;
+	private FrequencyGuide fg;
 
     private List<string> NotesAllowed;
 
@@ -63,6 +63,7 @@ public class GameController : MonoBehaviour
         FillNoteColorLookup();
         FillNotePosLookup();
         FillNotesAllowed();
+		fg = new FrequencyGuide ();
 
 
         pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
@@ -155,7 +156,8 @@ public class GameController : MonoBehaviour
 			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
 			foreach (string note in acceptableRanges) 
 			{
-				if (playerPitch [0] == targetNote [0]) 
+				Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
+				if (!string.IsNullOrEmpty(playerPitch) && playerPitch[0] == note[0]) 
 				{
 					isCorrect = true;
 					return;

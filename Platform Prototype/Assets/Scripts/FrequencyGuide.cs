@@ -119,7 +119,7 @@ public class FrequencyGuide {
 		if (range == 0)
 			return notes;
 
-		int targetIndex = freqToNote.IndexOfKey (targetNote);
+		int targetIndex = freqToNote.IndexOfValue (targetNote);
 		for (int i = 1; i <= range; i++) 
 		{
 			notes.Add ((string) freqToNote.GetByIndex (targetIndex + i));
