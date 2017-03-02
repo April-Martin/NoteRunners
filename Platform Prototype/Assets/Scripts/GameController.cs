@@ -26,6 +26,7 @@ public class GameController : MonoBehaviour
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
+	private List<TextMesh> platText = new List<TextMesh> (50);
 
     private float currPos = 0;
     private float currTime = 0;
@@ -226,6 +227,7 @@ public class GameController : MonoBehaviour
 		txtmsh.color = new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
 		txtobj.transform.position = plat.transform.position + new Vector3(0.05f, 0.3f, 0);
 		//txtobj.transform.position += new Vector3 (0, 1, 0);
+		platText.Insert (index, txtmsh);
 
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
@@ -503,6 +505,7 @@ public class GameController : MonoBehaviour
             {
 
                 Platform plat = platforms[i].GetComponent<Platform>();
+				TextMesh text = platText [i];
 
                 // Resize the platform's width so it matches the note's duration
                 float platWidth = Song[i].duration * worldUnitsPerBeat;
@@ -521,6 +524,8 @@ public class GameController : MonoBehaviour
                 float oldOffset = plat.transform.position.x - currPos;
                 float newOffset = oldOffset * speedMultiplier;
                 plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
+				// Adjust the position of the text for the platform.
+				text.transform.position = new Vector3 ((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
             }
 
             yield return null;
