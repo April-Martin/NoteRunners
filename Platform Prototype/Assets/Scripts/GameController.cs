@@ -17,6 +17,9 @@ public class GameController : MonoBehaviour
 	public int LeniencyRange = 0;
     public bool SongMode = false;
     public string filename;
+    public int ScorePerSecond = 100;
+    public float Score = 0;
+
 
     // Dependencies
     public PlayerMovement Player;
@@ -39,7 +42,7 @@ public class GameController : MonoBehaviour
     private bool isRespawning = false;
     private bool isChecking = true;
     private bool isFalling = false;
-    private bool isCorrect = true;
+    public bool isCorrect = true;
     private bool colIsFlashing = false;
 
     internal Dictionary<string, float> notePosLookup;
@@ -112,6 +115,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        AwardScore();
         CheckPitch();
 
         currTime += Time.deltaTime;
@@ -145,17 +149,26 @@ public class GameController : MonoBehaviour
         // Ignore rests
         string targetNote = Song[currNoteIndex].name;
         if (targetNote == "REST")
+        {
+            isCorrect = false;
             return;
+        }
 
-		// Compare player pitch to target note
-		// If the pitch is incorrect:
+        if (Input.GetKey(KeyCode.Space))
+        {
+            isCorrect = true;
+            return;
+        }
+
+        // Compare player pitch to target note
+        // If the pitch is incorrect:
         if (string.IsNullOrEmpty(playerPitch) || playerPitch[0] != targetNote[0])
         {
 			// Allow recognition of a tolerance range.
 			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
 			foreach (string note in acceptableRanges) 
 			{
-				Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
+				//Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
 				if (!string.IsNullOrEmpty(playerPitch) && playerPitch[0] == note[0]) 
 				{
 					isCorrect = true;
@@ -233,6 +246,15 @@ public class GameController : MonoBehaviour
 
         // Add it to our list of platforms
         platforms.Insert(index, plat.GetComponent<BoxCollider2D>());
+    }
+
+
+    void AwardScore()
+    {
+        if (!isFalling && isChecking && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
+        {
+            Score += (ScorePerSecond * speedMult * Time.deltaTime);
+        }
     }
 
 
