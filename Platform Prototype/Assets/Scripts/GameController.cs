@@ -17,13 +17,10 @@ public class GameController : MonoBehaviour
 	public int LeniencyRange = 0;
     public bool SongMode = false;
     public string filename;
-	public int ScorePerSecond = 100;
-	public float Score = 0;
-
 
     // Dependencies
     public PlayerMovement Player;
-    public GameObject platform, platformText;
+	public GameObject platform, platformText, particles;
     private PitchTester pt;
 
     // Private vars
@@ -42,7 +39,7 @@ public class GameController : MonoBehaviour
     private bool isRespawning = false;
     private bool isChecking = true;
     private bool isFalling = false;
-	public bool isCorrect = true;
+    private bool isCorrect = true;
     private bool colIsFlashing = false;
 
     internal Dictionary<string, float> notePosLookup;
@@ -110,14 +107,11 @@ public class GameController : MonoBehaviour
             StartCoroutine("HandleJump");
         }
 
-
-
     }
 
     // Update is called once per frame
     void Update()
     {
-		AwardScore();
         CheckPitch();
 
         currTime += Time.deltaTime;
@@ -129,8 +123,6 @@ public class GameController : MonoBehaviour
 
     void CheckPitch()
     {
-
-
         // Update player color
         string playerPitch = pt.MainNote;
         if (colIsFlashing)
@@ -150,22 +142,10 @@ public class GameController : MonoBehaviour
         if (!isChecking || DEBUG_InvincibleMode)
             return;
 
-
-
-
         // Ignore rests
         string targetNote = Song[currNoteIndex].name;
-		if (targetNote == "REST")
-		{
-			isCorrect = false;
-			return;
-		}
-
-		if (Input.GetKey (KeyCode.Space)) 
-		{
-			isCorrect = true;
-			return;
-		}
+        if (targetNote == "REST")
+            return;
 
 		// Compare player pitch to target note
 		// If the pitch is incorrect:
@@ -175,7 +155,7 @@ public class GameController : MonoBehaviour
 			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
 			foreach (string note in acceptableRanges) 
 			{
-				//Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
+				Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
 				if (!string.IsNullOrEmpty(playerPitch) && playerPitch[0] == note[0]) 
 				{
 					isCorrect = true;
@@ -209,8 +189,6 @@ public class GameController : MonoBehaviour
 		// If they got the note right:
         else
             isCorrect = true;
-
-
     }
 
     void SpawnPlatform(int index)
@@ -257,19 +235,12 @@ public class GameController : MonoBehaviour
         platforms.Insert(index, plat.GetComponent<BoxCollider2D>());
     }
 
-	void AwardScore()
-	{
-		if (!isFalling && isChecking && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
-		{
-			Score += (ScorePerSecond * speedMult * Time.deltaTime);
-		}
-	}
-
 
     void movePlayerAndCamera()
     {
         Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
         Player.transform.position = new Vector3(currPos, Player.transform.position.y);
+
     }
 
     IEnumerator AddNoteFromSong()
@@ -333,10 +304,22 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
+
+				GameObject particle1 = Instantiate (particles);
+				particle1.transform.position = Player.transform.position;
+
+				//particle.GetComponent<ParticleSystem> ().Play ();
+				Destroy(particle1, 1.5f);
+
                 float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
                 float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                 float platHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                 Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+				GameObject particle2 = Instantiate (particles);
+				particle2.transform.position = Player.transform.position;
+
+				//particle.GetComponent<ParticleSystem> ().Play ();
+				Destroy(particle2, 1.5f);
             }
 
             currNoteIndex++;
