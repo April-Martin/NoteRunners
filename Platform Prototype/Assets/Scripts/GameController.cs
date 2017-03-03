@@ -525,7 +525,7 @@ public class GameController : MonoBehaviour
                 float newOffset = oldOffset * speedMultiplier;
                 plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
 				// Adjust the position of the text for the platform.
-				text.transform.position = new Vector3 ((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
+				if (text != null) text.transform.position = new Vector3 ((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
             }
 
             yield return null;
