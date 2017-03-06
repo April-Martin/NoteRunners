@@ -207,6 +207,7 @@ public class GameController : MonoBehaviour
     void SpawnPlatform(int index)
     {
         GameObject plat = Instantiate(platform);
+        
 
 		Color platColor = noteColorLookup [Song [index].name];
         // Set the platform's color
@@ -243,9 +244,16 @@ public class GameController : MonoBehaviour
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
 
+        // Set its range marker if it's not a rest
+        if (Song[index].name != "REST")
+            plat.GetComponent<Platform>().SetRangeMarker(LeniencyRange, platColor);
+        else
+            plat.GetComponent<Platform>().DisableRangeMarker();
 
         // Add it to our list of platforms
         platforms.Insert(index, plat.GetComponent<BoxCollider2D>());
+
+
     }
 
 

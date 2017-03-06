@@ -113,7 +113,7 @@ public class FrequencyGuide {
             return -1;
     }
 
-	public List<string> GetLeniencyRange ( string targetNote, float range )
+	public List<string> GetLeniencyRange ( string targetNote, int range )
 	{
 		List<string> notes = new List<string> ();
 		if (range == 0)
