@@ -9,8 +9,8 @@ public class GameController : MonoBehaviour
     // Settings
     public bool DEBUG_InvincibleMode = false;
     public float TimeOnScreen;
-    public List<string> NoteDetectionRange;
-    public List<string> NotesRange;
+    public string[] NoteDetectionRange = new string[2];
+    public string[] NotesRange = new string[2];
     public float BPM;
     public float TransitionGracePeriod;
     public float SustainedGracePeriod;
@@ -289,7 +289,7 @@ public class GameController : MonoBehaviour
             string newNoteName = lastNoteName;
             while (newNoteName == lastNoteName)
             {
-                newNoteName = NotesAllowed[UnityEngine.Random.Range(0, NotesAllowed.Count - 1)];
+                newNoteName = NotesAllowed[UnityEngine.Random.Range(0, NotesAllowed.Count)];    // Note: min inclusive, max exclusive
             }
             float newNoteDur = UnityEngine.Random.Range(1, 4);
 
@@ -451,13 +451,23 @@ public class GameController : MonoBehaviour
         NotesAllowed.Add("REST");
 
         float notesRangeMinPos; float notesRangeMaxPos;
-        notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out notesRangeMinPos) ? notesRangeMinPos : -0.5f;
-        notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out notesRangeMaxPos) ? notesRangeMaxPos : 4.5f;
+        bool found = false;
+        if (Player.NotePosLookup.TryGetValue(NotesRange[0], out notesRangeMinPos))
+        {
+            found = true;
+        }
+        else
+            found = false;
+
+        float temp = 0;
+        notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out temp) ? temp : -0.5f;
+        notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out temp) ? temp : 4.5f;
         foreach (string Note in Player.NotePosLookup.Keys)
         {
-            if (Player.NotePosLookup[Note] >= notesRangeMinPos && Player.NotePosLookup[Note] <= notesRangeMaxPos)
+            if (Player.NotePosLookup[Note] >= notesRangeMinPos)
             {
-                NotesAllowed.Add(Note);
+                if (Player.NotePosLookup[Note] <= notesRangeMaxPos)
+                    NotesAllowed.Add(Note);
             }
         }
     }
