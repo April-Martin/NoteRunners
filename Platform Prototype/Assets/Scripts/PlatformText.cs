@@ -5,8 +5,18 @@ using UnityEngine;
 public class PlatformText : MonoBehaviour
 {
 
+	public bool isActive = true;
+
     //X position of the left edge of the camera in World Units. Caluculate this once.
     static float xCameraLeftEdgeInWU;
+
+	void Start()
+	{
+		if (!isActive)
+		{
+			Destroy (this.gameObject);
+		}
+	}
 
     void OnBecameInvisible()
     {

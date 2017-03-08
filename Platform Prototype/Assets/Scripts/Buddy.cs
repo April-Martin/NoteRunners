@@ -30,6 +30,7 @@ public class Buddy : MonoBehaviour
         trailRenderer = GetComponent<TrailRenderer>();
         trailRenderer.startColor = Color.black;
         trailRenderer.endColor = Color.white;
+		this.GetComponentInChildren<NoteText> ().isActive = gc.isTextActive;
     }
 	
 	// Update is called once per frame

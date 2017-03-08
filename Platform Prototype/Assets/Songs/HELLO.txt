@@ -11,3 +11,16 @@ E4,3
 A4,3
 D4,1
 B4,3
+    static Dictionary<string, string> _dict = new Dictionary<string, string>
+    {
+        {"entry", "entries"},
+        {"image", "images"},
+        {"view", "views"},
+        {"file", "files"},
+        {"result", "results"},
+        {"word", "words"},
+        {"definition", "definitions"},
+        {"item", "items"},
+        {"megabyte", "megabytes"},
+        {"game", "games"}
+    };

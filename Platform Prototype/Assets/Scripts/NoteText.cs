@@ -22,6 +22,8 @@ public class NoteText : MonoBehaviour {
 	void Update () {
 		if (isActive && !string.IsNullOrEmpty (note.MainNote)) {
 			text.text = note.MainNote;
+		} else if (!isActive) {
+			Destroy (this.gameObject);
 		}
 	}
 }

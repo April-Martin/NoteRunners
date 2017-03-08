@@ -6,14 +6,12 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 
+	#region Variables
     // Settings
-    public bool DEBUG_InvincibleMode = false;
+	public bool DEBUG_InvincibleMode = false, isTextActive = true;
     public float TimeOnScreen;
-    public string[] NoteDetectionRange = new string[2];
-    public string[] NotesRange = new string[2];
-    public float BPM;
-    public float TransitionGracePeriod;
-    public float SustainedGracePeriod;
+    public string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
+    public float BPM, TransitionGracePeriod, SustainedGracePeriod;
 	public int LeniencyRange = 0;
     public bool SongMode = false;
     public string filename;
@@ -31,30 +29,36 @@ public class GameController : MonoBehaviour
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
 	private List<TextMesh> platText = new List<TextMesh> (50);
 
-    private float currPos = 0;
-    private float currTime = 0;
-    private int currNoteIndex = 0;
-    private int lastSpawnedNoteIndex = 0;
-    float spawnPosOffset = 0;
-    float worldUnitsPerSec = 0;
-    float worldUnitsPerBeat = 0;
+    private float currPos = 0, currTime = 0;
+    private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
+    float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
-    private bool isRespawning = false;
-    private bool isChecking = true;
-    private bool isFalling = false;
+	private bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false;
     public bool isCorrect = true;
-    private bool colIsFlashing = false;
 
-    internal Dictionary<string, float> notePosLookup;
-    internal Dictionary<string, Color> noteColorLookup;
+	internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
+	{
+		{"E2", -7f}, {"F2", -6.5f}, {"G2", -6f}, {"A2", -5.5f}, {"B2", -5f}, {"C3", -4.5f}, {"D3", -4f},
+		{"E3", -3.5f}, {"F3", -3f}, {"G3", -2.5f}, {"A3", -2f}, {"B3", -1.5f}, {"C4", -1f}, {"D4", -.5f},
+		{"E4", 0f}, {"F4", .5f}, {"G4", 1f}, {"A4", 1.5f}, {"B4", 2f}, {"C5", 2.5f}, {"D5", 3f}, {"E5", 3.5f},
+		{"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
+	};
+	internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>
+	{
+		{"E2", Color.red}, {"F2", new Color(1f, .5f, 0f)}, {"G2", Color.yellow}, {"A2", Color.green}, {"B2", Color.cyan},
+		{"C3", Color.blue}, {"D3", new Color(.8f, .2f, .8f)}, {"E3", Color.red}, {"F3", new Color(1f, .5f, 0f)}, {"G3", Color.yellow},
+		{"A3", Color.green}, {"B3", Color.cyan}, {"C4", Color.blue}, {"D4", new Color(.8f, .2f, .8f)}, {"E4", Color.red}, {"F4", new Color(1f, .5f, 0f)},
+		{"G4", Color.yellow}, {"A4", Color.green}, {"B4", Color.cyan}, {"C5", Color.blue}, {"D5", new Color(.8f, .2f, .8f)}, {"E5", Color.red},
+		{"F5", new Color(1f, .5f, 0f)}, {"G5", Color.yellow}, {"REST", Color.black}, {"A5", Color.green}, {"B5", Color.cyan}, {"C6", Color.blue}
+	};
 	private FrequencyGuide fg;
 
     private List<string> NotesAllowed;
 
-    public float speedMult = 1f;
-    public float scrollingInterpolation = 0.01f;
+    public float speedMult = 1f, scrollingInterpolation = 0.01f;
 
     private float elapsedIncorrectTime = 0;
+	#endregion
 
 
     // Use this for initialization
@@ -64,8 +68,8 @@ public class GameController : MonoBehaviour
 
         // Initialize vars
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
-        FillNoteColorLookup();
-        FillNotePosLookup();
+        //FillNoteColorLookup();
+        //FillNotePosLookup();
         FillNotesAllowed();
 		fg = new FrequencyGuide ();
 
@@ -232,14 +236,17 @@ public class GameController : MonoBehaviour
 
         }
 
-		// Create Note Text for the platform.
-		GameObject txtobj = Instantiate (platformText);
-		TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
-		txtmsh.text = Song [index].name;
-		txtmsh.color = new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
-		txtobj.transform.position = plat.transform.position + new Vector3(0.05f, 0.3f, 0);
-		//txtobj.transform.position += new Vector3 (0, 1, 0);
-		platText.Insert (index, txtmsh);
+		if (isTextActive)
+		{
+			// Create Note Text for the platform.
+			GameObject txtobj = Instantiate (platformText);
+			TextMesh txtmsh = txtobj.GetComponent<TextMesh> ();
+			txtmsh.text = Song [index].name;
+			txtmsh.color = new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
+			txtobj.transform.position = plat.transform.position + new Vector3 (0.05f, 0.3f, 0);
+			//txtobj.transform.position += new Vector3 (0, 1, 0);
+			platText.Insert (index, txtmsh);
+		}
 
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
@@ -334,22 +341,31 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
+				if (Song [currNoteIndex + 1].name == "REST")
+				{
+					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+					float platHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+				} 
+				else
+				{
+					GameObject particle1 = Instantiate (particles);
+					particle1.transform.position = Player.transform.position;
 
-				GameObject particle1 = Instantiate (particles);
-				particle1.transform.position = Player.transform.position;
+					//particle.GetComponent<ParticleSystem> ().Play ();
+					Destroy (particle1, 1.5f);
 
-				//particle.GetComponent<ParticleSystem> ().Play ();
-				Destroy(particle1, 1.5f);
+					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+					float platHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+					GameObject particle2 = Instantiate (particles);
+					particle2.transform.position = Player.transform.position;
 
-                float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-                float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-                float platHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-                Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
-				GameObject particle2 = Instantiate (particles);
-				particle2.transform.position = Player.transform.position;
-
-				//particle.GetComponent<ParticleSystem> ().Play ();
-				Destroy(particle2, 1.5f);
+					//particle.GetComponent<ParticleSystem> ().Play ();
+					Destroy (particle2, 1.5f);
+				}
             }
 
             currNoteIndex++;
@@ -377,81 +393,81 @@ public class GameController : MonoBehaviour
         isChecking = true;
     }
 
-    void FillNoteColorLookup()
-    {
-        noteColorLookup = new Dictionary<string, Color>();
+//    void FillNoteColorLookup()
+//    {
+//        noteColorLookup = new Dictionary<string, Color>();
+//
+//        noteColorLookup.Add("E2", Color.red);
+//        noteColorLookup.Add("F2", new Color(1f, .5f, 0f));
+//        noteColorLookup.Add("G2", Color.yellow);
+//        noteColorLookup.Add("A2", Color.green);
+//        noteColorLookup.Add("B2", Color.cyan);
+//        noteColorLookup.Add("C3", Color.blue);
+//        noteColorLookup.Add("D3", new Color(.8f, .2f, .8f));
+//        noteColorLookup.Add("E3", Color.red);
+//        noteColorLookup.Add("F3", new Color(1f, .5f, 0f));
+//        noteColorLookup.Add("G3", Color.yellow);
+//        noteColorLookup.Add("A3", Color.green);
+//        noteColorLookup.Add("B3", Color.cyan);
+//        noteColorLookup.Add("C4", Color.blue);
+//
+//        // Original list
+//        noteColorLookup.Add("D4", new Color(.8f, .2f, .8f));
+//        noteColorLookup.Add("E4", Color.red);
+//        noteColorLookup.Add("F4", new Color(1f, .5f, 0f));
+//        noteColorLookup.Add("G4", Color.yellow);
+//        noteColorLookup.Add("A4", Color.green);
+//        noteColorLookup.Add("B4", Color.cyan);
+//        noteColorLookup.Add("C5", Color.blue);
+//        noteColorLookup.Add("D5", new Color(.8f, .2f, .8f));
+//        noteColorLookup.Add("E5", Color.red);
+//        noteColorLookup.Add("F5", new Color(1f, .5f, 0f));
+//        noteColorLookup.Add("G5", Color.yellow);
+//        noteColorLookup.Add("REST", Color.black);
+//        //End of original list
+//
+//        noteColorLookup.Add("A5", Color.green);
+//        noteColorLookup.Add("B5", Color.cyan);
+//        noteColorLookup.Add("C6", Color.blue);
+//    }
 
-        noteColorLookup.Add("E2", Color.red);
-        noteColorLookup.Add("F2", new Color(1f, .5f, 0f));
-        noteColorLookup.Add("G2", Color.yellow);
-        noteColorLookup.Add("A2", Color.green);
-        noteColorLookup.Add("B2", Color.cyan);
-        noteColorLookup.Add("C3", Color.blue);
-        noteColorLookup.Add("D3", new Color(.8f, .2f, .8f));
-        noteColorLookup.Add("E3", Color.red);
-        noteColorLookup.Add("F3", new Color(1f, .5f, 0f));
-        noteColorLookup.Add("G3", Color.yellow);
-        noteColorLookup.Add("A3", Color.green);
-        noteColorLookup.Add("B3", Color.cyan);
-        noteColorLookup.Add("C4", Color.blue);
-
-        // Original list
-        noteColorLookup.Add("D4", new Color(.8f, .2f, .8f));
-        noteColorLookup.Add("E4", Color.red);
-        noteColorLookup.Add("F4", new Color(1f, .5f, 0f));
-        noteColorLookup.Add("G4", Color.yellow);
-        noteColorLookup.Add("A4", Color.green);
-        noteColorLookup.Add("B4", Color.cyan);
-        noteColorLookup.Add("C5", Color.blue);
-        noteColorLookup.Add("D5", new Color(.8f, .2f, .8f));
-        noteColorLookup.Add("E5", Color.red);
-        noteColorLookup.Add("F5", new Color(1f, .5f, 0f));
-        noteColorLookup.Add("G5", Color.yellow);
-        noteColorLookup.Add("REST", Color.black);
-        //End of original list
-
-        noteColorLookup.Add("A5", Color.green);
-        noteColorLookup.Add("B5", Color.cyan);
-        noteColorLookup.Add("C6", Color.blue);
-    }
-
-    void FillNotePosLookup()
-    {
-        notePosLookup = new Dictionary<string, float>();
-
-        notePosLookup.Add("E2", -7f);
-        notePosLookup.Add("F2", -6.5f);
-        notePosLookup.Add("G2", -6f);
-        notePosLookup.Add("A2", -5.5f);
-        notePosLookup.Add("B2", -5f);
-        notePosLookup.Add("C3", -4.5f);
-        notePosLookup.Add("D3", -4f);
-        notePosLookup.Add("E3", -3.5f);
-        notePosLookup.Add("F3", -3f);
-        notePosLookup.Add("G3", -2.5f);
-        notePosLookup.Add("A3", -2f);
-        notePosLookup.Add("B3", -1.5f);
-        notePosLookup.Add("C4", -1f);
-
-        // Original list
-        notePosLookup.Add("D4", -.5f);
-        notePosLookup.Add("E4", 0f);
-        notePosLookup.Add("F4", .5f);
-        notePosLookup.Add("G4", 1f);
-        notePosLookup.Add("A4", 1.5f);
-        notePosLookup.Add("B4", 2f);
-        notePosLookup.Add("C5", 2.5f);
-        notePosLookup.Add("D5", 3f);
-        notePosLookup.Add("E5", 3.5f);
-        notePosLookup.Add("F5", 4f);
-        notePosLookup.Add("G5", 4.5f);
-        notePosLookup.Add("REST", 0);
-        // End of original list.
-
-        notePosLookup.Add("A5", 5f);
-        notePosLookup.Add("B5", 5.5f);
-        notePosLookup.Add("C6", 6f);
-    }
+//    void FillNotePosLookup()
+//    {
+//        notePosLookup = new Dictionary<string, float>();
+//
+//        notePosLookup.Add("E2", -7f);
+//        notePosLookup.Add("F2", -6.5f);
+//        notePosLookup.Add("G2", -6f);
+//        notePosLookup.Add("A2", -5.5f);
+//        notePosLookup.Add("B2", -5f);
+//        notePosLookup.Add("C3", -4.5f);
+//        notePosLookup.Add("D3", -4f);
+//        notePosLookup.Add("E3", -3.5f);
+//        notePosLookup.Add("F3", -3f);
+//        notePosLookup.Add("G3", -2.5f);
+//        notePosLookup.Add("A3", -2f);
+//        notePosLookup.Add("B3", -1.5f);
+//        notePosLookup.Add("C4", -1f);
+//
+//        // Original list
+//        notePosLookup.Add("D4", -.5f);
+//        notePosLookup.Add("E4", 0f);
+//        notePosLookup.Add("F4", .5f);
+//        notePosLookup.Add("G4", 1f);
+//        notePosLookup.Add("A4", 1.5f);
+//        notePosLookup.Add("B4", 2f);
+//        notePosLookup.Add("C5", 2.5f);
+//        notePosLookup.Add("D5", 3f);
+//        notePosLookup.Add("E5", 3.5f);
+//        notePosLookup.Add("F5", 4f);
+//        notePosLookup.Add("G5", 4.5f);
+//        notePosLookup.Add("REST", 0);
+//        // End of original list.
+//
+//        notePosLookup.Add("A5", 5f);
+//        notePosLookup.Add("B5", 5.5f);
+//        notePosLookup.Add("C6", 6f);
+//    }
 
     private void FillNotesAllowed()
     {
