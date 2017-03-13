@@ -28,3 +28,7 @@ sysinfo.txt
 # Builds
 *.apk
 *.unitypackage
+
+# Auto-generated text file containing last level
+/Assets/Songs/HELLO.txt
+/Assets/Songs/HELLO.txt.meta
