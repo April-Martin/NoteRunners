@@ -66,6 +66,22 @@ public class GameController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        if (GameGlobals.GlobalInstance != null)
+        {
+            GameGlobals temp = GameGlobals.GlobalInstance;
+            isTextActive = temp.isTextActive;
+            //NoteDetectionRange = temp.NoteDetectionRange;
+            NotesRange = temp.NotesRange;
+            BPM = temp.BPM;
+            TransitionGracePeriod = temp.TransitionGracePeriod;
+            SustainedGracePeriod = temp.SustainedGracePeriod;
+            LeniencyRange = temp.LeniencyRange;
+            SongMode = temp.SongMode;
+            filename = temp.selectedSong;
+            speedMult = temp.speedMult;
+            scrollingInterpolation = temp.scrollingInterpolation;
+        }
+
         Player.GetComponent<SpriteRenderer>().color = Color.black;
 
         // Initialize vars
