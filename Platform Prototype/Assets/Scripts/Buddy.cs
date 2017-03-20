@@ -4,8 +4,14 @@ using UnityEngine;
 
 public class Buddy : MonoBehaviour
 {
+    public float wanderRange = .2f;
+    public float wanderSpeed = 1f;
+    public float wanderRandomFactor = .1f;
     public float xOffset = 1f;
-    public float InterpolationFactor = 0.05f;
+    public float InterpolationFactorX = 0.05f;
+    public float InterpolationFactorY = 0.05f;
+
+    public float wanderValue = 0;
 
     PitchTester pt;
     GameController gc;
@@ -36,12 +42,22 @@ public class Buddy : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        spriteRenderer.color = Random.ColorHSV();
+        //  Sorry Monish xD xD
+        //spriteRenderer.color = Random.ColorHSV();
 
         //Remove this line for buddy trail effect. Buddy will struggle to catch up to the player as the player moves faster. Keep this line to lock at xOffset.
-        //transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
+//        transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
 
         Vector3 targetPos;
+        float test = Random.RandomRange(0f, 1f);
+        if (test < .01f)
+        {
+            wanderValue = Random.RandomRange(-wanderRandomFactor, wanderRandomFactor);
+        }
+
+        float targetXPos = playerTransform.position.x + xOffset + (wanderRange + wanderRange*wanderValue) * ((Mathf.Sin(Time.time * wanderSpeed) + (wanderValue)));
+        float targetYPos;
+
         if (!string.IsNullOrEmpty(pt.MainNote))
         {
             string currentNote = pt.MainNote;
@@ -56,15 +72,18 @@ public class Buddy : MonoBehaviour
             trailRenderer.endColor = Color.Lerp(trailRenderer.endColor, endGoal, 0.05f);
             trailRenderer.startColor = Color.Lerp(trailRenderer.startColor, startGoal, 0.05f);
 
-            targetPos = new Vector3(playerTransform.position.x + xOffset, gc.notePosLookup[currentNote], 0f);
+            targetYPos = gc.notePosLookup[currentNote];
         }
         else
         {
-            targetPos = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
+            targetYPos = transform.position.y;
             //transform.Rotate(new Vector3(0, 0, transform.position.y * 15)); Monish's dream is dead.
             
         }
-
-        transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
+ //       transform.position = new Vector3(xPos, transform.position.y, 0f);
+        float newXPos = Mathf.Lerp(transform.position.x, targetXPos, InterpolationFactorX);
+        float newYPos = Mathf.Lerp(transform.position.y, targetYPos, InterpolationFactorY);
+        transform.position = new Vector3(newXPos, newYPos, 0);
+//        transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
     }
 }

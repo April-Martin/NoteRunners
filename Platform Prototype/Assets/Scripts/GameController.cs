@@ -43,14 +43,16 @@ public class GameController : MonoBehaviour
 		{"E4", 0f}, {"F4", .5f}, {"G4", 1f}, {"A4", 1.5f}, {"B4", 2f}, {"C5", 2.5f}, {"D5", 3f}, {"E5", 3.5f},
 		{"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
 	};
+
 	internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>
 	{
-		{"E2", Color.red}, {"F2", new Color(1f, .5f, 0f)}, {"G2", Color.yellow}, {"A2", Color.green}, {"B2", Color.cyan},
+		{"E2", new Color32(255, 0, 0, 1)}, {"F2", new Color(1f, .5f, 0f)}, {"G2", Color.yellow}, {"A2", Color.green}, {"B2", Color.cyan},
 		{"C3", Color.blue}, {"D3", new Color(.8f, .2f, .8f)}, {"E3", Color.red}, {"F3", new Color(1f, .5f, 0f)}, {"G3", Color.yellow},
 		{"A3", Color.green}, {"B3", Color.cyan}, {"C4", Color.blue}, {"D4", new Color(.8f, .2f, .8f)}, {"E4", Color.red}, {"F4", new Color(1f, .5f, 0f)},
 		{"G4", Color.yellow}, {"A4", Color.green}, {"B4", Color.cyan}, {"C5", Color.blue}, {"D5", new Color(.8f, .2f, .8f)}, {"E5", Color.red},
 		{"F5", new Color(1f, .5f, 0f)}, {"G5", Color.yellow}, {"REST", Color.black}, {"A5", Color.green}, {"B5", Color.cyan}, {"C6", Color.blue}
 	};
+
 	private FrequencyGuide fg;
 
     private List<string> NotesAllowed;
@@ -139,7 +141,7 @@ public class GameController : MonoBehaviour
         }
         else if (string.IsNullOrEmpty(playerPitch))
         {
-            Player.GetComponent<SpriteRenderer>().color = Color.black;
+            Player.GetComponent<SpriteRenderer>().color = Color.white;
         }
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
@@ -345,7 +347,7 @@ public class GameController : MonoBehaviour
 				{
 					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
 					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
-					float platHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+					float platHeight = platform.GetComponent<SpriteRenderer> ().bounds.size.y;
 					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
 				} 
 				else
@@ -357,9 +359,12 @@ public class GameController : MonoBehaviour
 					Destroy (particle1, 1.5f);
 
 					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+                    
 					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
-					float platHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
-					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+					float platHeight = platform.GetComponent<SpriteRenderer> ().bounds.size.y;
+                    Debug.Log("jumpHeight: " + jumpHeight + "\nplatHeight: " + platHeight + "\nplayerHeight: " + playerHeight);
+                    Debug.Log("new y pos = " + (jumpHeight + playerHeight / 2 + platHeight / 2));
+					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
 					GameObject particle2 = Instantiate (particles);
 					particle2.transform.position = Player.transform.position;
 
