@@ -88,35 +88,14 @@ public class GameController : MonoBehaviour
         // Initialize vars
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         background = GameObject.Find("Background");
-        //FillNoteColorLookup();
-        //FillNotePosLookup();
         FillNotesAllowed();
 		fg = new FrequencyGuide ();
-
-
         pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
         pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
-
-        float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
-                                         - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
-        worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
-        worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
-        spawnPosOffset = screenWidthInWorldUnits;
-
-        Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
-        SpawnPlatform(0);
-
-        // If infinite mode:
-        if (!SongMode)
+  
+        // If we're in Song mode, read in file information
+        if (SongMode)
         {
-            StartCoroutine("AddRandomNote");
-            StartCoroutine("HandleJump");
-        }
-
-        // If song mode:
-        else
-        {
-            // Read information from file into Song array
             ReaderWriter.ReadSong(ref Song, filename, ref BPM);
             for (int i = 1; i < Song.Count; i++)
             {
@@ -129,7 +108,26 @@ public class GameController : MonoBehaviour
                     Song[i].yOffset = notePosLookup[Song[i].name];
                 }
             }
+        }
 
+        // Calculate conversion factors
+        float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
+                                         - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
+        worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
+        worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
+        spawnPosOffset = screenWidthInWorldUnits;
+
+        Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
+        SpawnPlatform(0);
+
+        // Start core coroutines
+        if (!SongMode)
+        {
+            StartCoroutine("AddRandomNote");
+            StartCoroutine("HandleJump");
+        }
+        else
+        {
             StartCoroutine("AddNoteFromSong");
             StartCoroutine("HandleJump");
         }
