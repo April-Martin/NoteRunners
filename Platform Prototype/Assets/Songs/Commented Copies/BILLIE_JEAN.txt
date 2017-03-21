@@ -1,8 +1,8 @@
+// Billie Jean, 117 BPM
+// Start
 117
-REST,4
-REST,4
-REST,4
-REST,4
+REST,16
+// She was more like a movie queen from a movie scene
 REST,1
 C5,0.5
 C5,0.5
@@ -17,6 +17,7 @@ A4,0.25
 B4,0.5
 A4,0.5
 C5,1
+// I sure don't mind but what do you mean I am the one
 REST,0.5
 C5,0.5
 C5,0.5
@@ -31,6 +32,7 @@ B4,1
 A4,0.5
 G4,0.5
 F4,1.5
+// Who will dance on the floor in the round
 REST,2
 F4,0.25
 G4,0.25
@@ -46,6 +48,7 @@ F4,1
 REST,0.5
 REST,1
 REST,2
+// She said I am the one
 REST,0.5
 F4,0.5
 A4,0.5
@@ -54,6 +57,7 @@ A4,0.5
 G4,0.5
 F4,1.5
 REST,2
+// Who will dance on the floor in the round
 F4,0.25
 G4,0.25
 F4,1
@@ -69,6 +73,7 @@ REST,0.5
 REST,1
 REST,2
 REST,4
+// She told me her name was Billie Jean as she caused a scene
 REST,0.5
 C5,0.5
 C5,0.5
@@ -84,6 +89,7 @@ A4,0.25
 B4,0.5
 A4,0.5
 C5,1
+// Then ev'ry head turned with eyes that dreamed of being the one
 REST,0.5
 C5,0.5
 C5,0.5
@@ -98,6 +104,7 @@ B4,1
 A4,0.5
 G4,0.5
 F4,1.5
+// Who will dance on the floor in the round
 REST,2
 F4,0.25
 G4,0.25
@@ -114,6 +121,7 @@ REST,0.5
 REST,1
 REST,2
 REST,4
+// People always told me, be careful of what you do.  And don't go around breakin young girls' hearts.
 F5,0.5
 E5,0.25
 F5,0.5
@@ -141,6 +149,7 @@ F5,0.25
 G5,1
 F5,1.5
 REST,2
+// And mother always told me becareful of who you love and be careful of what you do, 'cause the lie becomes the truth.  Hey.
 REST,0.5
 E5,0.5
 F5,0.5
@@ -179,6 +188,7 @@ REST,0.5
 F5,0.5
 G5,0.5
 F5,0.5
+// Billie Jean is not my lover
 REST,1
 F5,0.5
 F5,0.5
@@ -190,6 +200,7 @@ F5,1
 E5,1
 C5,0.5
 REST,1
+// She's just a girl who
 REST,0.5
 F5,0.5
 F5,0.5
@@ -197,6 +208,7 @@ F5,0.5
 E5,0.5
 C5,0.5
 C5,1
+// claims that I am the one, but the kid is not my son
 F5,0.5
 A5,0.5
 REST,0.5
@@ -215,6 +227,7 @@ F5,0.5
 D5,1
 C5,1.5
 REST,3
+// She says I am the one but the kid is not my son
 REST,0.5
 F5,0.5
 A5,0.5
@@ -234,6 +247,7 @@ D5,1
 C5,1.5
 REST,3
 REST,4
+// For 40 days and for 40 nights law was on her side
 REST,0.5
 C5,0.5
 C5,0.5
@@ -249,6 +263,7 @@ A4,0.25
 B4,0.5
 A4,0.5
 C5,1
+// But who can stand when she's in demand, her schemes and plans,
 REST,0.5
 C5,0.5
 C5,0.5
@@ -263,6 +278,7 @@ B4,1
 A4,0.5
 G4,0.5
 F4,1.5
+// Cause we danced on the floor in the round
 REST,2
 F4,0.25
 G4,0.25
@@ -278,6 +294,7 @@ F4,1
 REST,0.5
 REST,1
 REST,2
+// So take my strong advice:
 REST,0.5
 F4,0.5
 A4,0.5
@@ -286,6 +303,7 @@ A4,0.5
 G4,0.5
 F4,1.5
 REST,1.5
+// Just remember to alwasy think twice
 F4,1
 REST,0.5
 F4,1
@@ -300,6 +318,7 @@ REST,0.5
 REST,1
 REST,2
 REST,4
+// She told my baby we danced till 3, and she looked at me
 REST,0.5
 C5,0.5
 C5,0.5
@@ -315,6 +334,7 @@ A4,0.25
 B4,0.5
 A4,0.5
 C5,1
+// Then showed a photo my baby cried his eyes were like mine
 REST,0.5
 C5,0.5
 C5,0.5
@@ -329,6 +349,7 @@ B4,1
 A4,0.5
 G4,0.5
 F4,1.5
+// Can we dance on the floor in the round
 REST,2
 F4,0.25
 G4,0.25
@@ -345,6 +366,7 @@ REST,0.5
 REST,1
 REST,2
 REST,4
+// People always told me, be careful of what you do.  And don't go around breakin young girls' hearts.
 F5,0.5
 E5,0.25
 F5,0.5
@@ -372,6 +394,7 @@ F5,0.25
 G5,1
 F5,1.5
 REST,2
+// But you came and stood right by me, just a smell of sweet perfume.  This happened much to soon.  She called me to her room.  Hey.
 REST,0.5
 E5,0.25
 E5,0.25
@@ -412,6 +435,7 @@ REST,0.5
 F5,0.5
 G5,0.5
 F5,0.5
+// Billie Jean is not my lover
 REST,1
 F5,0.5
 F5,0.5
@@ -423,6 +447,7 @@ F5,1
 E5,1
 C5,0.5
 REST,1
+// She's just a girl who
 REST,0.5
 F5,0.5
 F5,0.5
@@ -430,6 +455,7 @@ F5,0.5
 E5,0.5
 C5,0.5
 C5,1
+// claims that I am the one, but the kid is not my son
 F5,0.5
 A5,0.5
 REST,0.5
@@ -448,6 +474,7 @@ F5,0.5
 D5,1
 C5,1.5
 REST,3
+// She says I am the one but the kid is not my son
 REST,0.5
 F5,0.5
 A5,0.5
@@ -467,4 +494,5 @@ D5,1
 C5,1.5
 REST,3
 REST,4
+// Fade out
 REST,8
