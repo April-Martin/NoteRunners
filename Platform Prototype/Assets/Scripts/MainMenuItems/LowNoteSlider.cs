@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class LowNoteSlider : MonoBehaviour {
 
+    private GameObject slider;
+
 	// Use this for initialization
 	void Start () {
-		
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
 	}
+
+    public void changeValue()
+    {
+
+    }
 }
