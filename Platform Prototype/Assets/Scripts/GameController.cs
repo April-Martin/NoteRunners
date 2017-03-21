@@ -22,7 +22,7 @@ public class GameController : MonoBehaviour
 
     // Dependencies
     public PlayerMovement Player;
-	public GameObject platform, platformText, particles;
+    public GameObject platform, platformText, particles, background;
     private PitchTester pt;
 
     // Private vars
@@ -87,6 +87,7 @@ public class GameController : MonoBehaviour
 
         // Initialize vars
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
+        background = GameObject.Find("Background");
         //FillNoteColorLookup();
         //FillNotePosLookup();
         FillNotesAllowed();
@@ -578,6 +579,10 @@ public class GameController : MonoBehaviour
         while (whileDelegate(speedMult))
         {
             speedMult *= speedMultiplier;
+            for (int layer = 0; layer < background.transform.childCount; layer ++)
+            {
+                background.transform.GetChild(layer).GetComponent<BackgroundScroller>().speed *= speedMultiplier;
+            }
 
             // Update time on screen
             TimeOnScreen /= speedMultiplier;
