@@ -37,6 +37,8 @@ public class ReaderWriter : MonoBehaviour
             reader.ReadLine();
             while ((line = reader.ReadLine()) != null)
             {
+                if (line[0] == '/' && line[1] == '/') continue;
+
                 vals = line.Split(',');
                 Song.Add( new Note(vals[0], float.Parse(vals[1])) );
             }

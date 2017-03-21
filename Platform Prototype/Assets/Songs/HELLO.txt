@@ -1,5 +1,7 @@
 60
+// This is a comment
 REST,5
+<<<<<<< HEAD
 C4,2
 REST,3
 C4,2
@@ -10,7 +12,34 @@ C4,2
 REST,1
 C4,1
 REST,2
+=======
+C4,1
+REST,2
+// This is a commment too!
+C4,1
+REST,2
+C4,1
+REST,1
+C4,2
+REST,2
+C4,3
+REST,1
+C4,1
+REST,1
+C4,1
+REST,3
+C4,3
+REST,2
+C4,1
+REST,1
+>>>>>>> 4a2d3e054a5109d4ac3b502dd68013ed6eb77c13
 C4,1
 REST,3
 C4,2
+<<<<<<< HEAD
 REST,2
+=======
+REST,1
+C4,1
+REST,3
+>>>>>>> 4a2d3e054a5109d4ac3b502dd68013ed6eb77c13
