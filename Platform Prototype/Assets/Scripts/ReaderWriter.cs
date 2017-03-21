@@ -32,9 +32,16 @@ public class ReaderWriter : MonoBehaviour
 
         using (StreamReader reader = new StreamReader(File.Open( path + name, FileMode.Open)))
         {
-            bpm = float.Parse(reader.ReadLine());
-            // Discard initial rest
-            reader.ReadLine();
+            // Read BPM
+            while ((line = reader.ReadLine()) != null)
+            {
+                if (line[0] == '/' && line[1] == '/') continue;
+
+                bpm = float.Parse(line);
+                break;
+            }
+
+            // Read notes
             while ((line = reader.ReadLine()) != null)
             {
                 if (line[0] == '/' && line[1] == '/') continue;
