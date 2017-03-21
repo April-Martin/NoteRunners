@@ -13,6 +13,7 @@ public class GameGlobals : MonoBehaviour {
     public int LeniencyRange = 1;
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
+    public float MaxTimeBetweenRests = 4f;
 
     private string LowestNote = "E2", HighestNote = "C6";
     private int highNoteIndex = 1, lowNoteIndex = 0;

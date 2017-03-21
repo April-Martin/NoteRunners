@@ -14,6 +14,7 @@ public class GameController : MonoBehaviour
     public float BPM, TransitionGracePeriod, SustainedGracePeriod;
 	public int LeniencyRange = 0;
     public bool SongMode = false;
+    public float MaxTimeBetweenRests = 4f;
     public string filename;
     public int ScorePerSecond = 100;
     public float Score = 0;
@@ -33,8 +34,7 @@ public class GameController : MonoBehaviour
     private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
     float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
-	private bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false;
-    public bool isCorrect = true;
+	private bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
 
 	internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
 	{
@@ -59,7 +59,7 @@ public class GameController : MonoBehaviour
 
     public float speedMult = 1f, scrollingInterpolation = 0.01f;
 
-    private float elapsedIncorrectTime = 0;
+    private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
 	#endregion
 
 
@@ -80,6 +80,7 @@ public class GameController : MonoBehaviour
             filename = temp.selectedSong;
             speedMult = temp.speedMult;
             scrollingInterpolation = temp.scrollingInterpolation;
+            MaxTimeBetweenRests = temp.MaxTimeBetweenRests;
         }
 
         Player.GetComponent<SpriteRenderer>().color = Color.black;
@@ -316,14 +317,26 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            // Randomize note name
+            // Update rest tracker
             int lastNoteIndex = Song.Count - 1;
             string lastNoteName = ((Note)Song[lastNoteIndex]).name;
+            if (lastNoteName == "REST")
+                elapsedSinceRest = 0;
+            else
+                elapsedSinceRest += Song[lastNoteIndex].duration;
+
+            // Randomize note name, unless it's time for a compulsory rest
             string newNoteName = lastNoteName;
-            while (newNoteName == lastNoteName)
+            if (elapsedSinceRest < MaxTimeBetweenRests)
             {
-                newNoteName = NotesAllowed[UnityEngine.Random.Range(0, NotesAllowed.Count)];    // Note: min inclusive, max exclusive
+                while (newNoteName == lastNoteName)
+                {
+                    newNoteName = NotesAllowed[UnityEngine.Random.Range(0, NotesAllowed.Count)];    // Note: min inclusive, max exclusive
+                }
             }
+            else
+                newNoteName = "REST";
+
             float newNoteDur = UnityEngine.Random.Range(1, 4);
 
 
@@ -597,9 +610,11 @@ public class GameController : MonoBehaviour
                 // Resize the platform's width so it matches the note's duration
                 float platWidth = Song[i].duration * worldUnitsPerBeat;
                 float startWidth = plat.GetComponent<SpriteRenderer>().bounds.size.x;
+
                 // WHAT. WHY DOES THIS NOT WORK.
                 // If you're not going to work, Unity, then give me an error, dammit!
                 //plat.transform.localScale.Scale( new Vector3(platWidth/startWidth, 1, 1) );
+
                 plat.transform.localScale = new Vector3(plat.transform.localScale.x * (platWidth / startWidth), plat.transform.localScale.y, plat.transform.localScale.z);
 
                 // Reposition the platform so that it's still at the right timing.
@@ -613,6 +628,9 @@ public class GameController : MonoBehaviour
                 plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
 				// Adjust the position of the text for the platform.
 				if (text != null) text.transform.position = new Vector3 ((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
+                // Reset its range marker if it's not a rest
+                if (Song[i].name != "REST")
+                    plat.SetRangeMarker(LeniencyRange, noteColorLookup[Song[i].name]);
             }
 
             yield return null;
