@@ -9,22 +9,20 @@ public class GameGlobals : MonoBehaviour {
     public bool isTextActive = true;
     public float TimeOnScreen;
     public string[] NoteDetectionRange = new string[] {"C3", "C5"}, NotesRange = new string[] {"C4", "C4"};
-    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.2f;
+    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.2f, speedMult = 1f, scrollingInterpolation = 0.01f;
     public int LeniencyRange = 1;
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
     public float MaxTimeBetweenRests = 4f;
 
     private string LowestNote = "E2", HighestNote = "C6";
-    private int highNoteIndex = 1, lowNoteIndex = 0;
+    private int highNoteIndex = 25, lowNoteIndex = 0;
 
     internal List<string> notes = new List<string>
     {
         "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4",
         "F4", "G4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6"
     };
-
-    public float speedMult = 1f, scrollingInterpolation = 0.01f;
 
     void Awake()
     {
@@ -56,7 +54,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeTolerance(float val)
     {
-        
+        LeniencyRange = (int)val;
     }
 
     /// <summary>
@@ -64,7 +62,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeGracePeriod (float val)
     {
-
+        TransitionGracePeriod = val;
     }
 
     /// <summary>
@@ -88,7 +86,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeTimeBetweenRest(float val)
     {
-
+        MaxTimeBetweenRests = val;
     }
 
     /// <summary>
@@ -97,7 +95,7 @@ public class GameGlobals : MonoBehaviour {
     /// <param name="val">Index value of note desired, starting from E2 - B5 (0-24 inclusive).</param>
     public void changeLowestNote(float val)
     {
-        Debug.Log("Low Index " + val);
+        //Debug.Log("Low Index " + val);
         int trueVal = (int)val;
         if (trueVal >= highNoteIndex)
         {
@@ -107,7 +105,7 @@ public class GameGlobals : MonoBehaviour {
         lowNoteIndex = (int)val;
         LowestNote = notes[lowNoteIndex];
         NotesRange = new string[] { LowestNote, HighestNote };
-        Debug.Log("Low Note " + LowestNote);
+        //Debug.Log("Low Note " + LowestNote);
     }
 
     /// <summary>
@@ -116,7 +114,7 @@ public class GameGlobals : MonoBehaviour {
     /// <param name="val">Index value of note desired, starting from F2 - C6 (1-25 inclusive).</param>
     public void changeHighestNote(float val)
     {
-        Debug.Log("High Index " + val);
+        //Debug.Log("High Index " + val);
         int trueVal = (int)val;
         if (trueVal <= lowNoteIndex)
         {
@@ -126,7 +124,7 @@ public class GameGlobals : MonoBehaviour {
         highNoteIndex = trueVal;
         HighestNote = notes[highNoteIndex];
         NotesRange = new string[] { LowestNote, HighestNote };
-        Debug.Log("High Note " + HighestNote);
+        //Debug.Log("High Note " + HighestNote);
     }
 
     /// <summary>
@@ -175,5 +173,15 @@ public class GameGlobals : MonoBehaviour {
     public void changeSelectedSong(string filename)
     {
         selectedSong = filename;
-    } 
+    }
+
+    public int getLowNoteIndex()
+    {
+        return lowNoteIndex;
+    }
+
+    public int getHighNoteIndex()
+    {
+        return highNoteIndex;
+    }
 }
