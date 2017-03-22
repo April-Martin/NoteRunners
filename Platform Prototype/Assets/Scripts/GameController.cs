@@ -658,7 +658,7 @@ public class GameController : MonoBehaviour
 
     void CheckKeyInput()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+		if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeScrollingSpeed(1.25f);
         }
