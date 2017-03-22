@@ -5,10 +5,10 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-
-	#region Variables
+   
+    #region Variables
     // Settings
-	public bool DEBUG_InvincibleMode = false, isTextActive = true;
+    public bool DEBUG_InvincibleMode = false, isTextActive = true;
     public float TimeOnScreen;
     public string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
     public float BPM, TransitionGracePeriod, SustainedGracePeriod;
@@ -30,7 +30,7 @@ public class GameController : MonoBehaviour
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
 	private List<TextMesh> platText = new List<TextMesh> (50);
 
-    private float currPos = 0, currTime = 0;
+    internal float currPos = 0, currTime = 0;
     private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
     float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
@@ -60,9 +60,7 @@ public class GameController : MonoBehaviour
     public float speedMult = 1f, scrollingInterpolation = 0.01f;
 
     private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
-	#endregion
-
-
+    #endregion
     // Use this for initialization
     void Start()
     {

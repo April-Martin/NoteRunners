@@ -8,8 +8,8 @@ public class GameGlobals : MonoBehaviour {
     public static GameGlobals GlobalInstance;
     public bool isTextActive = true;
     public float TimeOnScreen;
-    public string[] NoteDetectionRange = new string[] {"C3", "C5"}, NotesRange = new string[] {"C4", "C4"};
-    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.2f, speedMult = 1f, scrollingInterpolation = 0.01f;
+    public string[] NoteDetectionRange = new string[] {"C3", "C5"}, NotesRange = new string[] {"C3", "C5"};
+    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f;
     public int LeniencyRange = 1;
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
