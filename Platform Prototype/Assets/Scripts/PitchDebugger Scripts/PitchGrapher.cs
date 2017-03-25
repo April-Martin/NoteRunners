@@ -13,14 +13,17 @@ public class PitchGrapher : MonoBehaviour
     public int labelSpacing;
 
     public float volThreshold = 0.0f;
-    public float specFlatnessThreshold = 0.2f;
+    public float specFlatnessThreshold = 0.6f;
     public String MainNote;
+    public int targetFreq;
+    public float MagnetismPower = 2;
+
 
     // Settings
     private int samplerate;
     private const int bins = 8192;
     internal int minFreq = 75;
-    internal int maxFreq = 1075;
+    internal int maxFreq = 5000;
 
     public LineRenderer linePrefab;
     public TextMesh labelPrefab;
@@ -83,10 +86,15 @@ public class PitchGrapher : MonoBehaviour
         int minBin = minFreq * (2 * bins) / samplerate;
         int maxBin = maxFreq * (2 * bins) / samplerate;
 
+        int minBoostedBin = (targetFreq * bins) / samplerate;
+        int targetBin = (targetFreq * 2 * bins) / samplerate;
+        int maxBoostedBin = (targetFreq * 4 * bins) / samplerate;
+
         double geometricMean = 0;
         float arithmeticMean = 0;
         int maxIndex = 0;
         float maxVal = 0.0f;
+        float magnetismMultiplier = 0.0f;
 
         for (int i = minBin; i < maxBin; i++)
         {
@@ -96,6 +104,14 @@ public class PitchGrapher : MonoBehaviour
                 geometricMean += Mathf.Log(freqSamples[i]);
                 arithmeticMean += freqSamples[i];
             }
+
+            //Find ratio of given frequency to target frequency.
+            //if (i >= minBoostedBin && i <= maxBoostedBin)
+            {
+       //         magnetismMultiplier = i > targetBin ? (i - targetBin) / (float) (maxBoostedBin - targetBin) : (targetBin - i) / (float)(targetBin - minBoostedBin);
+         //       freqSamples[i] += MagnetismPower * (1 - magnetismMultiplier) * freqSamples[i];
+            }
+
 
             // Update max frequency
             if (freqSamples[i] >= maxVal)
@@ -120,7 +136,7 @@ public class PitchGrapher : MonoBehaviour
         float frequency = (float)maxIndex * samplerate / (2 * bins);
 
         // Log note
-        MainNote = guide.GetClosestNote(frequency);
+        MainNote = "" + frequency; //guide.GetClosestNote(frequency);
 
 
         /* 
@@ -130,12 +146,21 @@ public class PitchGrapher : MonoBehaviour
         // Wipe previous graph contents
         foreach (LineRenderer l in lines)
         {
-            Destroy(l);
+            if (l != null)
+            {
+                Destroy(l.gameObject);
+            }
         }
         foreach (TextMesh label in labels)
         {
-            Destroy(label);
+            if (label != null)
+            {
+                Destroy(label.gameObject);
+            }
         }
+        lines.Clear();
+        labels.Clear();
+
 
         // Figure out spacing for notches along the x-axis
         minBin = minGraphedFreq * (2 * bins) / samplerate;
@@ -158,7 +183,7 @@ public class PitchGrapher : MonoBehaviour
                 lines.Add(line);
             }
 
-            if (i%labelSpacing == 0)
+            if (i % labelSpacing == 0)
             {
                 TextMesh label = Instantiate<TextMesh>(labelPrefab);
                 label.transform.position = new Vector3(notchInterval * i, -1);

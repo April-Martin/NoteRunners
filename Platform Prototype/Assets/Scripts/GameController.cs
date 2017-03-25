@@ -182,14 +182,14 @@ public class GameController : MonoBehaviour
 
         // Compare player pitch to target note
         // If the pitch is incorrect:
-        if (string.IsNullOrEmpty(playerPitch) || playerPitch[0] != targetNote[0])
+        if (string.IsNullOrEmpty(playerPitch) || playerPitch != targetNote)
         {
 			// Allow recognition of a tolerance range.
 			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
 			foreach (string note in acceptableRanges) 
 			{
 				//Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
-				if (!string.IsNullOrEmpty(playerPitch) && playerPitch[0] == note[0]) 
+				if (!string.IsNullOrEmpty(playerPitch) && playerPitch == note) 
 				{
 					isCorrect = true;
 					return;
