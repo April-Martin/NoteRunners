@@ -14,6 +14,7 @@ public class GameGlobals : MonoBehaviour {
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
     public float MaxTimeBetweenRests = 4f;
+    public bool WritingOn = false;
 
     private string LowestNote = "E2", HighestNote = "C6";
     private int highNoteIndex = 25, lowNoteIndex = 0;

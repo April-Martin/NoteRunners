@@ -8,22 +8,25 @@ public class GameController : MonoBehaviour
    
     #region Variables
     // Settings
-    public bool DEBUG_InvincibleMode = false, isTextActive = true;
-    public string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
-    public float BPM, TransitionGracePeriod, SustainedGracePeriod;
-	public int LeniencyRange = 0;
-    public bool SongMode = false;
-    public float MaxTimeBetweenRests = 4f;
-    public string filename;
+    public bool DEBUG_InvincibleMode = false;
     public int ScorePerSecond = 100;
     public float Score = 0;
-    public float TimeOnScreen = 5;
-
 
     // Dependencies
     public PlayerMovement Player;
     public GameObject platform, platformText, particles, background;
     private PitchTester pt;
+
+    // Game globals
+    internal bool isTextActive = true;
+    private float TimeOnScreen = 5;
+    private string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
+    private float BPM, TransitionGracePeriod, SustainedGracePeriod;
+    private int LeniencyRange = 0;
+    private bool SongMode = false;
+    private string filename;
+    private float MaxTimeBetweenRests = 4f;
+    private bool WritingOn;
 
     // Private vars
     private List<Note> Song = new List<Note>(50);
@@ -80,6 +83,7 @@ public class GameController : MonoBehaviour
             speedMult = temp.speedMult;
             scrollingInterpolation = temp.scrollingInterpolation;
             MaxTimeBetweenRests = temp.MaxTimeBetweenRests;
+            WritingOn = temp.WritingOn;
         }
 
         Player.GetComponent<SpriteRenderer>().color = Color.black;
@@ -344,7 +348,7 @@ public class GameController : MonoBehaviour
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
-            ReaderWriter.WriteSong(Song, "HELLO.txt", 60);
+//            ReaderWriter.WriteSong(Song, "HELLO.txt", 60);
 
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
