@@ -8,6 +8,8 @@ using System;
 public class PitchGrapher : MonoBehaviour
 {
     // Public vars
+    public int graphingMult = 100;
+
     public int minGraphedFreq;
     public int maxGraphedFreq;
     public int labelSpacing;
@@ -22,7 +24,7 @@ public class PitchGrapher : MonoBehaviour
     // Settings
     private int samplerate;
     private const int bins = 8192;
-    internal int minFreq = 75;
+    internal int minFreq = 100;
     internal int maxFreq = 5000;
 
     public LineRenderer linePrefab;
@@ -74,6 +76,12 @@ public class PitchGrapher : MonoBehaviour
         // Get frequency information
         src.GetSpectrumData(freqSamples, 0, FFTWindow.BlackmanHarris);
 
+        float[] hpsFreqSamples = new float[freqSamples.Length / 5];
+        for (int i = 1; i < hpsFreqSamples.Length; i++)
+        {
+            hpsFreqSamples[i] = freqSamples[i] * freqSamples[i * 2] * freqSamples[i * 3] * freqSamples[i * 4] * freqSamples[i * 5];
+        }
+        
         if (Input.GetKeyDown(KeyCode.D))
         {
             Debug.Log("Break");
@@ -96,13 +104,13 @@ public class PitchGrapher : MonoBehaviour
         float maxVal = 0.0f;
         float magnetismMultiplier = 0.0f;
 
-        for (int i = minBin; i < maxBin; i++)
+        for (int i = minBin; i < maxBin && i < hpsFreqSamples.Length; i++)
         {
             // Update sums
-            if (freqSamples[i] != 0)
+            if (hpsFreqSamples[i] != 0)
             {
-                geometricMean += Mathf.Log(freqSamples[i]);
-                arithmeticMean += freqSamples[i];
+                geometricMean += Mathf.Log(hpsFreqSamples[i]);
+                arithmeticMean += hpsFreqSamples[i];
             }
 
             //Find ratio of given frequency to target frequency.
@@ -114,10 +122,10 @@ public class PitchGrapher : MonoBehaviour
 
 
             // Update max frequency
-            if (freqSamples[i] >= maxVal)
+            if (hpsFreqSamples[i] >= maxVal)
             {
                 maxIndex = i;
-                maxVal = freqSamples[i];
+                maxVal = hpsFreqSamples[i];
             }
         }
 
@@ -125,7 +133,7 @@ public class PitchGrapher : MonoBehaviour
         geometricMean /= (maxBin - minBin);
         geometricMean = Math.Exp(geometricMean);
 
-        // Exclude frequencies outside of range
+        // Exclude audio that's too noisy (i.e., if the player isn't singing)
         if (maxIndex == 0 || (geometricMean / arithmeticMean > specFlatnessThreshold))
         {
             MainNote = "";
@@ -136,7 +144,7 @@ public class PitchGrapher : MonoBehaviour
         float frequency = (float)maxIndex * samplerate / (2 * bins);
 
         // Log note
-        MainNote = "" + frequency; //guide.GetClosestNote(frequency);
+        MainNote = guide.GetClosestNote(frequency);
 
 
         /* 
@@ -168,14 +176,15 @@ public class PitchGrapher : MonoBehaviour
         float notchInterval = maxX / (maxBin - minBin);
 
         // Loop over frequency bins within graphable range
-        for (int i = minBin; i < maxBin; i++)
+        for (int i = minBin; i < maxBin && i<hpsFreqSamples.Length; i++)
         {
-            float binVal = freqSamples[i];
+            float binVal = hpsFreqSamples[i];
 
             if (binVal != 0)
             {
                 // Scale the y-axis so that the maximum value reaches the top
                 float yPos = (binVal / maxVal) * maxY;
+             //   float yPos = binVal * graphingMult * maxY;
 
                 LineRenderer line = Instantiate<LineRenderer>(linePrefab);
                 line.SetPosition(0, new Vector3(notchInterval * i, 0));
