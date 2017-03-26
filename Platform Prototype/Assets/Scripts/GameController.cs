@@ -9,7 +9,6 @@ public class GameController : MonoBehaviour
     #region Variables
     // Settings
     public bool DEBUG_InvincibleMode = false, isTextActive = true;
-    public float TimeOnScreen;
     public string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
     public float BPM, TransitionGracePeriod, SustainedGracePeriod;
 	public int LeniencyRange = 0;
@@ -18,6 +17,7 @@ public class GameController : MonoBehaviour
     public string filename;
     public int ScorePerSecond = 100;
     public float Score = 0;
+    public float TimeOnScreen = 5;
 
 
     // Dependencies
@@ -68,7 +68,8 @@ public class GameController : MonoBehaviour
         {
             GameGlobals temp = GameGlobals.GlobalInstance;
             isTextActive = temp.isTextActive;
-            //NoteDetectionRange = temp.NoteDetectionRange;
+            NoteDetectionRange = temp.NoteDetectionRange;
+            TimeOnScreen = temp.TimeOnScreen;
             NotesRange = temp.NotesRange;
             BPM = temp.BPM;
             TransitionGracePeriod = temp.TransitionGracePeriod;

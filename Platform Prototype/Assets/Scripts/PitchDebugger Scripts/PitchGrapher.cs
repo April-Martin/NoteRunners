@@ -17,11 +17,11 @@ public class PitchGrapher : MonoBehaviour
     public float volThreshold = 0.0f;
     public float specFlatnessThreshold = 0.6f;
     public String MainNote;
-    public int targetFreq;
-    public float MagnetismPower = 2;
+    public int queueHistorySize = 5;
 
 
     // Settings
+    private Queue<float> frequencyHistory = new Queue<float>();
     private int samplerate;
     private const int bins = 8192;
     internal int minFreq = 100;
@@ -94,15 +94,10 @@ public class PitchGrapher : MonoBehaviour
         int minBin = minFreq * (2 * bins) / samplerate;
         int maxBin = maxFreq * (2 * bins) / samplerate;
 
-        int minBoostedBin = (targetFreq * bins) / samplerate;
-        int targetBin = (targetFreq * 2 * bins) / samplerate;
-        int maxBoostedBin = (targetFreq * 4 * bins) / samplerate;
-
         double geometricMean = 0;
         float arithmeticMean = 0;
         int maxIndex = 0;
         float maxVal = 0.0f;
-        float magnetismMultiplier = 0.0f;
 
         for (int i = minBin; i < maxBin && i < hpsFreqSamples.Length; i++)
         {
@@ -112,14 +107,6 @@ public class PitchGrapher : MonoBehaviour
                 geometricMean += Mathf.Log(hpsFreqSamples[i]);
                 arithmeticMean += hpsFreqSamples[i];
             }
-
-            //Find ratio of given frequency to target frequency.
-            //if (i >= minBoostedBin && i <= maxBoostedBin)
-            {
-       //         magnetismMultiplier = i > targetBin ? (i - targetBin) / (float) (maxBoostedBin - targetBin) : (targetBin - i) / (float)(targetBin - minBoostedBin);
-         //       freqSamples[i] += MagnetismPower * (1 - magnetismMultiplier) * freqSamples[i];
-            }
-
 
             // Update max frequency
             if (hpsFreqSamples[i] >= maxVal)
@@ -143,8 +130,18 @@ public class PitchGrapher : MonoBehaviour
         // Log frequency
         float frequency = (float)maxIndex * samplerate / (2 * bins);
 
+        frequencyHistory.Enqueue(frequency);
+        if (frequencyHistory.Count >= queueHistorySize)
+        {
+            frequencyHistory.Dequeue();
+        }
+        float freqSum = 0;
+        foreach (float freq in frequencyHistory)
+        {
+            freqSum += freq;
+        }
         // Log note
-        MainNote = guide.GetClosestNote(frequency);
+        MainNote = guide.GetClosestNote(freqSum/frequencyHistory.Count);
 
 
         /* 
