@@ -88,7 +88,7 @@ public class GameController : MonoBehaviour
 			bassClefMode = temp.bassClefMode;
         }
 
-        Player.GetComponent<SpriteRenderer>().color = Color.black;
+        //Player.GetComponent<SpriteRenderer>().color = Color.white;
 
         // Initialize vars
 		if (bassClefMode)
@@ -165,11 +165,11 @@ public class GameController : MonoBehaviour
         }
         else if (string.IsNullOrEmpty(playerPitch))
         {
-            Player.GetComponent<SpriteRenderer>().color = Color.white;
+            //Player.GetComponent<SpriteRenderer>().color = Color.white;
         }
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
-            Player.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
+            //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
         }
 
         // Permit grace period
@@ -212,7 +212,7 @@ public class GameController : MonoBehaviour
                 elapsedIncorrectTime = 0;
                 isCorrect = false;
 
-                Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
             }
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
@@ -224,7 +224,7 @@ public class GameController : MonoBehaviour
             // Add elapsed incorrect time
             else
             {
-                Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
                 elapsedIncorrectTime += Time.deltaTime;
             }
         }
@@ -292,6 +292,7 @@ public class GameController : MonoBehaviour
 
     void AwardScore()
     {
+		//TODO : Don't depend on colIsFlashing!
         if (!isFalling && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
         {
             Score += (ScorePerSecond * speedMult * Time.deltaTime);
@@ -667,15 +668,18 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
-            Player.GetComponent<SpriteRenderer>().color = Color.white;
+			Player.GetComponent<SpriteRenderer> ().color = Color.white;
             Invoke("EndColorFlash", interval / 3);
             yield return new WaitForSeconds(interval);
         }
+		Player.GetComponent<SpriteRenderer> ().color = Color.white;
     }
 
     void EndColorFlash()
     {
+		Debug.Log ("vanish!");
         colIsFlashing = false;
+		Player.GetComponent<SpriteRenderer>().color = new Color(1,1,1,0.4f);
     }
 
     void CheckKeyInput()
