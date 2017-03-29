@@ -18,7 +18,7 @@ public class PitchTester : MonoBehaviour
     private int samplerate;
     private const int bins = 8192;
     internal int minFreq = 75;
-    internal int maxFreq = 1075;
+    internal int maxFreq = 1500;
 
     private AudioSource src;
 

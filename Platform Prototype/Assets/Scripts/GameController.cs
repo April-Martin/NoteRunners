@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -20,13 +21,14 @@ public class GameController : MonoBehaviour
     // Game globals
     internal bool isTextActive = true;
     private float TimeOnScreen = 5;
-    private string[] NoteDetectionRange = new string[2], NotesRange = new string[2];
+    private string[] NotesRange = new string[2];
     private float BPM, TransitionGracePeriod, SustainedGracePeriod;
     private int LeniencyRange = 0;
     private bool SongMode = false;
     private string filename;
     private float MaxTimeBetweenRests = 4f;
     private bool WritingOn;
+	private bool bassClefMode = false;
 
     // Private vars
     private List<Note> Song = new List<Note>(50);
@@ -71,7 +73,6 @@ public class GameController : MonoBehaviour
         {
             GameGlobals temp = GameGlobals.GlobalInstance;
             isTextActive = temp.isTextActive;
-            NoteDetectionRange = temp.NoteDetectionRange;
             TimeOnScreen = temp.TimeOnScreen;
             NotesRange = temp.NotesRange;
             BPM = temp.BPM;
@@ -84,22 +85,26 @@ public class GameController : MonoBehaviour
             scrollingInterpolation = temp.scrollingInterpolation;
             MaxTimeBetweenRests = temp.MaxTimeBetweenRests;
             WritingOn = temp.WritingOn;
+			bassClefMode = temp.bassClefMode;
         }
 
         Player.GetComponent<SpriteRenderer>().color = Color.black;
 
         // Initialize vars
+		if (bassClefMode)
+			BassClefTransformation ();
+
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         background = GameObject.Find("Background");
         FillNotesAllowed();
 		fg = new FrequencyGuide ();
-        pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
-        pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
+        //pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
+        //pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
   
         // If we're in Song mode, read in file information
         if (SongMode)
         {
-            ReaderWriter.ReadSong(ref Song, filename, ref BPM);
+			ReaderWriter.ReadSong(ref Song, filename, ref BPM, ref bassClefMode);
             for (int i = 1; i < Song.Count; i++)
             {
                 if (Song[i].name == "REST")
@@ -287,7 +292,7 @@ public class GameController : MonoBehaviour
 
     void AwardScore()
     {
-        if (!isFalling && isChecking && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
+        if (!isFalling && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
         {
             Score += (ScorePerSecond * speedMult * Time.deltaTime);
         }
@@ -348,7 +353,8 @@ public class GameController : MonoBehaviour
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
-//            ReaderWriter.WriteSong(Song, "HELLO.txt", 60);
+			if (WritingOn) 
+				ReaderWriter.WriteSong(Song, "HELLO.txt", 60, bassClefMode);
 
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
@@ -505,6 +511,18 @@ public class GameController : MonoBehaviour
 //        notePosLookup.Add("C6", 6f);
 //    }
 
+	private void BassClefTransformation()
+	{
+		List<string> keys = notePosLookup.Keys.ToList ();
+		for (int i = 0; i < notePosLookup.Count; i++) 
+		{
+			if (keys[i] != "REST") 
+			{
+				notePosLookup [keys [i]] += 6;
+			}
+		}
+	}
+
     private void FillNotesAllowed()
     {
         NotesAllowed = new List<string>();
@@ -522,7 +540,8 @@ public class GameController : MonoBehaviour
         float temp = 0;
         notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out temp) ? temp : -0.5f;
         notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out temp) ? temp : 4.5f;
-        foreach (string Note in Player.NotePosLookup.Keys)
+        
+		foreach (string Note in Player.NotePosLookup.Keys)
         {
             if (Player.NotePosLookup[Note] >= notesRangeMinPos)
             {
