@@ -64,7 +64,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeGracePeriod (float val)
     {
-        TransitionGracePeriod = val;
+		TransitionGracePeriod = val / 100f;
     }
 
     /// <summary>
@@ -72,7 +72,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeNoteDensity(float val)
     {
-
+		float temp = val / 10;
     } 
 
     /// <summary>
@@ -80,7 +80,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeScrollSpeed(float val)
     {
-		TimeOnScreen = val; 
+		TimeOnScreen = val / 10f;
     }
 
     /// <summary>
