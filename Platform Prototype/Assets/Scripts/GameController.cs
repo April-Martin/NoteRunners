@@ -668,18 +668,17 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
-			Player.GetComponent<SpriteRenderer> ().color = Color.white;
-            Invoke("EndColorFlash", interval / 3);
+			Player.GetComponent<SpriteRenderer> ().color = new Color (1, 1, 1, .4f);
+            Invoke("EndColorFlash", 3 * interval / 4);
             yield return new WaitForSeconds(interval);
         }
-		Player.GetComponent<SpriteRenderer> ().color = Color.white;
     }
 
     void EndColorFlash()
     {
 		Debug.Log ("vanish!");
         colIsFlashing = false;
-		Player.GetComponent<SpriteRenderer>().color = new Color(1,1,1,0.4f);
+		Player.GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
     }
 
     void CheckKeyInput()
