@@ -159,11 +159,10 @@ public class GameController : MonoBehaviour
     void CheckPitch()
     {
         // Update buddy color
-
         string playerPitch = pt.MainNote;
 
-		// If player isn't singing:
-        if (string.IsNullOrEmpty(playerPitch))
+		// If player isn't singing, or if player's falling:
+        if (string.IsNullOrEmpty(playerPitch || isFalling))
         {
             Bud.GetComponent<SpriteRenderer>().color = Color.white;
         }
