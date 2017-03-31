@@ -15,6 +15,7 @@ public class GameController : MonoBehaviour
 
     // Dependencies
     public PlayerMovement Player;
+	public Buddy Bud;
     public GameObject platform, platformText, particles, background;
     private PitchTester pt;
 
@@ -157,19 +158,19 @@ public class GameController : MonoBehaviour
 
     void CheckPitch()
     {
-        // Update player color
+        // Update buddy color
+
         string playerPitch = pt.MainNote;
-        if (colIsFlashing)
+
+		// If player isn't singing:
+        if (string.IsNullOrEmpty(playerPitch))
         {
-            return;
+            Bud.GetComponent<SpriteRenderer>().color = Color.white;
         }
-        else if (string.IsNullOrEmpty(playerPitch))
-        {
-            //Player.GetComponent<SpriteRenderer>().color = Color.white;
-        }
+		// If player is singing:
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
-            //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
+            Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
         }
 
         // Permit grace period
@@ -211,8 +212,7 @@ public class GameController : MonoBehaviour
             {
                 elapsedIncorrectTime = 0;
                 isCorrect = false;
-
-                //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
             }
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
@@ -224,7 +224,7 @@ public class GameController : MonoBehaviour
             // Add elapsed incorrect time
             else
             {
-                //Player.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
                 elapsedIncorrectTime += Time.deltaTime;
             }
         }
