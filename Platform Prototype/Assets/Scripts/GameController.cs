@@ -40,7 +40,7 @@ public class GameController : MonoBehaviour
     private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
     float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
-	private bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
+	internal bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
 
 	internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
 	{

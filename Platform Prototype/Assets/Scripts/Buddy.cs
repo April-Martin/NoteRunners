@@ -56,7 +56,7 @@ public class Buddy : MonoBehaviour
         }
 
         float targetXPos = playerTransform.position.x + xOffset + (wanderRange + wanderRange*wanderValue) * ((Mathf.Sin(Time.time * wanderSpeed) + (wanderValue)));
-        float targetYPos;
+        float targetYPos = 1f;
 
         if (!string.IsNullOrEmpty(pt.MainNote))
         {
@@ -72,7 +72,10 @@ public class Buddy : MonoBehaviour
             trailRenderer.endColor = Color.Lerp(trailRenderer.endColor, endGoal, 0.05f);
             trailRenderer.startColor = Color.Lerp(trailRenderer.startColor, startGoal, 0.05f);
 
-            targetYPos = gc.notePosLookup[currentNote];
+			if (!gc.isFalling)
+			{
+				targetYPos = gc.notePosLookup[currentNote];
+			}
         }
         else
         {
@@ -81,8 +84,12 @@ public class Buddy : MonoBehaviour
             
         }
  //       transform.position = new Vector3(xPos, transform.position.y, 0f);
-        float newXPos = Mathf.Lerp(transform.position.x, targetXPos, InterpolationFactorX);
-        float newYPos = Mathf.Lerp(transform.position.y, targetYPos, InterpolationFactorY);
+		float newYPos = newYPos = Mathf.Lerp(transform.position.y, transform.position.y, InterpolationFactorY);
+		float newXPos = Mathf.Lerp(transform.position.x, targetXPos, InterpolationFactorX);
+		if (!gc.isFalling)
+		{
+        	newYPos = Mathf.Lerp(transform.position.y, targetYPos, InterpolationFactorY);
+		}
         transform.position = new Vector3(newXPos, newYPos, 0);
 //        transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
     }
