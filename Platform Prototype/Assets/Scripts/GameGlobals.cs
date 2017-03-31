@@ -80,7 +80,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeScrollSpeed(float val)
     {
-        speedMult = val;
+		TimeOnScreen = val; 
     }
 
     /// <summary>
@@ -128,24 +128,6 @@ public class GameGlobals : MonoBehaviour {
         NotesRange = new string[] { LowestNote, HighestNote };
         //Debug.Log("High Note " + HighestNote);
     }
-
-    /// <summary>
-    /// Change the lowest detected note.
-    /// </summary>
-    /// <param name="val">Index value of note desired, starting from F2 - C6 (1-25 inclusive).</param>
-    public void changeLowestDetectionRangeNote(float val)
-    {
-        // TODO: Decide if this will be used or if it is also controled by changeLowestNote().
-    }
-
-    /// <summary>
-    /// Change the highest detected note.
-    /// </summary>
-    /// <param name="val">Index value of note desired, starting from E2 - B5 (0-24 inclusive).</param>
-    public void changeHighestDetectionRangeNote(float val)
-    {
-        // TODO: Decide if this will be used or if it is also controled by changeHighestNote().
-    } 
 
     /// <summary>
     /// Sets game to infinite mode
