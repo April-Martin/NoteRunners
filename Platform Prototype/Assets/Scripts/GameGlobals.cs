@@ -7,7 +7,7 @@ public class GameGlobals : MonoBehaviour {
     // Settings
     public static GameGlobals GlobalInstance;
     public bool isTextActive = true;
-    public float TimeOnScreen;
+	public float TimeOnScreen = 5f;
     public string[] NotesRange = new string[] {"C3", "C5"};
     public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f;
     public int LeniencyRange = 1;
