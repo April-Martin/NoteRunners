@@ -162,7 +162,7 @@ public class GameController : MonoBehaviour
         string playerPitch = pt.MainNote;
 
 		// If player isn't singing, or if player's falling:
-        if (string.IsNullOrEmpty(playerPitch || isFalling))
+		if (string.IsNullOrEmpty(playerPitch) || isFalling)
         {
             Bud.GetComponent<SpriteRenderer>().color = Color.white;
         }
