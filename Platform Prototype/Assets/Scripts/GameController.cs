@@ -64,7 +64,7 @@ public class GameController : MonoBehaviour
 
     internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>()
     {
-        {"REST", Color.white}
+        {"REST", new Color(.15f, .15f, .15f, 1)}
     };
 
 	private FrequencyGuide fg;
@@ -247,6 +247,10 @@ public class GameController : MonoBehaviour
     {
         Platform plat = Instantiate(platform).GetComponent<Platform>();
 
+        // Fill the platform if it's a rest
+        if (Song[index].name == "REST")
+            plat.SetPlatFilled(true);
+
         // Set the platform's color
 		Color platColor = noteColorLookup [Song [index].name];
         plat.SetPlatColor(platColor);
@@ -285,9 +289,11 @@ public class GameController : MonoBehaviour
         plat.transform.position += Vector3.right * platWidth / 2;
 
         // Set its range marker if it's not a rest
+       /*
         if (Song[index].name != "REST")
             plat.GetComponent<Platform>().SetRangeMarker(LeniencyRange, platColor);
         else
+        * */
             plat.GetComponent<Platform>().DisableRangeMarker();
 
         // Add it to our list of platforms
@@ -714,6 +720,8 @@ public class GameController : MonoBehaviour
         {
             if (notes[i] == "REST") continue;
             noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
+         //   noteColorLookup.Add(notes[i], Color.black);
+
         }
     }
 

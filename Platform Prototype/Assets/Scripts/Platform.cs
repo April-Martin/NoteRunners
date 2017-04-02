@@ -12,11 +12,12 @@ public class Platform : MonoBehaviour
 {
     //X position of the left edge of the camera in World Units. Calculate this once.
     static float xCameraLeftEdgeInWU;
-
+    private bool isFilled = false;
     public float height = .9f;
     private float width;
     private LineRenderer outline;
     private Vector3[] outlineCorners;
+    private SpriteRenderer fillSprite;
 
     void Awake()
     {
@@ -27,12 +28,37 @@ public class Platform : MonoBehaviour
         outlineCorners[1].y = outlineCorners[2].y = -height / 2;
         outline.SetPositions(outlineCorners);
 
+        fillSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
+        //fillSprite.enabled = false;
+    }
+
+    public void SetPlatFilled(bool filled)
+    {
+        if (filled)
+        {
+            isFilled = true;
+    //        fillSprite.enabled = true;
+        }
+        else
+        {
+            isFilled = false;
+      //      fillSprite.enabled = false;
+        }
     }
 
     public void SetPlatColor(Color c)
     {
         outline.startColor = c;
         outline.endColor = c;
+
+        //if (isFilled)
+        //    fillSprite.color = c;
+
+        if (isFilled)
+            fillSprite.color = c;
+        else
+            fillSprite.color = new Color(c.r, c.g, c.b, .2f);
+
         return;
     }
 
@@ -48,6 +74,12 @@ public class Platform : MonoBehaviour
 
         BoxCollider2D col = GetComponent<BoxCollider2D>();
         col.size = new Vector2(width, col.size.y);
+
+     //   if (isFilled)
+        {
+            float startWidth = fillSprite.bounds.size.x;
+            fillSprite.transform.localScale = new Vector3(width / startWidth, fillSprite.transform.localScale.y, 1);
+        }
 
         return;
     }
