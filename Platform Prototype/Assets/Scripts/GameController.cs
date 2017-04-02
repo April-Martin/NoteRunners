@@ -50,14 +50,22 @@ public class GameController : MonoBehaviour
 		{"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
 	};
 
-	internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>
+    internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
 	{
-		{"E2", new Color32(255, 0, 0, 1)}, {"F2", new Color(1f, .5f, 0f)}, {"G2", Color.yellow}, {"A2", Color.green}, {"B2", Color.cyan},
-		{"C3", Color.blue}, {"D3", new Color(.8f, .2f, .8f)}, {"E3", Color.red}, {"F3", new Color(1f, .5f, 0f)}, {"G3", Color.yellow},
-		{"A3", Color.green}, {"B3", Color.cyan}, {"C4", Color.blue}, {"D4", new Color(.8f, .2f, .8f)}, {"E4", Color.red}, {"F4", new Color(1f, .5f, 0f)},
-		{"G4", Color.yellow}, {"A4", Color.green}, {"B4", Color.cyan}, {"C5", Color.blue}, {"D5", new Color(.8f, .2f, .8f)}, {"E5", Color.red},
-		{"F5", new Color(1f, .5f, 0f)}, {"G5", Color.yellow}, {"REST", Color.white}, {"A5", Color.green}, {"B5", Color.cyan}, {"C6", Color.blue}
+        {-7, Color.white},
+		{-6, new Color32(255, 0, 0, 1)}, {-5, new Color32(210, 155, 188, 255)}, 
+        {-4, new Color32(210, 146, 190, 255)}, {-3, new Color32(165, 163, 208, 255)}, 
+        {-2, new Color32(134, 193, 230, 255)}, {-1, new Color32(150, 219, 200, 255)}, 
+        {-0, new Color32(191, 245, 145, 255)}, {1, new Color32(216, 251, 118, 255)}, 
+        {2, new Color32(244, 238, 108, 255)}, {3, new Color32(255, 212, 91, 255)}, 
+        {4, new Color32(254, 138, 52, 255)}, {5, new Color32(255, 111, 51, 255)}, 
+        {6, Color.white}
 	};
+
+    internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>()
+    {
+        {"REST", Color.white}
+    };
 
 	private FrequencyGuide fg;
 
@@ -91,9 +99,11 @@ public class GameController : MonoBehaviour
 
         //Player.GetComponent<SpriteRenderer>().color = Color.white;
 
-        // Initialize vars
+        // Initialize tables
 		if (bassClefMode)
 			BassClefTransformation ();
+        fillGapsInPosColorLookup();
+        fillNoteColorLookup();
 
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         background = GameObject.Find("Background");
@@ -684,6 +694,27 @@ public class GameController : MonoBehaviour
         }
 
         return;
+    }
+
+    private void fillGapsInPosColorLookup()
+    {
+        // Fill in the *.5 colors by interpolating between the integers
+        for (int i=-7;  i<6; i++)
+        {
+            Color32 mid = Color.Lerp(posColorLookup[i], posColorLookup[i + 1], 0.5f);
+            posColorLookup.Add((i + .5f), mid);
+        }
+
+    }
+
+    private void fillNoteColorLookup()
+    {
+        List<string> notes = notePosLookup.Keys.ToList ();
+        for (int i = 0; i < notePosLookup.Count; i++) 
+        {
+            if (notes[i] == "REST") continue;
+            noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
+        }
     }
 
 }
