@@ -242,7 +242,7 @@ public class GameController : MonoBehaviour
         plat.SetPlatColor(platColor);
 
         // Set the platform's width so it matches the note's duration
-        float platWidth = Song[index].duration * worldUnitsPerBeat - 0.3f;
+        float platWidth = (Song[index].duration - .05f) * worldUnitsPerBeat;
         plat.SetPlatWidth(platWidth);
 
         // Set it at the position corresponding to the note's start time.
@@ -631,7 +631,7 @@ public class GameController : MonoBehaviour
 				TextMesh text = platText [i];
 
                 // Resize the platform's width so it matches the note's duration
-                float platWidth = Song[i].duration * worldUnitsPerBeat;
+                float platWidth = (Song[i].duration - .05f) * worldUnitsPerBeat;
                 plat.SetPlatWidth(platWidth);
 
                 // Reposition the platform so that it's still at the right timing.
