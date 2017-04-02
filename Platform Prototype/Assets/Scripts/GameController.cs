@@ -56,7 +56,7 @@ public class GameController : MonoBehaviour
 		{"C3", Color.blue}, {"D3", new Color(.8f, .2f, .8f)}, {"E3", Color.red}, {"F3", new Color(1f, .5f, 0f)}, {"G3", Color.yellow},
 		{"A3", Color.green}, {"B3", Color.cyan}, {"C4", Color.blue}, {"D4", new Color(.8f, .2f, .8f)}, {"E4", Color.red}, {"F4", new Color(1f, .5f, 0f)},
 		{"G4", Color.yellow}, {"A4", Color.green}, {"B4", Color.cyan}, {"C5", Color.blue}, {"D5", new Color(.8f, .2f, .8f)}, {"E5", Color.red},
-		{"F5", new Color(1f, .5f, 0f)}, {"G5", Color.yellow}, {"REST", Color.black}, {"A5", Color.green}, {"B5", Color.cyan}, {"C6", Color.blue}
+		{"F5", new Color(1f, .5f, 0f)}, {"G5", Color.yellow}, {"REST", Color.white}, {"A5", Color.green}, {"B5", Color.cyan}, {"C6", Color.blue}
 	};
 
 	private FrequencyGuide fg;
@@ -235,17 +235,15 @@ public class GameController : MonoBehaviour
 
     void SpawnPlatform(int index)
     {
-        GameObject plat = Instantiate(platform);
-        
+        Platform plat = Instantiate(platform).GetComponent<Platform>();
 
-		Color platColor = noteColorLookup [Song [index].name];
         // Set the platform's color
-        plat.GetComponent<SpriteRenderer>().color = platColor;
+		Color platColor = noteColorLookup [Song [index].name];
+        plat.SetPlatColor(platColor);
 
-        // Resize the platform's width so it matches the note's duration
-        float platWidth = Song[index].duration * worldUnitsPerBeat;
-        float startWidth = plat.GetComponent<SpriteRenderer>().bounds.size.x;
-        plat.transform.localScale = new Vector3(platWidth / startWidth, plat.transform.localScale.y, 1);
+        // Set the platform's width so it matches the note's duration
+        float platWidth = Song[index].duration * worldUnitsPerBeat - 0.3f;
+        plat.SetPlatWidth(platWidth);
 
         // Set it at the position corresponding to the note's start time.
         if (index != 0)
@@ -384,7 +382,7 @@ public class GameController : MonoBehaviour
 				{
 					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
 					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
-					float platHeight = platform.GetComponent<SpriteRenderer> ().bounds.size.y;
+                    float platHeight = platform.GetComponent<Platform>().height;
 					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
 				} 
 				else
@@ -398,7 +396,7 @@ public class GameController : MonoBehaviour
 					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
                     
 					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
-					float platHeight = platform.GetComponent<SpriteRenderer> ().bounds.size.y;
+                    float platHeight = platform.GetComponent<Platform>().height;
                     Debug.Log("jumpHeight: " + jumpHeight + "\nplatHeight: " + platHeight + "\nplayerHeight: " + playerHeight);
                     Debug.Log("new y pos = " + (jumpHeight + playerHeight / 2 + platHeight / 2));
 					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
@@ -561,7 +559,7 @@ public class GameController : MonoBehaviour
 
         // Respawn player
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-        float platformHeight = platform.GetComponent<SpriteRenderer>().bounds.size.y;
+        float platformHeight = platform.GetComponent<Platform>().height;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
 
         // Pay attention to collisions again
