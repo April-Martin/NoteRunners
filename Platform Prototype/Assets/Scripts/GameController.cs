@@ -632,13 +632,7 @@ public class GameController : MonoBehaviour
 
                 // Resize the platform's width so it matches the note's duration
                 float platWidth = Song[i].duration * worldUnitsPerBeat;
-                float startWidth = plat.GetComponent<SpriteRenderer>().bounds.size.x;
-
-                // WHAT. WHY DOES THIS NOT WORK.
-                // If you're not going to work, Unity, then give me an error, dammit!
-                //plat.transform.localScale.Scale( new Vector3(platWidth/startWidth, 1, 1) );
-
-                plat.transform.localScale = new Vector3(plat.transform.localScale.x * (platWidth / startWidth), plat.transform.localScale.y, plat.transform.localScale.z);
+                plat.SetPlatWidth(platWidth);
 
                 // Reposition the platform so that it's still at the right timing.
 
