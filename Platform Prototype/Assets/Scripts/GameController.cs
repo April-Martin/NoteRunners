@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
@@ -143,13 +144,13 @@ public class GameController : MonoBehaviour
         if (!SongMode)
         {
             StartCoroutine("AddRandomNote");
-            StartCoroutine("HandleJump");
         }
         else
         {
             StartCoroutine("AddNoteFromSong");
-            StartCoroutine("HandleJump");
         }
+		StartCoroutine("HandleJump");
+		StartCoroutine ("OscillatePlatformOpacity");
 
     }
 
@@ -160,10 +161,16 @@ public class GameController : MonoBehaviour
         CheckPitch();
 
         currTime += Time.deltaTime;
+
         currPos += Time.deltaTime * worldUnitsPerSec;
         movePlayerAndCamera();
 
         CheckKeyInput();
+
+		if (Input.GetKey(KeyCode.Escape))
+			{
+				SceneManager.LoadScene (0);
+			}
     }
 
     void CheckPitch()
@@ -199,6 +206,8 @@ public class GameController : MonoBehaviour
             isCorrect = true;
             return;
         }
+
+
 
         // Compare player pitch to target note
         // If the pitch is incorrect:
@@ -721,8 +730,24 @@ public class GameController : MonoBehaviour
             if (notes[i] == "REST") continue;
             noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
          //   noteColorLookup.Add(notes[i], Color.black);
-
         }
     }
 
+	private IEnumerator OscillatePlatformOpacity()
+	{
+		while(true)
+		{
+			for (int i = 0; i < platforms.Count; i++)
+			{
+				if (platforms[i] != null && Song[i].name != "REST")
+				{
+					LineRenderer renderer = platforms [i].gameObject.GetComponent<LineRenderer> ();
+
+					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.25f);
+					renderer.endColor = new Color (renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.25f);
+				}
+			}
+			yield return null;
+		}
+	}
 }

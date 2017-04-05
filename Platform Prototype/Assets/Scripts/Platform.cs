@@ -57,7 +57,8 @@ public class Platform : MonoBehaviour
         if (isFilled)
             fillSprite.color = c;
         else
-            fillSprite.color = new Color(0, 0, 0, .35f);
+			fillSprite.color = new Color(c.r/2, c.g/2, c.b/2, .35f);
+
 
         return;
     }
@@ -66,10 +67,14 @@ public class Platform : MonoBehaviour
     {
         width = w;
         outlineCorners[0].x = width / 2;
+		outlineCorners [0].y = outlineCorners [0].y - outline.startWidth / 2;
         outlineCorners[1].x = width / 2;
         outlineCorners[2].x = -width / 2;
         outlineCorners[3].x = -width / 2;
         outlineCorners[4].x = width / 2 + outline.startWidth / 2;
+		Debug.Log ("outline.startWidth = " + outline.startWidth);
+		Debug.Log ("outline.endWidth = " + outline.endWidth);
+
         outline.SetPositions(outlineCorners);
 
         BoxCollider2D col = GetComponent<BoxCollider2D>();
