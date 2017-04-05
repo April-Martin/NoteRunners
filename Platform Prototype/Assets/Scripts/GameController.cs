@@ -19,6 +19,7 @@ public class GameController : MonoBehaviour
 	public Buddy Bud;
     public GameObject platform, platformText, particles, background;
     private PitchTester pt;
+    private AudioCuePlayer audioPlayer;
 
     // Game globals
     internal bool isTextActive = true;
@@ -107,6 +108,7 @@ public class GameController : MonoBehaviour
         fillNoteColorLookup();
 
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
+        audioPlayer = GetComponent<AudioCuePlayer>();
         background = GameObject.Find("Background");
         FillNotesAllowed();
 		fg = new FrequencyGuide ();
@@ -151,6 +153,7 @@ public class GameController : MonoBehaviour
         }
 		StartCoroutine("HandleJump");
 		StartCoroutine ("OscillatePlatformOpacity");
+        StartCoroutine("PlayAudioCues");
 
     }
 
@@ -159,7 +162,7 @@ public class GameController : MonoBehaviour
     {
         AwardScore();
         CheckPitch();
-
+        
         currTime += Time.deltaTime;
 
         currPos += Time.deltaTime * worldUnitsPerSec;
@@ -458,81 +461,6 @@ public class GameController : MonoBehaviour
         isChecking = true;
     }
 
-//    void FillNoteColorLookup()
-//    {
-//        noteColorLookup = new Dictionary<string, Color>();
-//
-//        noteColorLookup.Add("E2", Color.red);
-//        noteColorLookup.Add("F2", new Color(1f, .5f, 0f));
-//        noteColorLookup.Add("G2", Color.yellow);
-//        noteColorLookup.Add("A2", Color.green);
-//        noteColorLookup.Add("B2", Color.cyan);
-//        noteColorLookup.Add("C3", Color.blue);
-//        noteColorLookup.Add("D3", new Color(.8f, .2f, .8f));
-//        noteColorLookup.Add("E3", Color.red);
-//        noteColorLookup.Add("F3", new Color(1f, .5f, 0f));
-//        noteColorLookup.Add("G3", Color.yellow);
-//        noteColorLookup.Add("A3", Color.green);
-//        noteColorLookup.Add("B3", Color.cyan);
-//        noteColorLookup.Add("C4", Color.blue);
-//
-//        // Original list
-//        noteColorLookup.Add("D4", new Color(.8f, .2f, .8f));
-//        noteColorLookup.Add("E4", Color.red);
-//        noteColorLookup.Add("F4", new Color(1f, .5f, 0f));
-//        noteColorLookup.Add("G4", Color.yellow);
-//        noteColorLookup.Add("A4", Color.green);
-//        noteColorLookup.Add("B4", Color.cyan);
-//        noteColorLookup.Add("C5", Color.blue);
-//        noteColorLookup.Add("D5", new Color(.8f, .2f, .8f));
-//        noteColorLookup.Add("E5", Color.red);
-//        noteColorLookup.Add("F5", new Color(1f, .5f, 0f));
-//        noteColorLookup.Add("G5", Color.yellow);
-//        noteColorLookup.Add("REST", Color.black);
-//        //End of original list
-//
-//        noteColorLookup.Add("A5", Color.green);
-//        noteColorLookup.Add("B5", Color.cyan);
-//        noteColorLookup.Add("C6", Color.blue);
-//    }
-
-//    void FillNotePosLookup()
-//    {
-//        notePosLookup = new Dictionary<string, float>();
-//
-//        notePosLookup.Add("E2", -7f);
-//        notePosLookup.Add("F2", -6.5f);
-//        notePosLookup.Add("G2", -6f);
-//        notePosLookup.Add("A2", -5.5f);
-//        notePosLookup.Add("B2", -5f);
-//        notePosLookup.Add("C3", -4.5f);
-//        notePosLookup.Add("D3", -4f);
-//        notePosLookup.Add("E3", -3.5f);
-//        notePosLookup.Add("F3", -3f);
-//        notePosLookup.Add("G3", -2.5f);
-//        notePosLookup.Add("A3", -2f);
-//        notePosLookup.Add("B3", -1.5f);
-//        notePosLookup.Add("C4", -1f);
-//
-//        // Original list
-//        notePosLookup.Add("D4", -.5f);
-//        notePosLookup.Add("E4", 0f);
-//        notePosLookup.Add("F4", .5f);
-//        notePosLookup.Add("G4", 1f);
-//        notePosLookup.Add("A4", 1.5f);
-//        notePosLookup.Add("B4", 2f);
-//        notePosLookup.Add("C5", 2.5f);
-//        notePosLookup.Add("D5", 3f);
-//        notePosLookup.Add("E5", 3.5f);
-//        notePosLookup.Add("F5", 4f);
-//        notePosLookup.Add("G5", 4.5f);
-//        notePosLookup.Add("REST", 0);
-//        // End of original list.
-//
-//        notePosLookup.Add("A5", 5f);
-//        notePosLookup.Add("B5", 5.5f);
-//        notePosLookup.Add("C6", 6f);
-//    }
 
 	private void BassClefTransformation()
 	{
@@ -743,11 +671,25 @@ public class GameController : MonoBehaviour
 				{
 					LineRenderer renderer = platforms [i].gameObject.GetComponent<LineRenderer> ();
 
-					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.25f);
-					renderer.endColor = new Color (renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.25f);
+					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.15f);
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin(currTime)) + 0.15f);
+
+                    SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
+                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime)));
 				}
 			}
 			yield return null;
 		}
 	}
+
+    private IEnumerator PlayAudioCues()
+    {
+        while (true)
+        {
+            string currNote = Song[currNoteIndex].name;
+            if (currNote != "REST")
+                audioPlayer.PlayNote(currNote);
+            yield return new WaitForSeconds(60 / BPM);
+        }
+    }
 }

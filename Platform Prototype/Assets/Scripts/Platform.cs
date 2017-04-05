@@ -57,7 +57,7 @@ public class Platform : MonoBehaviour
         if (isFilled)
             fillSprite.color = c;
         else
-			fillSprite.color = new Color(c.r/2, c.g/2, c.b/2, .35f);
+            fillSprite.color = new Color(c.r * .7f, c.g * .7f, c.b * .7f, .35f);
 
 
         return;
