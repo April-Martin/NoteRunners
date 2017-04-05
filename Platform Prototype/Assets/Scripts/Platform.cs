@@ -104,7 +104,7 @@ public class Platform : MonoBehaviour
         transform.GetChild(0).GetComponent<LineRenderer>().enabled = false;
     }
 
-    /*
+    
     void OnBecameInvisible()
     {
         xCameraLeftEdgeInWU = Camera.main.transform.position.x + Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, -10)).x
@@ -116,5 +116,5 @@ public class Platform : MonoBehaviour
             Destroy(this.gameObject);
         }
     }
-     * */
+     
 }

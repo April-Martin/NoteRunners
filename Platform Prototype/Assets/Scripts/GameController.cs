@@ -279,7 +279,7 @@ public class GameController : MonoBehaviour
 			GameObject txtobj = Instantiate (platformText);
 			TextMesh txtmsh = txtobj.GetComponent<TextMesh> ();
 			txtmsh.text = Song [index].name;
-			txtmsh.color = new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
+			txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
 			txtobj.transform.position = plat.transform.position + new Vector3 (0.05f, 0.3f, 0);
 			//txtobj.transform.position += new Vector3 (0, 1, 0);
 			platText.Insert (index, txtmsh);
