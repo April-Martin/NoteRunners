@@ -9,7 +9,7 @@ public class GameGlobals : MonoBehaviour {
     public bool isTextActive = true;
 	public float TimeOnScreen = 5f;
     public string[] NotesRange = new string[] {"C3", "C5"};
-    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f;
+    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f, NoteDensity = 0f;
     public int LeniencyRange = 1;
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
@@ -23,7 +23,7 @@ public class GameGlobals : MonoBehaviour {
     internal List<string> notes = new List<string>
     {
         "E2", "F2", "G2", "A2", "B2", "C3", "D3", "E3", "F3", "G3", "A3", "B3", "C4", "D4", "E4",
-        "F4", "G4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6"
+        "F4", "G4", "A4", "B4", "C5", "D5", "E5", "F5", "G5", "A5", "B5", "C6"
     };
 
     void Awake()
@@ -40,16 +40,6 @@ public class GameGlobals : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
 
     /// <summary>
     /// Update the tolerance level.
@@ -72,7 +62,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeNoteDensity(float val)
     {
-		float temp = val / 10;
+		NoteDensity = val / 10;
     } 
 
     /// <summary>
@@ -162,6 +152,16 @@ public class GameGlobals : MonoBehaviour {
     public int getLowNoteIndex()
     {
         return lowNoteIndex;
+    }
+
+    public string getHighNote()
+    {
+        return HighestNote;
+    }
+
+    public string getLowNote()
+    {
+        return LowestNote;
     }
 
     public int getHighNoteIndex()
