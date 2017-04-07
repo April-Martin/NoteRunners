@@ -8,7 +8,7 @@ public class GameGlobals : MonoBehaviour {
     public static GameGlobals GlobalInstance;
     public bool isTextActive = true;
 	public float TimeOnScreen = 5f;
-    public string[] NotesRange = new string[] {"C3", "C5"};
+    public string[] NotesRange = new string[] {"E2", "C6"};
     public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f, NoteDensity = 0f;
     public int LeniencyRange = 1;
     public bool SongMode = false;
@@ -18,7 +18,7 @@ public class GameGlobals : MonoBehaviour {
 	public bool bassClefMode = false;
 
     private string LowestNote = "E2", HighestNote = "C6";
-    private int highNoteIndex = 25, lowNoteIndex = 0;
+    private int highNoteIndex = 26, lowNoteIndex = 0;
 
     internal List<string> notes = new List<string>
     {
