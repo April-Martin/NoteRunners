@@ -21,15 +21,18 @@ public class Platform : MonoBehaviour
 
     void Awake()
     {
+
         outline = GetComponent<LineRenderer>();
         outlineCorners = new Vector3[outline.numPositions];
         outline.GetPositions(outlineCorners);
-		outlineCorners[3].y = outlineCorners[4].y = (height-outline.startWidth) / 2;
+		outlineCorners[3].y = outlineCorners[4].y = (height-outline.startWidth) / 2 * height;
 		outlineCorners [0].y = (height / 2 - outline.startWidth);
-		outlineCorners[1].y = outlineCorners[2].y = -(height-outline.startWidth) / 2;
+		outlineCorners [1].y = outlineCorners [2].y = -(height - outline.startWidth) / 2 * height;
         outline.SetPositions(outlineCorners);
 
         fillSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
+		float targetHeight = height - 2 * outline.startWidth;
+		fillSprite.transform.localScale = new Vector3 (fillSprite.transform.localScale.x, targetHeight / fillSprite.bounds.size.y, 1);
         //fillSprite.enabled = false;
     }
 
@@ -38,7 +41,7 @@ public class Platform : MonoBehaviour
         if (filled)
         {
             isFilled = true;
-    //        fillSprite.enabled = true;
+            fillSprite.enabled = true;
         }
         else
         {
@@ -47,20 +50,27 @@ public class Platform : MonoBehaviour
         }
     }
 
-    public void SetPlatColor(Color c)
+	public void SetPlatColor(Color c)
     {
-        outline.startColor = c;
-        outline.endColor = c;
+		
+		outline.startColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
+		outline.endColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 
-        //if (isFilled)
-        //    fillSprite.color = c;
+		if (isFilled)
+			fillSprite.color = c;
+		else
+			fillSprite.color = c;
+		
+		/*
+		outline.startColor = c;
+		outline.endColor = c;
 
-        if (isFilled)
-            fillSprite.color = c;
-        else
-            fillSprite.color = new Color(c.r * .7f, c.g * .7f, c.b * .7f, .35f);
+		if (isFilled)
+			fillSprite.color = c;
+		else
+			fillSprite.color = new Color(c.r * .9f, c.g * .9f, c.b * .9f);
 
-
+		*/
         return;
     }
 
@@ -83,7 +93,8 @@ public class Platform : MonoBehaviour
      //   if (isFilled)
         {
             float startWidth = fillSprite.bounds.size.x;
-            fillSprite.transform.localScale = new Vector3(width / startWidth, fillSprite.transform.localScale.y, 1);
+			float targetWidth = width - 2 * outline.startWidth;
+            fillSprite.transform.localScale = new Vector3(targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
         }
 
         return;

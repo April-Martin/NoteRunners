@@ -671,11 +671,11 @@ public class GameController : MonoBehaviour
 				{
 					LineRenderer renderer = platforms [i].gameObject.GetComponent<LineRenderer> ();
 
-					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime))+0.15f);
-                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin(currTime)) + 0.15f);
+					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime) *.5f)+0.5f);
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f);
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
-                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime)));
+					sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + .5f);
 				}
 			}
 			yield return null;
