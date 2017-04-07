@@ -24,8 +24,9 @@ public class Platform : MonoBehaviour
         outline = GetComponent<LineRenderer>();
         outlineCorners = new Vector3[outline.numPositions];
         outline.GetPositions(outlineCorners);
-        outlineCorners[0].y = outlineCorners[3].y = outlineCorners[4].y = height / 2;
-        outlineCorners[1].y = outlineCorners[2].y = -height / 2;
+		outlineCorners[3].y = outlineCorners[4].y = (height-outline.startWidth) / 2;
+		outlineCorners [0].y = (height / 2 - outline.startWidth);
+		outlineCorners[1].y = outlineCorners[2].y = -(height-outline.startWidth) / 2;
         outline.SetPositions(outlineCorners);
 
         fillSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
@@ -42,7 +43,7 @@ public class Platform : MonoBehaviour
         else
         {
             isFilled = false;
-      //      fillSprite.enabled = false;
+            fillSprite.enabled = false;
         }
     }
 
@@ -66,12 +67,11 @@ public class Platform : MonoBehaviour
     public void SetPlatWidth(float w)
     {
         width = w;
-        outlineCorners[0].x = width / 2;
-		outlineCorners [0].y = outlineCorners [0].y - outline.startWidth / 2;
-        outlineCorners[1].x = width / 2;
-        outlineCorners[2].x = -width / 2;
-        outlineCorners[3].x = -width / 2;
-        outlineCorners[4].x = width / 2 + outline.startWidth / 2;
+		outlineCorners[0].x = (width-outline.startWidth) / 2;
+		outlineCorners[1].x = (width-outline.startWidth) / 2;
+		outlineCorners[2].x = -(width-outline.startWidth) / 2;
+		outlineCorners[3].x = -(width-outline.startWidth) / 2;
+		outlineCorners[4].x = (width-outline.startWidth) / 2 + outline.startWidth / 2;
 		Debug.Log ("outline.startWidth = " + outline.startWidth);
 		Debug.Log ("outline.endWidth = " + outline.endWidth);
 
