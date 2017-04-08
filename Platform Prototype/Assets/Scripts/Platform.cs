@@ -82,8 +82,8 @@ public class Platform : MonoBehaviour
 		outlineCorners[2].x = -(width-outline.startWidth) / 2;
 		outlineCorners[3].x = -(width-outline.startWidth) / 2;
 		outlineCorners[4].x = (width-outline.startWidth) / 2 + outline.startWidth / 2;
-		Debug.Log ("outline.startWidth = " + outline.startWidth);
-		Debug.Log ("outline.endWidth = " + outline.endWidth);
+		//Debug.Log ("outline.startWidth = " + outline.startWidth);
+		//Debug.Log ("outline.endWidth = " + outline.endWidth);
 
         outline.SetPositions(outlineCorners);
 
@@ -94,7 +94,7 @@ public class Platform : MonoBehaviour
         {
             float startWidth = fillSprite.bounds.size.x;
 			float targetWidth = width - 2 * outline.startWidth;
-            fillSprite.transform.localScale = new Vector3(targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
+            fillSprite.transform.localScale = new Vector3(fillSprite.transform.localScale.x * targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
         }
 
         return;

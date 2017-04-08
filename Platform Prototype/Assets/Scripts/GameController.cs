@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
-   
+
     #region Variables
     // Settings
     public bool DEBUG_InvincibleMode = false;
@@ -16,7 +16,7 @@ public class GameController : MonoBehaviour
 
     // Dependencies
     public PlayerMovement Player;
-	public Buddy Bud;
+    public Buddy Bud;
     public GameObject platform, platformText, particles, background;
     private PitchTester pt;
     private AudioCuePlayer audioPlayer;
@@ -31,49 +31,51 @@ public class GameController : MonoBehaviour
     private string filename;
     private float MaxTimeBetweenRests = 4f;
     private bool WritingOn;
-	private bool bassClefMode = false;
+    private bool bassClefMode = false;
 
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
-	private List<TextMesh> platText = new List<TextMesh> (50);
+    private List<TextMesh> platText = new List<TextMesh>(50);
 
     internal float currPos = 0, currTime = 0;
     private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
+    public int noteStreak = 0;
     float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
-	internal bool isRespawning = false ,isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
-
-	internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
-	{
-		{"E2", -7f}, {"F2", -6.5f}, {"G2", -6f}, {"A2", -5.5f}, {"B2", -5f}, {"C3", -4.5f}, {"D3", -4f},
-		{"E3", -3.5f}, {"F3", -3f}, {"G3", -2.5f}, {"A3", -2f}, {"B3", -1.5f}, {"C4", -1f}, {"D4", -.5f},
-		{"E4", 0f}, {"F4", .5f}, {"G4", 1f}, {"A4", 1.5f}, {"B4", 2f}, {"C5", 2.5f}, {"D5", 3f}, {"E5", 3.5f},
-		{"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
-	};
+    internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
+    private bool singleFire = false;
+    internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
+    {
+        {"E2", -7f}, {"F2", -6.5f}, {"G2", -6f}, {"A2", -5.5f}, {"B2", -5f}, {"C3", -4.5f}, {"D3", -4f},
+        {"E3", -3.5f}, {"F3", -3f}, {"G3", -2.5f}, {"A3", -2f}, {"B3", -1.5f}, {"C4", -1f}, {"D4", -.5f},
+        {"E4", 0f}, {"F4", .5f}, {"G4", 1f}, {"A4", 1.5f}, {"B4", 2f}, {"C5", 2.5f}, {"D5", 3f}, {"E5", 3.5f},
+        {"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
+    };
 
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
-	{
+    {
         {-7, Color.white},
-		{-6, new Color32(255, 0, 0, 1)}, {-5, new Color32(210, 155, 188, 255)}, 
-        {-4, new Color32(210, 146, 190, 255)}, {-3, new Color32(165, 163, 208, 255)}, 
-        {-2, new Color32(134, 193, 230, 255)}, {-1, new Color32(150, 219, 200, 255)}, 
-        {-0, new Color32(191, 245, 145, 255)}, {1, new Color32(216, 251, 118, 255)}, 
-        {2, new Color32(244, 238, 108, 255)}, {3, new Color32(255, 212, 91, 255)}, 
-        {4, new Color32(254, 138, 52, 255)}, {5, new Color32(255, 111, 51, 255)}, 
+        {-6, new Color32(255, 0, 0, 1)}, {-5, new Color32(210, 155, 188, 255)},
+        {-4, new Color32(210, 146, 190, 255)}, {-3, new Color32(165, 163, 208, 255)},
+        {-2, new Color32(134, 193, 230, 255)}, {-1, new Color32(150, 219, 200, 255)},
+        {-0, new Color32(191, 245, 145, 255)}, {1, new Color32(216, 251, 118, 255)},
+        {2, new Color32(244, 238, 108, 255)}, {3, new Color32(255, 212, 91, 255)},
+        {4, new Color32(254, 138, 52, 255)}, {5, new Color32(255, 111, 51, 255)},
         {6, Color.white}
-	};
+    };
 
     internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>()
     {
         {"REST", new Color(.15f, .15f, .15f, 1)}
     };
 
-	private FrequencyGuide fg;
+    private FrequencyGuide fg;
 
     private List<string> NotesAllowed;
 
     public float speedMult = 1f, scrollingInterpolation = 0.01f;
+    public float speedMultLowerLimit = 1f, speedMultUpperLimit = 3f , respawnSpeedPenalty = 0.75f;
 
     private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
     #endregion
@@ -96,14 +98,14 @@ public class GameController : MonoBehaviour
             scrollingInterpolation = temp.scrollingInterpolation;
             MaxTimeBetweenRests = temp.MaxTimeBetweenRests;
             WritingOn = temp.WritingOn;
-			bassClefMode = temp.bassClefMode;
+            bassClefMode = temp.bassClefMode;
         }
 
         //Player.GetComponent<SpriteRenderer>().color = Color.white;
 
         // Initialize tables
-		if (bassClefMode)
-			BassClefTransformation ();
+        if (bassClefMode)
+            BassClefTransformation();
         fillGapsInPosColorLookup();
         fillNoteColorLookup();
 
@@ -111,14 +113,14 @@ public class GameController : MonoBehaviour
         audioPlayer = GetComponent<AudioCuePlayer>();
         background = GameObject.Find("Background");
         FillNotesAllowed();
-		fg = new FrequencyGuide ();
+        fg = new FrequencyGuide();
         //pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
         //pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
-  
+
         // If we're in Song mode, read in file information
         if (SongMode)
         {
-			ReaderWriter.ReadSong(ref Song, filename, ref BPM, ref bassClefMode);
+            ReaderWriter.ReadSong(ref Song, filename, ref BPM, ref bassClefMode);
             for (int i = 1; i < Song.Count; i++)
             {
                 if (Song[i].name == "REST")
@@ -151,8 +153,8 @@ public class GameController : MonoBehaviour
         {
             StartCoroutine("AddNoteFromSong");
         }
-		StartCoroutine("HandleJump");
-		StartCoroutine ("OscillatePlatformOpacity");
+        StartCoroutine("HandleJump");
+        StartCoroutine("OscillatePlatformOpacity");
         StartCoroutine("PlayAudioCues");
 
     }
@@ -160,9 +162,9 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        AwardScore();
         CheckPitch();
-        
+        AwardScore();
+
         currTime += Time.deltaTime;
 
         currPos += Time.deltaTime * worldUnitsPerSec;
@@ -170,10 +172,10 @@ public class GameController : MonoBehaviour
 
         CheckKeyInput();
 
-		if (Input.GetKey(KeyCode.Escape))
-			{
-				SceneManager.LoadScene (0);
-			}
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 
     void CheckPitch()
@@ -181,12 +183,12 @@ public class GameController : MonoBehaviour
         // Update buddy color
         string playerPitch = pt.MainNote;
 
-		// If player isn't singing, or if player's falling:
-		if (string.IsNullOrEmpty(playerPitch) || isFalling)
+        // If player isn't singing, or if player's falling:
+        if (string.IsNullOrEmpty(playerPitch) || isFalling)
         {
             Bud.GetComponent<SpriteRenderer>().color = Color.white;
         }
-		// If player is singing:
+        // If player is singing:
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
             Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
@@ -216,17 +218,17 @@ public class GameController : MonoBehaviour
         // If the pitch is incorrect:
         if (string.IsNullOrEmpty(playerPitch) || playerPitch != targetNote)
         {
-			// Allow recognition of a tolerance range.
-			List <string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
-			foreach (string note in acceptableRanges) 
-			{
-				//Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
-				if (!string.IsNullOrEmpty(playerPitch) && playerPitch == note) 
-				{
-					isCorrect = true;
-					return;
-				}
-			}
+            // Allow recognition of a tolerance range.
+            List<string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
+            foreach (string note in acceptableRanges)
+            {
+                //Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
+                if (!string.IsNullOrEmpty(playerPitch) && playerPitch == note)
+                {
+                    isCorrect = true;
+                    return;
+                }
+            }
 
             // If they just deviated from the pitch, start keeping track of the time.
             if (isCorrect)
@@ -239,8 +241,10 @@ public class GameController : MonoBehaviour
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
             else if (elapsedIncorrectTime > SustainedGracePeriod)
             {
+                noteStreak = 0;
                 Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
                 isFalling = true;
+                isCorrect = false;
             }
             // Add elapsed incorrect time
             else
@@ -250,9 +254,11 @@ public class GameController : MonoBehaviour
             }
         }
 
-		// If they got the note right:
+        // If they got the note right:
         else
+        {
             isCorrect = true;
+        }
     }
 
     void SpawnPlatform(int index)
@@ -264,7 +270,7 @@ public class GameController : MonoBehaviour
             plat.SetPlatFilled(true);
 
         // Set the platform's color
-		Color platColor = noteColorLookup [Song [index].name];
+        Color platColor = noteColorLookup[Song[index].name];
         plat.SetPlatColor(platColor);
 
         // Set the platform's width so it matches the note's duration
@@ -282,31 +288,30 @@ public class GameController : MonoBehaviour
             {
                 plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index].yOffset);
             }
-
         }
 
-		if (isTextActive)
-		{
-			// Create Note Text for the platform.
-			GameObject txtobj = Instantiate (platformText);
-			TextMesh txtmsh = txtobj.GetComponent<TextMesh> ();
-			txtmsh.text = Song [index].name;
-			txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
-			txtobj.transform.position = plat.transform.position + new Vector3 (0.05f, 0.3f, 0);
-			//txtobj.transform.position += new Vector3 (0, 1, 0);
-			platText.Insert (index, txtmsh);
-		}
+        if (isTextActive)
+        {
+            // Create Note Text for the platform.
+            GameObject txtobj = Instantiate(platformText);
+            TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
+            txtmsh.text = Song[index].name;
+            txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
+            txtobj.transform.position = plat.transform.position + new Vector3(0.05f, 0.3f, 0);
+            //txtobj.transform.position += new Vector3 (0, 1, 0);
+            platText.Insert(index, txtmsh);
+        }
 
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
 
         // Set its range marker if it's not a rest
-       /*
-        if (Song[index].name != "REST")
-            plat.GetComponent<Platform>().SetRangeMarker(LeniencyRange, platColor);
-        else
-        * */
-            plat.GetComponent<Platform>().DisableRangeMarker();
+        /*
+         if (Song[index].name != "REST")
+             plat.GetComponent<Platform>().SetRangeMarker(LeniencyRange, platColor);
+         else
+         * */
+        plat.GetComponent<Platform>().DisableRangeMarker();
 
         // Add it to our list of platforms
         platforms.Insert(index, plat.GetComponent<BoxCollider2D>());
@@ -317,7 +322,7 @@ public class GameController : MonoBehaviour
 
     void AwardScore()
     {
-		//TODO : Don't depend on colIsFlashing!
+        //TODO : Don't depend on colIsFlashing!
         if (!isFalling && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
         {
             Score += (ScorePerSecond * speedMult * Time.deltaTime);
@@ -379,8 +384,8 @@ public class GameController : MonoBehaviour
 
             // Add note to song
             Song.Insert(lastNoteIndex + 1, newNote);
-			if (WritingOn) 
-				ReaderWriter.WriteSong(Song, "HELLO.txt", 60, bassClefMode);
+            if (WritingOn)
+                ReaderWriter.WriteSong(Song, "HELLO.txt", 60, bassClefMode);
 
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
@@ -406,37 +411,51 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
-				if (Song [currNoteIndex + 1].name == "REST")
-				{
-					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+                if (Song[currNoteIndex + 1].name == "REST")
+                {
+                    float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+                    float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                     float platHeight = platform.GetComponent<Platform>().height;
-					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
-				} 
-				else
-				{
-					GameObject particle1 = Instantiate (particles);
-					particle1.transform.position = Player.transform.position;
+                    Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
+                }
+                else
+                {
+                    GameObject particle1 = Instantiate(particles);
+                    particle1.transform.position = Player.transform.position;
 
-					//particle.GetComponent<ParticleSystem> ().Play ();
-					Destroy (particle1, 1.5f);
+                    //particle.GetComponent<ParticleSystem> ().Play ();
+                    Destroy(particle1, 1.5f);
 
-					float jumpHeight = Song [currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-                    
-					float playerHeight = Player.GetComponent<SpriteRenderer> ().bounds.size.y;
+                    float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
+
+                    float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                     float platHeight = platform.GetComponent<Platform>().height;
-                    Debug.Log("jumpHeight: " + jumpHeight + "\nplatHeight: " + platHeight + "\nplayerHeight: " + playerHeight);
-                    Debug.Log("new y pos = " + (jumpHeight + playerHeight / 2 + platHeight / 2));
-					Player.transform.position = new Vector3 (Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
-					GameObject particle2 = Instantiate (particles);
-					particle2.transform.position = Player.transform.position;
+                    //Debug.Log("jumpHeight: " + jumpHeight + "\nplatHeight: " + platHeight + "\nplayerHeight: " + playerHeight);
+                    //Debug.Log("new y pos = " + (jumpHeight + playerHeight / 2 + platHeight / 2));
+                    Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
+                    GameObject particle2 = Instantiate(particles);
+                    particle2.transform.position = Player.transform.position;
 
-					//particle.GetComponent<ParticleSystem> ().Play ();
-					Destroy (particle2, 1.5f);
-				}
+                    //particle.GetComponent<ParticleSystem> ().Play ();
+                    Destroy(particle2, 1.5f);
+                }
+            }
+            if (Song[currNoteIndex].name != "REST")
+            {
+                if (++noteStreak % 3 == 0 && noteStreak != 0)
+                {
+                    if (!singleFire)
+                    {
+                        Debug.Log("SF = " + singleFire);
+                        ChangeScrollingSpeed(speedMult * 1.2f >= speedMultUpperLimit ? speedMultUpperLimit / speedMult : 1.2f);
+                        singleFire = true;
+                    }
+                }
             }
 
             currNoteIndex++;
+
+            singleFire = false;
         }
     }
 
@@ -462,17 +481,17 @@ public class GameController : MonoBehaviour
     }
 
 
-	private void BassClefTransformation()
-	{
-		List<string> keys = notePosLookup.Keys.ToList ();
-		for (int i = 0; i < notePosLookup.Count; i++) 
-		{
-			if (keys[i] != "REST") 
-			{
-				notePosLookup [keys [i]] += 6;
-			}
-		}
-	}
+    private void BassClefTransformation()
+    {
+        List<string> keys = notePosLookup.Keys.ToList();
+        for (int i = 0; i < notePosLookup.Count; i++)
+        {
+            if (keys[i] != "REST")
+            {
+                notePosLookup[keys[i]] += 6;
+            }
+        }
+    }
 
     private void FillNotesAllowed()
     {
@@ -491,8 +510,8 @@ public class GameController : MonoBehaviour
         float temp = 0;
         notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out temp) ? temp : -0.5f;
         notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out temp) ? temp : 4.5f;
-        
-		foreach (string Note in Player.NotePosLookup.Keys)
+
+        foreach (string Note in Player.NotePosLookup.Keys)
         {
             if (Player.NotePosLookup[Note] >= notesRangeMinPos)
             {
@@ -506,6 +525,9 @@ public class GameController : MonoBehaviour
     internal void RespawnPlayer()
     {
         isFalling = false;
+
+        //Slow platform speed by half if greater than 1 with lower bound on speed = 1.
+        ChangeScrollingSpeed(speedMult * respawnSpeedPenalty >= speedMultLowerLimit ? respawnSpeedPenalty : speedMultLowerLimit / speedMult);
 
         // Halt momentum of player
         Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
@@ -542,7 +564,6 @@ public class GameController : MonoBehaviour
             IEnumerator coroutine = ChangeScrollingSpeedIncremental(1 - scrollingInterpolation, (sm) => sm > targetSpeedMultiplier);
             StartCoroutine(coroutine);
         }
-
     }
 
     IEnumerator ChangeScrollingSpeedIncremental(float speedMultiplier, Func<float, bool> whileDelegate)
@@ -550,7 +571,7 @@ public class GameController : MonoBehaviour
         while (whileDelegate(speedMult))
         {
             speedMult *= speedMultiplier;
-            for (int layer = 0; layer < background.transform.childCount; layer ++)
+            for (int layer = 0; layer < background.transform.childCount; layer++)
             {
                 background.transform.GetChild(layer).GetComponent<BackgroundScroller>().speed *= speedMultiplier;
             }
@@ -581,7 +602,7 @@ public class GameController : MonoBehaviour
             {
 
                 Platform plat = platforms[i].GetComponent<Platform>();
-				TextMesh text = platText [i];
+                TextMesh text = platText[i];
 
                 // Resize the platform's width so it matches the note's duration
                 float platWidth = (Song[i].duration - .05f) * worldUnitsPerBeat;
@@ -596,13 +617,12 @@ public class GameController : MonoBehaviour
                 float oldOffset = plat.transform.position.x - currPos;
                 float newOffset = oldOffset * speedMultiplier;
                 plat.transform.position = new Vector3(newOffset + currPos, plat.transform.position.y, plat.transform.position.z);
-				// Adjust the position of the text for the platform.
-				if (text != null) text.transform.position = new Vector3 ((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
+                // Adjust the position of the text for the platform.
+                if (text != null) text.transform.position = new Vector3((plat.transform.position.x - (platWidth / 2)) + 0.05f, text.transform.position.y, text.transform.position.z);
                 // Reset its range marker if it's not a rest
                 if (Song[i].name != "REST")
                     plat.SetRangeMarker(LeniencyRange, noteColorLookup[Song[i].name]);
             }
-
             yield return null;
         }
     }
@@ -612,7 +632,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
-			Player.GetComponent<SpriteRenderer> ().color = new Color (1, 1, 1, .4f);
+            Player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, .4f);
             Invoke("EndColorFlash", 3 * interval / 4);
             yield return new WaitForSeconds(interval);
         }
@@ -620,14 +640,13 @@ public class GameController : MonoBehaviour
 
     void EndColorFlash()
     {
-		Debug.Log ("vanish!");
         colIsFlashing = false;
-		Player.GetComponent<SpriteRenderer>().color = new Color(1,1,1,1);
+        Player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
     }
 
     void CheckKeyInput()
     {
-		if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ChangeScrollingSpeed(1.25f);
         }
@@ -642,7 +661,7 @@ public class GameController : MonoBehaviour
     private void fillGapsInPosColorLookup()
     {
         // Fill in the *.5 colors by interpolating between the integers
-        for (int i=-7;  i<6; i++)
+        for (int i = -7; i < 6; i++)
         {
             Color32 mid = Color.Lerp(posColorLookup[i], posColorLookup[i + 1], 0.5f);
             posColorLookup.Add((i + .5f), mid);
@@ -652,35 +671,35 @@ public class GameController : MonoBehaviour
 
     private void fillNoteColorLookup()
     {
-        List<string> notes = notePosLookup.Keys.ToList ();
-        for (int i = 0; i < notePosLookup.Count; i++) 
+        List<string> notes = notePosLookup.Keys.ToList();
+        for (int i = 0; i < notePosLookup.Count; i++)
         {
             if (notes[i] == "REST") continue;
             noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
-         //   noteColorLookup.Add(notes[i], Color.black);
+            //   noteColorLookup.Add(notes[i], Color.black);
         }
     }
 
-	private IEnumerator OscillatePlatformOpacity()
-	{
-		while(true)
-		{
-			for (int i = 0; i < platforms.Count; i++)
-			{
-				if (platforms[i] != null && Song[i].name != "REST")
-				{
-					LineRenderer renderer = platforms [i].gameObject.GetComponent<LineRenderer> ();
+    private IEnumerator OscillatePlatformOpacity()
+    {
+        while (true)
+        {
+            for (int i = 0; i < platforms.Count; i++)
+            {
+                if (platforms[i] != null && Song[i].name != "REST")
+                {
+                    LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
-					renderer.startColor = new Color (renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin (currTime) *.5f)+0.5f);
+                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f);
                     renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f);
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
-					sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + .5f);
-				}
-			}
-			yield return null;
-		}
-	}
+                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + .5f);
+                }
+            }
+            yield return null;
+        }
+    }
 
     private IEnumerator PlayAudioCues()
     {
