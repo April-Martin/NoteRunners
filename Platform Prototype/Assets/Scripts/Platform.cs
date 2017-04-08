@@ -82,8 +82,8 @@ public class Platform : MonoBehaviour
 		outlineCorners[2].x = -(width-outline.startWidth) / 2;
 		outlineCorners[3].x = -(width-outline.startWidth) / 2;
 		outlineCorners[4].x = (width-outline.startWidth) / 2 + outline.startWidth / 2;
-		Debug.Log ("outline.startWidth = " + outline.startWidth);
-		Debug.Log ("outline.endWidth = " + outline.endWidth);
+		//Debug.Log ("outline.startWidth = " + outline.startWidth);
+		//Debug.Log ("outline.endWidth = " + outline.endWidth);
 
         outline.SetPositions(outlineCorners);
 
