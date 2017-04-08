@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour {
 
     public float ArrowSpeed = .2f;
     public float LerpSpeed = 1f;
+    private Animator anim;
 
     internal Dictionary<string, float> NotePosLookup;
 
@@ -17,6 +18,7 @@ public class PlayerMovement : MonoBehaviour {
     {
         gc = GameObject.Find("Game Controller").GetComponent<GameController>(); 
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
+        anim = GetComponent<Animator>();
         FillNoteLookup();
 	}
 	
@@ -28,15 +30,17 @@ public class PlayerMovement : MonoBehaviour {
             Vector3 newPos = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y + (Input.GetAxis("Vertical") * ArrowSpeed), -0.5f, 4.5f), transform.position.z);
             transform.position = newPos;
         }
-            /*
-        else if (pt.MainNote != null && NotePosLookup.ContainsKey(pt.MainNote))
-        {
-            Vector3 dest = new Vector3(transform.position.x, NotePosLookup[pt.MainNote]);
-            Vector3 newPos = Vector3.Lerp(transform.position, dest, LerpSpeed);
-            transform.position = newPos;
-        }
-             * */
 	}
+
+    public void PauseAnimation()
+    {
+        anim.enabled = false;
+    }
+
+    public void PlayAnimation()
+    {
+        anim.enabled = true;
+    }
 
     void OnBecameInvisible()
     {

@@ -245,6 +245,8 @@ public class GameController : MonoBehaviour
                 Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
                 isFalling = true;
                 isCorrect = false;
+                Player.GetComponent<PlayerMovement>().PauseAnimation();
+                
             }
             // Add elapsed incorrect time
             else
@@ -536,6 +538,7 @@ public class GameController : MonoBehaviour
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<Platform>().height;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
+        Player.GetComponent<PlayerMovement>().PlayAnimation();
 
         // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
