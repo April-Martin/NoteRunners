@@ -94,7 +94,7 @@ public class Platform : MonoBehaviour
         {
             float startWidth = fillSprite.bounds.size.x;
 			float targetWidth = width - 2 * outline.startWidth;
-            fillSprite.transform.localScale = new Vector3(targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
+            fillSprite.transform.localScale = new Vector3(fillSprite.transform.localScale.x * targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
         }
 
         return;
