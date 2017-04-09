@@ -34,6 +34,7 @@ public class Buddy : MonoBehaviour
         playerTransform = GameObject.Find("Player").GetComponent<Transform>();
 
         trailRenderer = GetComponent<TrailRenderer>();
+        trailRenderer.sortingOrder = 2;
         trailRenderer.startColor = Color.black;
         trailRenderer.endColor = Color.white;
 		this.GetComponentInChildren<NoteText> ().isActive = gc.isTextActive;

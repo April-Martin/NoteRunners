@@ -298,8 +298,11 @@ public class GameController : MonoBehaviour
             GameObject txtobj = Instantiate(platformText);
             TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
             txtmsh.text = Song[index].name;
-            txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
-            txtobj.transform.position = plat.transform.position + new Vector3(0.05f, 0.3f, 0);
+            if (Song[index].name == "REST")
+                txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
+            else
+                txtmsh.color = new Color (platColor.r * .2f, platColor.g * .2f, platColor.b * .2f);
+            txtobj.transform.position = plat.transform.position + new Vector3(0.15f, 0.3f, 0);
             //txtobj.transform.position += new Vector3 (0, 1, 0);
             platText.Insert(index, txtmsh);
         }
@@ -708,9 +711,8 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            string currNote = Song[currNoteIndex].name;
-            if (currNote != "REST")
-                audioPlayer.PlayNote(currNote);
+            string currNote = Song[currNoteIndex].name; 
+            audioPlayer.PlayNote(currNote);
             yield return new WaitForSeconds(60 / BPM);
         }
     }

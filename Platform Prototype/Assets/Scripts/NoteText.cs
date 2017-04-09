@@ -13,6 +13,7 @@ public class NoteText : MonoBehaviour {
 		if (isActive) {
 			note = GameObject.Find ("Pitch Tester").GetComponent<PitchTester> ();
 			text = this.GetComponent<TextMesh> ();
+            GetComponent<MeshRenderer>().sortingLayerName = "Top";
 		} else {
 			Destroy (this.gameObject);
 		}

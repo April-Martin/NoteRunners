@@ -12,6 +12,8 @@ public class PlatformText : MonoBehaviour
 
 	void Start()
 	{
+        GetComponent<MeshRenderer>().sortingLayerName = "Top";
+
 		if (!isActive)
 		{
 			Destroy (this.gameObject);
