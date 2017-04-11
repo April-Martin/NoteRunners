@@ -122,8 +122,8 @@ public class FrequencyGuide {
 		int targetIndex = freqToNote.IndexOfValue (targetNote);
 		for (int i = 1; i <= range; i++) 
 		{
-			notes.Add ((string) freqToNote.GetByIndex (targetIndex + i));
-			notes.Add ((string) freqToNote.GetByIndex (targetIndex - i));
+			if (targetIndex + i < freqToNote.Count) notes.Add ((string) freqToNote.GetByIndex (targetIndex + i));
+			if (targetIndex - i > 0) notes.Add ((string) freqToNote.GetByIndex (targetIndex - i));
 		}
 		return notes;
 	}
