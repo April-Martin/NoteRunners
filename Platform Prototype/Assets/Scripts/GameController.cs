@@ -740,7 +740,7 @@ public class GameController : MonoBehaviour
         {
             for (int i = 0; i < platforms.Count; i++)
             {
-                if(i == currNoteIndex && isFalling)
+                if(i == currNoteIndex && isFalling && Song[i].name != "REST")
                 {
                     LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
