@@ -30,7 +30,7 @@ public class MenuAnimator : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
     {
-        title.color = Random.ColorHSV();
+       // title.color = Random.ColorHSV();  sorry monish xD
 
         if (buddy.transform.position.x < xPivot)
         {
