@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour
     };
 
     private FrequencyGuide fg;
-
+    private bool warmupMode = false; 
     private List<string> NotesAllowed;
 
     public float speedMult = 1f, scrollingInterpolation = 0.01f;
@@ -161,8 +161,53 @@ public class GameController : MonoBehaviour
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
 
+        if (warmupMode)
+            StartWarmup();
+        else
+            StartLevel();
+    }
+
+    void ClearState()
+    {
+        // Clear all level state variables
+        platforms.Clear(); platText.Clear();
+        currNoteIndex = 0; currTime = 0; currPos = 0;
+        playAudioCueTime = 0; handleJumpTime = 0; addNoteTime = 0;
+        lastSpawnedNoteIndex = 0;
+        noteStreak = 0;
+    }
+
+
+    void StartWarmup()
+    {
+        ClearState();
+
+        Song.Insert(0, new Note("REST", 2));
+        SpawnPlatform(0, false, 0);
+
+        int i = 1;
+        List<string> ToAdd = NotesAllowed;
+        while (ToAdd.Count > 0)
+        {
+            string note = ToAdd[UnityEngine.Random.Range(0, ToAdd.Count)];     // inclusive / exclusive
+            ToAdd.Remove(note);
+            Song.Insert(i, new Note(note, 2));
+            Song[i].yOffset = notePosLookup[note];
+            SpawnPlatform(i, false, 2 * i * worldUnitsPerBeat);
+            i++;
+        }
+
+
+        StartCoroutine("HandleJump");
+        StartCoroutine("OscillatePlatformOpacity");
+    }
+
+    void StartLevel()
+    {
+        ClearState();
+
         Song.Insert(0, new Note("REST", TimeOnScreen * BPM / 60));	// Time * BPM / 60 gives us the number of beats
-        SpawnPlatform(0);
+        SpawnPlatform(0, false, 0);
 
         // Start core coroutines
         if (!SongMode)
@@ -283,7 +328,7 @@ public class GameController : MonoBehaviour
         }
     }
 
-    void SpawnPlatform(int index)
+    void SpawnPlatform(int index, bool autoPosition = true, float xPos = 0)
     {
         Platform plat = Instantiate(platform).GetComponent<Platform>();
 
@@ -300,17 +345,17 @@ public class GameController : MonoBehaviour
         plat.SetPlatWidth(platWidth);
 
         // Set it at the position corresponding to the note's start time.
-        if (index != 0)
-        {
-            if (Song[index].name == "REST") //If Rest, set Y of rest platform to previous note's Y
-            {
-                plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index - 1].yOffset);
-            }
-            else
-            {
-                plat.transform.position = new Vector3(currPos + spawnPosOffset, Song[index].yOffset);
-            }
-        }
+        Vector3 platPos = new Vector3(0, 0);
+        if (autoPosition)
+            platPos.x = currPos + spawnPosOffset;
+        else
+            platPos.x = xPos;
+
+        if (Song[index].name == "REST" && index != 0)
+            platPos.y = Song[index - 1].yOffset;
+        else
+            platPos.y = Song[index].yOffset;
+        plat.transform.position = platPos;
 
         if (isTextActive)
         {
