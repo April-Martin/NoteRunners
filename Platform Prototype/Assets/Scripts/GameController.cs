@@ -310,6 +310,7 @@ public class GameController : MonoBehaviour
         // But, bump it over to the right by half of the platform's width, so that it starts at the right spot
         plat.transform.position += Vector3.right * platWidth / 2;
 
+
         // Set its range marker if it's not a rest
         /*
          if (Song[index].name != "REST")
@@ -360,6 +361,7 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
+            float time = currTime;
             // Update rest tracker
             int lastNoteIndex = Song.Count - 1;
             string lastNoteName = ((Note)Song[lastNoteIndex]).name;
@@ -405,11 +407,17 @@ public class GameController : MonoBehaviour
     {
         while (currNoteIndex < Song.Count)
         {
+            float time = currTime;
+
             // Wait till end of note
+            float beats = Song[currNoteIndex].duration;
             float dur = Song[currNoteIndex].duration * 60 / BPM;
 
-            // Handle transition grace period
+            // Handle transition grace period, 
             Invoke("StartTransitionGracePeriod", dur - TransitionGracePeriod / 2);
+            // Set up audio cue of next note 
+            // Note: it precedes the nect note by either half a beat, or (if that's too long) half of the current note's length.
+            //Invoke("PlayNextNote", dur - Mathf.Min(0.5f, 0.5f * beats) * 60 / BPM);
             yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
 
 
@@ -462,6 +470,12 @@ public class GameController : MonoBehaviour
 
             singleFire = false;
         }
+    }
+
+    void PlayNextNote()
+    {
+        string nextNote = Song[currNoteIndex+1].name;
+        audioPlayer.PlayNote(nextNote, .5f);
     }
 
     void StartTransitionGracePeriod()
@@ -711,8 +725,12 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
+            float time = currTime;
+            float test = BPM;
+
             string currNote = Song[currNoteIndex].name; 
-            audioPlayer.PlayNote(currNote);
+            audioPlayer.PlayNote(currNote, 1);
+            audioPlayer.PlayTick();
             yield return new WaitForSeconds(60 / BPM);
         }
     }
