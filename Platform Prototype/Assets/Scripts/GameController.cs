@@ -43,6 +43,9 @@ public class GameController : MonoBehaviour
     public int noteStreak = 0;
     float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
 
+    // Time check variables (for keeping the coroutines honest)
+    private float playAudioCueTime = 0, handleJumpTime = 0, addNoteTime = 0;
+
     internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
     private bool singleFire = false;
     internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
@@ -100,8 +103,6 @@ public class GameController : MonoBehaviour
             WritingOn = temp.WritingOn;
             bassClefMode = temp.bassClefMode;
         }
-
-        //Player.GetComponent<SpriteRenderer>().color = Color.white;
 
         // Initialize tables
         if (bassClefMode)
@@ -361,7 +362,6 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            float time = currTime;
             // Update rest tracker
             int lastNoteIndex = Song.Count - 1;
             string lastNoteName = ((Note)Song[lastNoteIndex]).name;
@@ -397,9 +397,13 @@ public class GameController : MonoBehaviour
             // Spawn corresponding platform
             SpawnPlatform(lastNoteIndex + 1);
 
+            // Calculate the timing error (negative if we're ahead, positive if we're behind)
+            float error = addNoteTime - currTime;
             // Set the next new note to spawn as soon as this new one's duration has elapsed
-            float delay = newNoteDur * 60 / BPM;
-            yield return new WaitForSeconds(delay);
+            float durInSec = newNoteDur * 60 / BPM;
+            addNoteTime += durInSec;
+            // Add the current error from the next iteration's delay, so that errors don't build up.
+            yield return new WaitForSeconds(durInSec + error);
         }
     }
 
@@ -407,8 +411,6 @@ public class GameController : MonoBehaviour
     {
         while (currNoteIndex < Song.Count)
         {
-            float time = currTime;
-
             // Wait till end of note
             float beats = Song[currNoteIndex].duration;
             float dur = Song[currNoteIndex].duration * 60 / BPM;
@@ -418,7 +420,17 @@ public class GameController : MonoBehaviour
             // Set up audio cue of next note 
             // Note: it precedes the nect note by either half a beat, or (if that's too long) half of the current note's length.
             //Invoke("PlayNextNote", dur - Mathf.Min(0.5f, 0.5f * beats) * 60 / BPM);
-            yield return new WaitForSeconds(Song[currNoteIndex].duration * 60 / BPM);
+
+            // Calculate the timing error (negative if we're ahead, positive if we're behind)
+            float error = handleJumpTime - currTime;
+            handleJumpTime += dur;
+
+            // This is a little hacky: we need to make sure the runner jumps before the audio cue is played,
+            // so subtract a tiny offset from the jump's delay to make sure it fires first.
+            float offset = .15f;
+
+            // Add the current error from the next iteration's delay, so that errors don't build up.
+            yield return new WaitForSeconds(dur + error - offset);
 
 
             // Handle jump
@@ -467,7 +479,6 @@ public class GameController : MonoBehaviour
             }
 
             currNoteIndex++;
-
             singleFire = false;
         }
     }
@@ -725,13 +736,18 @@ public class GameController : MonoBehaviour
     {
         while (true)
         {
-            float time = currTime;
-            float test = BPM;
-
             string currNote = Song[currNoteIndex].name; 
             audioPlayer.PlayNote(currNote, 1);
             audioPlayer.PlayTick();
-            yield return new WaitForSeconds(60 / BPM);
+
+            // Calculate the timing error (negative if we're ahead, positive if we're behind)
+            float error = playAudioCueTime - currTime;
+            float secPerBeat = 60 / BPM;
+            playAudioCueTime += secPerBeat;
+            // Add the current error from the next iteration's delay, so that errors don't build up.
+            yield return new WaitForSeconds(secPerBeat + error);
+
+   
         }
     }
 }
