@@ -32,7 +32,8 @@ public class GameController : MonoBehaviour
     private float MaxTimeBetweenRests = 4f;
     private bool WritingOn;
     private bool bassClefMode = false;
-
+    private int infiniteNoteDensity;
+   
     // Private vars
     private List<Note> Song = new List<Note>(50);
     private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
@@ -81,6 +82,7 @@ public class GameController : MonoBehaviour
     public float speedMultLowerLimit = 1f, speedMultUpperLimit = 3f , respawnSpeedPenalty = 0.75f;
 
     private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
+    private float maxNoteDuration = 0, minNoteDuration = 0;
     #endregion
     // Use this for initialization
     void Start()
@@ -102,6 +104,7 @@ public class GameController : MonoBehaviour
             MaxTimeBetweenRests = temp.MaxTimeBetweenRests;
             WritingOn = temp.WritingOn;
             bassClefMode = temp.bassClefMode;
+            infiniteNoteDensity = temp.NoteDensity;
         }
 
         // Initialize tables
@@ -117,6 +120,22 @@ public class GameController : MonoBehaviour
         fg = new FrequencyGuide();
         //pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
         //pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
+        if (infiniteNoteDensity <= 1)
+        {
+            minNoteDuration = 2;
+            maxNoteDuration = 4;
+        }
+        else if (infiniteNoteDensity == 2)
+        {
+            minNoteDuration = 1;
+            maxNoteDuration = 3;
+        }
+        else if (infiniteNoteDensity == 3)
+        {
+            minNoteDuration = 1/8;
+            maxNoteDuration = 2;
+        }
+
 
         // If we're in Song mode, read in file information
         if (SongMode)
@@ -351,9 +370,13 @@ public class GameController : MonoBehaviour
             // Spawn corresponding platform
             SpawnPlatform(++lastSpawnedNoteIndex);
 
+            // Calculate the timing error (negative if we're ahead, positive if we're behind)
+            float error = addNoteTime - currTime;
             // Set the next new note to spawn as soon as this new one's duration has elapsed
-            float delay = Song[lastSpawnedNoteIndex].duration * 60 / BPM;
-            yield return new WaitForSeconds(delay);
+            float durInSec = Song[lastSpawnedNoteIndex].duration * 60 / BPM;
+            addNoteTime += durInSec;
+            // Add the current error from the next iteration's delay, so that errors don't build up.
+            yield return new WaitForSeconds(durInSec + error);
         }
     }
 
@@ -382,7 +405,7 @@ public class GameController : MonoBehaviour
             else
                 newNoteName = "REST";
 
-            float newNoteDur = UnityEngine.Random.Range(1, 4);
+            float newNoteDur = UnityEngine.Random.Range(1, (int)(maxNoteDuration));
 
 
             // Fill in note properties

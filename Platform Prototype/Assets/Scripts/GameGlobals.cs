@@ -9,8 +9,8 @@ public class GameGlobals : MonoBehaviour {
     public bool isTextActive = true;
 	public float TimeOnScreen = 5f;
     public string[] NotesRange = new string[] {"E2", "C6"};
-    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f, NoteDensity = 0f;
-    public int LeniencyRange = 1;
+    public float BPM = 60, TransitionGracePeriod = 0.5f, SustainedGracePeriod = 0.8f, speedMult = 1f, scrollingInterpolation = 0.01f;
+    public int LeniencyRange = 1, NoteDensity = 0;
     public bool SongMode = false;
     public string selectedSong = "text1.txt";
     public float MaxTimeBetweenRests = 4f;
@@ -62,7 +62,7 @@ public class GameGlobals : MonoBehaviour {
     /// </summary>
     public void changeNoteDensity(float val)
     {
-		NoteDensity = val / 10;
+        NoteDensity = (int) val;
     } 
 
     /// <summary>
