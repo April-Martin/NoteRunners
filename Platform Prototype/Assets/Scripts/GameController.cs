@@ -740,15 +740,27 @@ public class GameController : MonoBehaviour
         {
             for (int i = 0; i < platforms.Count; i++)
             {
+                if(i == currNoteIndex && isFalling)
+                {
+                    LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
+
+                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, 0.2f,0.1f));
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, 0.2f, 0.1f));
+
+                    SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
+                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Lerp(renderer.startColor.a, 0.2f, 0.1f));
+
+                    continue;
+                }
                 if (platforms[i] != null && Song[i].name != "REST")
                 {
                     LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
-                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f);
-                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f);
+                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
-                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Abs(Mathf.Sin(currTime) * .5f) + .5f);
+                    sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
                 }
             }
             yield return null;
