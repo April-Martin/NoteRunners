@@ -307,7 +307,8 @@ public class GameController : MonoBehaviour
             else if (elapsedIncorrectTime > SustainedGracePeriod)
             {
                 noteStreak = 0;
-                Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+				Player.gameObject.layer = 8;
+              //  Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
                 isFalling = true;
                 isCorrect = false;
                 Player.GetComponent<PlayerMovement>().PauseAnimation();
@@ -623,6 +624,7 @@ public class GameController : MonoBehaviour
     internal void RespawnPlayer()
     {
         isFalling = false;
+		Player.gameObject.layer = 0;
 
         //Slow platform speed by half if greater than 1 with lower bound on speed = 1.
         ChangeScrollingSpeed(speedMult * respawnSpeedPenalty >= speedMultLowerLimit ? respawnSpeedPenalty : speedMultLowerLimit / speedMult);
