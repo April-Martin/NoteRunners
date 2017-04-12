@@ -11,6 +11,7 @@ public class LowNoteSlider : MonoBehaviour {
     void Start()
     {
         slider = GetComponent<Slider>();
+        slider.value = GameGlobals.GlobalInstance.getLowNoteIndex();
     }
 
     // Update is called once per frame

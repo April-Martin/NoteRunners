@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
     private float BPM, TransitionGracePeriod, SustainedGracePeriod;
     private int LeniencyRange = 0;
     private bool SongMode = false;
-    private string filename;
+    public string filename;
     private float MaxTimeBetweenRests = 4f;
     private bool WritingOn;
     private bool bassClefMode = false;
