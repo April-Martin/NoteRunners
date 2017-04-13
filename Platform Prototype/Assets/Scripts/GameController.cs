@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour
     // Time check variables (for keeping the coroutines honest)
     private float playAudioCueTime = 0, handleJumpTime = 0, addNoteTime = 0;
 
-    internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
+    internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true, timeFrozen = false;
     private bool singleFire = false;
     internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
     {
@@ -227,20 +227,19 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckKeyInput();
+
+        if (timeFrozen) return;
+
         CheckPitch();
         AwardScore();
 
         currTime += Time.deltaTime;
-
         currPos += Time.deltaTime * worldUnitsPerSec;
         movePlayerAndCamera();
 
-        CheckKeyInput();
 
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            SceneManager.LoadScene(0);
-        }
+
     }
 
     void CheckPitch()
@@ -479,6 +478,30 @@ public class GameController : MonoBehaviour
     {
         while (currNoteIndex < Song.Count)
         {
+            if (warmupMode)
+            {
+                // Freeze time
+                string targetNote = Song[currNoteIndex].name;
+                if (targetNote != "REST")
+                {
+                    timeFrozen = true;
+                    for (int layer = 0; layer < background.transform.childCount; layer++)
+                    {
+                        background.transform.GetChild(layer).GetComponent<BackgroundScroller>().Pause();
+                    }
+                    Player.PauseAnimation();
+                    while (pt.MainNote != targetNote)
+                        yield return null;
+                }
+                // Unfreeze
+                timeFrozen = false;
+                for (int layer = 0; layer < background.transform.childCount; layer++)
+                {
+                    background.transform.GetChild(layer).GetComponent<BackgroundScroller>().Play();
+                }
+                Player.PlayAnimation();
+            }
+
             // Wait till end of note
             float beats = Song[currNoteIndex].duration;
             float dur = Song[currNoteIndex].duration * 60 / BPM;
@@ -753,7 +776,10 @@ public class GameController : MonoBehaviour
         {
             ChangeScrollingSpeed(.8f);
         }
-
+        else if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
         return;
     }
 
@@ -826,8 +852,11 @@ public class GameController : MonoBehaviour
             playAudioCueTime += secPerBeat;
             // Add the current error from the next iteration's delay, so that errors don't build up.
             yield return new WaitForSeconds(secPerBeat + error);
-
-   
         }
+    }
+
+    private void FreezeTime()
+    {
+        timeFrozen = true;
     }
 }
