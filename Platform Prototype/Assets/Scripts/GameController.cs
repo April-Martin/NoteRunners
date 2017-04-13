@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour
     };
 
     private FrequencyGuide fg;
-    private bool warmupMode = false; 
+    private bool warmupMode = true; 
     private List<string> NotesAllowed;
 
     public float speedMult = 1f, scrollingInterpolation = 0.01f;
@@ -228,10 +228,11 @@ public class GameController : MonoBehaviour
     void Update()
     {
         CheckKeyInput();
-
+        SetBuddyColor();
         if (timeFrozen) return;
 
-        CheckPitch();
+        CheckRunnerShouldFall();
+
         AwardScore();
 
         currTime += Time.deltaTime;
@@ -242,13 +243,12 @@ public class GameController : MonoBehaviour
 
     }
 
-    void CheckPitch()
+    void SetBuddyColor()
     {
-        // Update buddy color
         string playerPitch = pt.MainNote;
 
         // If player isn't singing, or if player's falling:
-        if (string.IsNullOrEmpty(playerPitch) || isFalling)
+        if (string.IsNullOrEmpty(pt.MainNote) || isFalling)
         {
             Bud.GetComponent<SpriteRenderer>().color = Color.white;
         }
@@ -257,6 +257,11 @@ public class GameController : MonoBehaviour
         {
             Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
         }
+    }
+
+    void CheckRunnerShouldFall()
+    {
+        string playerPitch = pt.MainNote;
 
         // Permit grace period
         if (!isChecking || DEBUG_InvincibleMode)
@@ -270,15 +275,8 @@ public class GameController : MonoBehaviour
             return;
         }
 
-        if (Input.GetKey(KeyCode.Space))
-        {
-            isCorrect = true;
-            return;
-        }
-
-
-
         // Compare player pitch to target note
+
         // If the pitch is incorrect:
         if (string.IsNullOrEmpty(playerPitch) || playerPitch != targetNote)
         {
@@ -286,7 +284,6 @@ public class GameController : MonoBehaviour
             List<string> acceptableRanges = fg.GetLeniencyRange(targetNote, LeniencyRange);
             foreach (string note in acceptableRanges)
             {
-                //Debug.Log ("Acceptable note: " + note + ", player pitch: " + playerPitch);
                 if (!string.IsNullOrEmpty(playerPitch) && playerPitch == note)
                 {
                     isCorrect = true;
@@ -301,7 +298,7 @@ public class GameController : MonoBehaviour
                 isCorrect = false;
                 Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
             }
-            //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
+
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
             else if (elapsedIncorrectTime > SustainedGracePeriod)
             {
@@ -312,6 +309,7 @@ public class GameController : MonoBehaviour
                 Player.GetComponent<PlayerMovement>().PauseAnimation();
                 
             }
+
             // Add elapsed incorrect time
             else
             {
@@ -490,7 +488,11 @@ public class GameController : MonoBehaviour
                         background.transform.GetChild(layer).GetComponent<BackgroundScroller>().Pause();
                     }
                     Player.PauseAnimation();
-                    while (pt.MainNote != targetNote)
+                    Debug.Log("Position.x was " + Player.transform.position.x);
+                    Player.transform.position = new Vector3(-10, Player.transform.position.y, Player.transform.position.z);
+                    Debug.Log("Position.x is now " + Player.transform.position.x);
+                    Player.GetComponent<Rigidbody2D>().isKinematic = true;
+                    while (pt.MainNote != targetNote && !DEBUG_InvincibleMode)
                         yield return null;
                 }
                 // Unfreeze
@@ -500,6 +502,8 @@ public class GameController : MonoBehaviour
                     background.transform.GetChild(layer).GetComponent<BackgroundScroller>().Play();
                 }
                 Player.PlayAnimation();
+                Player.GetComponent<Rigidbody2D>().isKinematic = false;
+
             }
 
             // Wait till end of note
@@ -656,8 +660,12 @@ public class GameController : MonoBehaviour
         // Respawn player
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<Platform>().height;
-        Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
-        Player.GetComponent<PlayerMovement>().PlayAnimation();
+        if (Song[currNoteIndex].name != "REST")
+            Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
+        else
+            Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex-1].yOffset + playerHeight / 2 + platformHeight / 2);
+
+        if (!timeFrozen) Player.GetComponent<PlayerMovement>().PlayAnimation();
 
         // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
@@ -780,6 +788,16 @@ public class GameController : MonoBehaviour
         {
             SceneManager.LoadScene(0);
         }
+        else if (Input.GetKey(KeyCode.Space))
+        {
+            isCorrect = true;
+            return;
+        }
+        else if (Input.GetKey(KeyCode.D))
+        {
+            Debug.Log("Break");
+        }
+
         return;
     }
 
