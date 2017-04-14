@@ -404,8 +404,8 @@ public class GameController : MonoBehaviour
 
     void movePlayerAndCamera()
     {
-        Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
-        Player.transform.position = new Vector3(currPos, Player.transform.position.y);
+		Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
+		Player.transform.position = new Vector3(currPos+Player.GetComponent<SpriteRenderer>().bounds.size.x/2, Player.transform.position.y);
 
     }
 
@@ -414,7 +414,8 @@ public class GameController : MonoBehaviour
         while (lastSpawnedNoteIndex < (Song.Count - 1))
         {
             // Spawn corresponding platform
-            SpawnPlatform(++lastSpawnedNoteIndex);
+			Song[++lastSpawnedNoteIndex].yOffset = notePosLookup[Song[lastSpawnedNoteIndex].name];
+            SpawnPlatform(lastSpawnedNoteIndex);
 
             // Calculate the timing error (negative if we're ahead, positive if we're behind)
             float error = addNoteTime - currTime;
@@ -755,6 +756,10 @@ public class GameController : MonoBehaviour
         {
             ChangeScrollingSpeed(.8f);
         }
+		else if (Input.GetKeyDown(KeyCode.D))
+		{
+			Debug.Log ("Break");
+		}
 
         return;
     }
