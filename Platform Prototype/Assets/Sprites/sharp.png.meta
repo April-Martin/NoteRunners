@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 6f1a94aafd1be704b86fdfd52ad3af1d
-timeCreated: 1492292246
+timeCreated: 1492304308
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -41,7 +41,7 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 130
   alphaUsage: 1
   alphaIsTransparency: 1
   spriteTessellationDetail: -1
@@ -82,10 +82,10 @@ TextureImporter:
       name: sharp_0
       rect:
         serializedVersion: 2
-        x: 70
-        y: 42
-        width: 31
-        height: 87
+        x: 22
+        y: 22
+        width: 128
+        height: 128
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}

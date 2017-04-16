@@ -405,7 +405,7 @@ public class GameController : MonoBehaviour
 
     void movePlayerAndCamera()
     {
-		Camera.main.transform.position = new Vector3(currPos, Camera.main.transform.position.y, Camera.main.transform.position.z);
+		Camera.main.transform.position = new Vector3(currPos + 7.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
 		Player.transform.position = new Vector3(currPos+Player.GetComponent<SpriteRenderer>().bounds.size.x/2, Player.transform.position.y);
 
     }
