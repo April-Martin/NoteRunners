@@ -51,10 +51,11 @@ public class GameController : MonoBehaviour
     private bool singleFire = false;
     internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
     {
-        {"E2", -7f}, {"F2", -6.5f}, {"G2", -6f}, {"A2", -5.5f}, {"B2", -5f}, {"C3", -4.5f}, {"D3", -4f},
-        {"E3", -3.5f}, {"F3", -3f}, {"G3", -2.5f}, {"A3", -2f}, {"B3", -1.5f}, {"C4", -1f}, {"D4", -.5f},
-        {"E4", 0f}, {"F4", .5f}, {"G4", 1f}, {"A4", 1.5f}, {"B4", 2f}, {"C5", 2.5f}, {"D5", 3f}, {"E5", 3.5f},
-        {"F5", 4f}, {"G5", 4.5f}, {"REST", 0}, {"A5", 5f}, {"B5", 5.5f}, {"C6", 6f}
+        {"E2", -7f}, {"F2", -6.5f}, {"F#2", -6.5f}, {"G2", -6f}, {"G#2", -6f}, {"A2", -5.5f}, {"A#2", -5.5f}, {"B2", -5f}, 
+        {"C3", -4.5f}, {"C#3", -4.5f}, {"D3", -4f}, {"D#3", -4f}, {"E3", -3.5f}, {"F3", -3f}, {"F#3", -3f}, {"G3", -2.5f}, {"G#3", -2.5f}, {"A3", -2f}, {"A#3", -2f}, {"B3", -1.5f}, 
+        {"C4", -1f}, {"C#4", -1f}, {"D4", -.5f}, {"D#4", -.5f}, {"E4", 0f}, {"F4", .5f}, {"F#4", .5f}, {"G4", 1f}, {"G#4", 1f}, {"A4", 1.5f}, {"A#4", 1.5f}, {"B4", 2f}, 
+        {"C5", 2.5f}, {"C#5", 2.5f}, {"D5", 3f}, {"D#5", 3f}, {"E5", 3.5f}, {"F5", 4f}, {"F#5", 4f}, {"G5", 4.5f}, {"G#5", 4.5f}, {"A5", 5f}, {"A#5", 5f},{"B5", 5.5f}, 
+        {"C6", 6f}, {"REST", 0}
     };
 
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
@@ -333,13 +334,13 @@ public class GameController : MonoBehaviour
     {
         Platform plat = Instantiate(platform).GetComponent<Platform>();
 
-        // Fill the platform if it's a rest
-        if (Song[index].name == "REST")
-            plat.SetPlatFilled(true);
-
         // Set the platform's color
         Color platColor = noteColorLookup[Song[index].name];
         plat.SetPlatColor(platColor);
+
+        // Set the platform's modifier if necessary (sharp/flat)
+        if (Song[index].name[1] == '#')
+            plat.SetPlatSharp();
 
         // Set the platform's width so it matches the note's duration
         float platWidth = (Song[index].duration - .05f) * worldUnitsPerBeat;
@@ -598,26 +599,37 @@ public class GameController : MonoBehaviour
         NotesAllowed.Add("REST");
 
         float notesRangeMinPos; float notesRangeMaxPos;
+        /*
+         * // It looks like this section was rendered obsolete by the Turian statements below?
         bool found = false;
-        if (Player.NotePosLookup.TryGetValue(NotesRange[0], out notesRangeMinPos))
+        if (notePosLookup.TryGetValue(NotesRange[0], out notesRangeMinPos))
         {
             found = true;
         }
         else
             found = false;
+         * */
 
         float temp = 0;
-        notesRangeMinPos = Player.NotePosLookup.TryGetValue(NotesRange[0], out temp) ? temp : -0.5f;
-        notesRangeMaxPos = Player.NotePosLookup.TryGetValue(NotesRange[1], out temp) ? temp : 4.5f;
+        notesRangeMinPos = notePosLookup.TryGetValue(NotesRange[0], out temp) ? temp : -0.5f;
+        notesRangeMaxPos = notePosLookup.TryGetValue(NotesRange[1], out temp) ? temp : 4.5f;
 
-        foreach (string Note in Player.NotePosLookup.Keys)
+        foreach (string Note in notePosLookup.Keys)
         {
-            if (Player.NotePosLookup[Note] >= notesRangeMinPos)
+            if (notePosLookup[Note] >= notesRangeMinPos)
             {
-                if (Player.NotePosLookup[Note] <= notesRangeMaxPos)
+                if (notePosLookup[Note] <= notesRangeMaxPos)
                     NotesAllowed.Add(Note);
             }
         }
+
+        // Remove sharp of max note, if it's in the list
+        char[] maxSharp = new char[3];
+        maxSharp[0] = NotesRange[1][0];
+        maxSharp[1] = '#';
+        maxSharp[2] = NotesRange[1][1];
+        string ms = new string(maxSharp);
+        NotesAllowed.Remove(ms);
     }
 
 

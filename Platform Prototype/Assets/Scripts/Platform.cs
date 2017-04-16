@@ -10,18 +10,20 @@ using UnityEngine;
 
 public class Platform : MonoBehaviour
 {
+    public float height = .9f;
+    public Sprite sharpImg;
+    public Sprite flatImg;
     //X position of the left edge of the camera in World Units. Calculate this once.
     static float xCameraLeftEdgeInWU;
-    private bool isFilled = false;
-    public float height = .9f;
     private float width;
     private LineRenderer outline;
     private Vector3[] outlineCorners;
     private SpriteRenderer fillSprite;
+    private SpriteRenderer modifierSprite;
+    private bool hasModifier = false;
 
     void Awake()
     {
-
         outline = GetComponent<LineRenderer>();
         outlineCorners = new Vector3[outline.numPositions];
         outline.GetPositions(outlineCorners);
@@ -33,21 +35,23 @@ public class Platform : MonoBehaviour
         fillSprite = transform.GetChild(1).GetComponent<SpriteRenderer>();
 		float targetHeight = height - 2 * outline.startWidth;
 		fillSprite.transform.localScale = new Vector3 (fillSprite.transform.localScale.x, targetHeight / fillSprite.bounds.size.y, 1);
-        //fillSprite.enabled = false;
+
+        modifierSprite = transform.GetChild(2).GetComponent<SpriteRenderer>();
+        modifierSprite.enabled = false;
     }
 
-    public void SetPlatFilled(bool filled)
+    public void SetPlatSharp()
     {
-        if (filled)
-        {
-            isFilled = true;
-            fillSprite.enabled = true;
-        }
-        else
-        {
-            isFilled = false;
-            fillSprite.enabled = false;
-        }
+        modifierSprite.sprite = sharpImg;
+        modifierSprite.enabled = true;
+        hasModifier = true;
+    }
+
+    public void SetPlatFlat()
+    {
+        modifierSprite.sprite = flatImg;
+        modifierSprite.enabled = true;
+        hasModifier = true;
     }
 
 	public void SetPlatColor(Color c)
@@ -55,22 +59,7 @@ public class Platform : MonoBehaviour
 		
 		outline.startColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 		outline.endColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
-
-		if (isFilled)
-			fillSprite.color = c;
-		else
-			fillSprite.color = c;
-		
-		/*
-		outline.startColor = c;
-		outline.endColor = c;
-
-		if (isFilled)
-			fillSprite.color = c;
-		else
-			fillSprite.color = new Color(c.r * .9f, c.g * .9f, c.b * .9f);
-
-		*/
+		fillSprite.color = c;
         return;
     }
 
@@ -82,20 +71,17 @@ public class Platform : MonoBehaviour
 		outlineCorners[2].x = -(width-outline.startWidth) / 2;
 		outlineCorners[3].x = -(width-outline.startWidth) / 2;
 		outlineCorners[4].x = (width-outline.startWidth) / 2 + outline.startWidth / 2;
-		//Debug.Log ("outline.startWidth = " + outline.startWidth);
-		//Debug.Log ("outline.endWidth = " + outline.endWidth);
-
         outline.SetPositions(outlineCorners);
+
+        if (hasModifier)
+            modifierSprite.transform.localPosition = new Vector3 (-width/2 + modifierSprite.bounds.size.x/2 + .2f, height/2 + modifierSprite.bounds.size.y/2 + .2f, 0);
 
         BoxCollider2D col = GetComponent<BoxCollider2D>();
         col.size = new Vector2(width, col.size.y);
 
-     //   if (isFilled)
-        {
-            float startWidth = fillSprite.bounds.size.x;
-			float targetWidth = width - 2 * outline.startWidth;
-            fillSprite.transform.localScale = new Vector3(fillSprite.transform.localScale.x * targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
-        }
+        float startWidth = fillSprite.bounds.size.x;
+		float targetWidth = width - 2 * outline.startWidth;
+        fillSprite.transform.localScale = new Vector3(fillSprite.transform.localScale.x * targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
 
         return;
     }
