@@ -338,9 +338,36 @@ public class GameController : MonoBehaviour
         Color platColor = noteColorLookup[Song[index].name];
         plat.SetPlatColor(platColor);
 
-        // Set the platform's modifier if necessary (sharp/flat)
+        // Deal with sharps and flats
+        // If it's a flat, give it a 50/50 chance of being the corresponding flat instead.
         if (Song[index].name[1] == '#')
-            plat.SetPlatSharp();
+        {
+            int rnd = UnityEngine.Random.Range(0, 2);
+            if (rnd == 0)
+            {
+                Song[index].yOffset += .5f;
+                plat.SetPlatFlat();
+
+                /*
+                 *  Note: this is, well, kind of hacky. But the ASCII codes for letters A-G are in order, and 
+                 *  so are digits 0-9, so works to just cast the char to an int for the increment, then cast it back to a char.
+                 * */
+                char startNote = Song[index].name[0];
+                char newNote = (startNote == 'G') ? ('A') : ((char)(startNote + 1));
+
+                char startOctave = Song[index].name[2];
+                char newOctave = (startNote == 'B') ? (char)(Song[index].name[2] + 1) : Song[index].name[2];
+
+                char[] newName = new char[3];
+                newName[0] = newNote;
+                newName[2] = newOctave;
+                Song[index].name = new String(newName);
+            }
+            else
+            {
+                plat.SetPlatSharp();
+            }
+        }
 
         // Set the platform's width so it matches the note's duration
         float platWidth = (Song[index].duration - .05f) * worldUnitsPerBeat;
@@ -364,7 +391,15 @@ public class GameController : MonoBehaviour
             // Create Note Text for the platform.
             GameObject txtobj = Instantiate(platformText);
             TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
-            txtmsh.text = Song[index].name;
+            if (Song[index].name[1] == '#')
+            {
+                char[] name = new char[2];
+                name[0] = Song[index].name[0];
+                name[1] = Song[index].name[2];
+                txtmsh.text = new String(name);
+            }
+            else
+                txtmsh.text = Song[index].name;
             if (Song[index].name == "REST")
                 txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
             else
