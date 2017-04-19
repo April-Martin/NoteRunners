@@ -318,7 +318,9 @@ public class GameController : MonoBehaviour
               //  Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
                 isFalling = true;
                 isCorrect = false;
-                Player.GetComponent<PlayerMovement>().PauseAnimation();
+                //Player.GetComponent<PlayerMovement>().PauseAnimation();
+				Player.SetAnimSpeed(3);
+				Player.StartPlayerSpinning ();
                 
             }
             // Add elapsed incorrect time
@@ -690,7 +692,9 @@ public class GameController : MonoBehaviour
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<Platform>().height;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
-        Player.GetComponent<PlayerMovement>().PlayAnimation();
+        //Player.GetComponent<PlayerMovement>().PlayAnimation();
+		Player.SetAnimSpeed(1);
+		Player.ResetPlayerRotation ();
 
         // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
@@ -862,7 +866,7 @@ public class GameController : MonoBehaviour
                     LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
                     renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
-                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime*2) * .5f) + 0.5f, 0.1f));
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
                     sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));

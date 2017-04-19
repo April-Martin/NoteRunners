@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour {
     public float ArrowSpeed = .2f;
     public float LerpSpeed = 1f;
     private Animator anim;
+	private bool isSpinning = false;
 
     internal Dictionary<string, float> NotePosLookup;
 
@@ -30,6 +31,8 @@ public class PlayerMovement : MonoBehaviour {
             Vector3 newPos = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y + (Input.GetAxis("Vertical") * ArrowSpeed), -0.5f, 4.5f), transform.position.z);
             transform.position = newPos;
         }
+		if (isSpinning)
+			this.transform.Rotate(new Vector3(0, 0, Time.deltaTime * -45));
 	}
 
     public void PauseAnimation()
@@ -37,10 +40,27 @@ public class PlayerMovement : MonoBehaviour {
         anim.enabled = false;
     }
 
+	public void StartPlayerSpinning()
+	{
+		isSpinning = true;
+	}
+
+	public void ResetPlayerRotation()
+	{
+		isSpinning = false;
+		transform.localRotation = Quaternion.identity;
+	}
+
+
     public void PlayAnimation()
     {
         anim.enabled = true;
     }
+
+	public void SetAnimSpeed(float speed)
+	{
+		anim.speed = speed;
+	}
 
     void OnBecameInvisible()
     {
