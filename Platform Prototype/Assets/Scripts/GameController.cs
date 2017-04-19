@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
     public bool DEBUG_InvincibleMode = false;
     public int ScorePerSecond = 100;
     public float Score = 0;
+	public float CameraOffset = 7.5f;
 
     // Dependencies
     public PlayerMovement Player;
@@ -448,7 +449,7 @@ public class GameController : MonoBehaviour
 
     void movePlayerAndCamera()
     {
-		Camera.main.transform.position = new Vector3(currPos + 7.5f, Camera.main.transform.position.y, Camera.main.transform.position.z);
+		Camera.main.transform.position = new Vector3(currPos + CameraOffset, Camera.main.transform.position.y, Camera.main.transform.position.z);
 		Player.transform.position = new Vector3(currPos+Player.GetComponent<SpriteRenderer>().bounds.size.x/2, Player.transform.position.y);
 
     }
@@ -706,6 +707,8 @@ public class GameController : MonoBehaviour
         Invoke("EndDeathGracePeriod", deathGracePeriod);
         IEnumerator coroutine = FlashColor(deathGracePeriod / 4);
         StartCoroutine(coroutine);
+
+		StartCoroutine ("ShakeScreen");
     }
 
     // FACADE FUNCTION 
@@ -724,6 +727,25 @@ public class GameController : MonoBehaviour
             StartCoroutine(coroutine);
         }
     }
+
+	private IEnumerator ShakeScreen()
+	{
+		Vector3 originalCameraPosition = Camera.main.transform.position;
+		float shakeFactor = .3f;
+		bool isResetting = false;
+		while (shakeFactor > 0)
+		{
+			if (isResetting) {			
+				Camera.main.transform.position = Camera.main.transform.position + ((Vector3)UnityEngine.Random.insideUnitCircle * shakeFactor);
+			} else {
+				Camera.main.transform.position = new Vector3 (currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
+			}
+			shakeFactor -= Time.deltaTime * .33f;
+			isResetting = !isResetting;
+			yield return null;
+		}
+		Camera.main.transform.position = new Vector3 (currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
+	}
 
     IEnumerator ChangeScrollingSpeedIncremental(float speedMultiplier, Func<float, bool> whileDelegate)
     {
