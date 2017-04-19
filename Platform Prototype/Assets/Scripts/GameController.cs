@@ -33,6 +33,7 @@ public class GameController : MonoBehaviour
     private bool WritingOn;
     private bool bassClefMode = false;
     private int infiniteNoteDensity;
+	private byte plrRed = 255, plrGrn = 255, plrBlu = 255;
    
     // Private vars
     private List<Note> Song = new List<Note>(50);
@@ -106,6 +107,9 @@ public class GameController : MonoBehaviour
             WritingOn = temp.WritingOn;
             bassClefMode = temp.bassClefMode;
             infiniteNoteDensity = temp.NoteDensity;
+			plrRed = temp.plrRed;
+			plrGrn = temp.plrGrn;
+			plrBlu = temp.plrBlu;
         }
 
         // Initialize tables
@@ -161,6 +165,8 @@ public class GameController : MonoBehaviour
         worldUnitsPerSec = screenWidthInWorldUnits / TimeOnScreen;
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
+
+		Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
 
         if (warmupMode)
             StartWarmup();
@@ -781,7 +787,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
-            Player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, .4f);
+			Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 102);
             Invoke("EndColorFlash", 3 * interval / 4);
             yield return new WaitForSeconds(interval);
         }
@@ -790,7 +796,7 @@ public class GameController : MonoBehaviour
     void EndColorFlash()
     {
         colIsFlashing = false;
-        Player.GetComponent<SpriteRenderer>().color = new Color(1, 1, 1, 1);
+		Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
     }
 
     void CheckKeyInput()

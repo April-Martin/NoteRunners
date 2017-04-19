@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,9 @@ public class GameGlobals : MonoBehaviour {
     public float MaxTimeBetweenRests = 4f;
     public bool WritingOn = false;
 	public bool bassClefMode = false;
+	[Range(0, 255)]
+	public byte plrRed = 255, plrGrn = 255, plrBlu = 255;
+
 
     private string LowestNote = "E2", HighestNote = "C6";
     private int highNoteIndex = 26, lowNoteIndex = 0;
@@ -168,4 +172,18 @@ public class GameGlobals : MonoBehaviour {
     {
         return highNoteIndex;
     }
+
+	public void setPlayerColor(int r, int g, int b)
+	{
+		plrRed = Convert.ToByte (r);
+		plrGrn = Convert.ToByte (g);
+		plrBlu = Convert.ToByte (b);
+	}
+
+	public void setPlayerColor(byte r, byte g, byte b)
+	{
+		plrRed = r;
+		plrGrn = g;
+		plrBlu = b;
+	}
 }

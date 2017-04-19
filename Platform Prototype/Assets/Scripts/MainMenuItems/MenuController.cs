@@ -15,6 +15,8 @@ public class MenuController : MonoBehaviour {
     public Button SongMode;
     public Button InfMode;
 
+	private int plrRed = 255, plrGrn = 255, plrBlu = 255;
+
 
 	void Start () {
         Tolerance.text = GameGlobals.GlobalInstance.LeniencyRange + "";
@@ -130,4 +132,28 @@ public class MenuController : MonoBehaviour {
     {
         GameGlobals.GlobalInstance.changeSelectedSong(filename);
     }
+
+	public void changeRunnerColorRed(float val)
+	{
+		if (val < 0 || val > 255)
+			return;
+		plrRed = (int)val;
+		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
+	}
+
+	public void changeRunnerColorGreen(float val)
+	{
+		if (val < 0 || val > 255)
+			return;
+		plrGrn = (int)val;
+		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
+	}
+
+	public void changeRunnerColorBlue(float val)
+	{
+		if (val < 0 || val > 255)
+			return;
+		plrBlu = (int)val;
+		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
+	}
 }
