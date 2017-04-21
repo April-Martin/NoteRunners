@@ -14,6 +14,7 @@ public class MenuController : MonoBehaviour {
     public Text HighNote;
     public Button SongMode;
     public Button InfMode;
+	public GameObject SongSelectPanel;
 
 	private int plrRed = 255, plrGrn = 255, plrBlu = 255;
 
@@ -155,5 +156,13 @@ public class MenuController : MonoBehaviour {
 			return;
 		plrBlu = (int)val;
 		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
+	}
+
+	public void songModeFix()
+	{
+		if (GameGlobals.GlobalInstance.SongMode) 
+		{
+			SongSelectPanel.SetActive (true);
+		}
 	}
 }

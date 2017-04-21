@@ -58,7 +58,6 @@ public class MenuAnimator : MonoBehaviour
 
     void QueRunner()
     {
-        Debug.Log("Go!");
         isRunning = true;
     }
 }
