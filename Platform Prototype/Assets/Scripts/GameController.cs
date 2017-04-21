@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
         {"C3", -4.5f}, {"C#3", -4.5f}, {"D3", -4f}, {"D#3", -4f}, {"E3", -3.5f}, {"F3", -3f}, {"F#3", -3f}, {"G3", -2.5f}, {"G#3", -2.5f}, {"A3", -2f}, {"A#3", -2f}, {"B3", -1.5f}, 
         {"C4", -1f}, {"C#4", -1f}, {"D4", -.5f}, {"D#4", -.5f}, {"E4", 0f}, {"F4", .5f}, {"F#4", .5f}, {"G4", 1f}, {"G#4", 1f}, {"A4", 1.5f}, {"A#4", 1.5f}, {"B4", 2f}, 
         {"C5", 2.5f}, {"C#5", 2.5f}, {"D5", 3f}, {"D#5", 3f}, {"E5", 3.5f}, {"F5", 4f}, {"F#5", 4f}, {"G5", 4.5f}, {"G#5", 4.5f}, {"A5", 5f}, {"A#5", 5f},{"B5", 5.5f}, 
-        {"C6", 6f}, {"REST", 0}
+		{"C6", 6f}, {"REST", 0}
     };
 
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
@@ -369,6 +369,7 @@ public class GameController : MonoBehaviour
 
                 char[] newName = new char[3];
                 newName[0] = newNote;
+				newName [1] = 'f';
                 newName[2] = newOctave;
                 Song[index].name = new String(newName);
             }
@@ -400,7 +401,7 @@ public class GameController : MonoBehaviour
             // Create Note Text for the platform.
             GameObject txtobj = Instantiate(platformText);
             TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
-            if (Song[index].name[1] == '#')
+			if (Song[index].name.Length == 3)
             {
                 char[] name = new char[2];
                 name[0] = Song[index].name[0];
@@ -860,6 +861,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < notePosLookup.Count; i++)
         {
             if (notes[i] == "REST") continue;
+			if (notePosLookup [notes [i]] > 6) break;
             noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
             //   noteColorLookup.Add(notes[i], Color.black);
         }
