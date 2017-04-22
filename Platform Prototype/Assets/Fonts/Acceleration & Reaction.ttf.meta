@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 2ad435898d3a5134c9414b333175ecdd
+timeCreated: 1492835437
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: 'Acceleration &  Reaction '
+  fontNames:
+  - 'Acceleration &  Reaction '
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

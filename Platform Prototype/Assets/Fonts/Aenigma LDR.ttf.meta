@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 1ab4d538348e6a248a26df996b3b7e1b
+timeCreated: 1492835436
+licenseType: Free
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Aenigma LDR
+  fontNames:
+  - Aenigma LDR
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

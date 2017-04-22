@@ -34,7 +34,7 @@ public class MenuAnimator : MonoBehaviour
 
         if (buddy.transform.position.x < xPivot)
         {
-            buddy.transform.position += (new Vector3(0, 1) - buddy.transform.position) * 0.05f;
+            buddy.transform.position += (new Vector3(0, 1.5f) - buddy.transform.position) * 0.05f;
         }
         else
         {
@@ -48,7 +48,8 @@ public class MenuAnimator : MonoBehaviour
 
         if(timeElapsed > repeatInterval)
         {
-            runner.transform.position = buddy.transform.position = new Vector3(-15f, 1);
+            runner.transform.position = new Vector3(-15, runner.transform.position.y);
+            buddy.transform.position = new Vector3(-15, buddy.transform.position.y);
             isRunning = false;
             Invoke("QueRunner", runnerDelay);
             timeElapsed = 0f;
