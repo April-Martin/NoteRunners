@@ -13,14 +13,9 @@ public class GameController : MonoBehaviour
     public bool DEBUG_InvincibleMode = false;
     public int ScorePerSecond = 100;
     public float Score = 0;
-	public float CameraOffset = 7.5f;
-
-    // Dependencies
-    public PlayerMovement Player;
-    public Buddy Bud;
-    public GameObject platform, platformText, particles, background;
-    private PitchTester pt;
-    private AudioCuePlayer audioPlayer;
+    public float CameraOffset = 7.5f;
+    public float speedMultLowerLimit = 1f, speedMultUpperLimit = 3f, respawnSpeedPenalty = 0.75f;
+    private bool warmupMode = false;
 
     // Game globals
     internal bool isTextActive = true;
@@ -34,23 +29,38 @@ public class GameController : MonoBehaviour
     private bool WritingOn;
     private bool bassClefMode = false;
     private int infiniteNoteDensity;
-	private byte plrRed = 255, plrGrn = 255, plrBlu = 255;
-   
-    // Private vars
-    private List<Note> Song = new List<Note>(50);
-    private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
-    private List<TextMesh> platText = new List<TextMesh>(50);
+    private byte plrRed = 255, plrGrn = 255, plrBlu = 255;
+    private float scrollingInterpolation = 0.01f;
 
+    // Dependencies
+    public PlayerMovement Player;
+    public Buddy Bud;
+    public GameObject platform, platformText, particles, background;
+    private PitchTester pt;
+    private AudioCuePlayer audioPlayer;
+    private FrequencyGuide fg;
+
+    // Status-tracking  vars
     internal float currPos = 0, currTime = 0;
     private int currNoteIndex = 0, lastSpawnedNoteIndex = 0;
     public int noteStreak = 0;
-    float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
+    internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
+    private bool singleFire = false, songIsOver = false;
+    private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
+    public float speedMult = 1f;
+
+    // Utility vars
+    private float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
+    private float maxNoteDuration = 0, minNoteDuration = 0;
 
     // Time check variables (for keeping the coroutines honest)
     private float playAudioCueTime = 0, handleJumpTime = 0, addNoteTime = 0;
 
-    internal bool isRespawning = false, isChecking = true, isFalling = false, colIsFlashing = false, isCorrect = true;
-    private bool singleFire = false;
+    // Data structures
+    private List<Note> Song = new List<Note>(50);
+    private List<BoxCollider2D> platforms = new List<BoxCollider2D>(50);
+    private List<TextMesh> platText = new List<TextMesh>(50);
+    private List<string> NotesAllowed;
     internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
     {
         {"E2", -7f}, {"F2", -6.5f}, {"F#2", -6.5f}, {"G2", -6f}, {"G#2", -6f}, {"A2", -5.5f}, {"A#2", -5.5f}, {"B2", -5f}, 
@@ -59,7 +69,6 @@ public class GameController : MonoBehaviour
         {"C5", 2.5f}, {"C#5", 2.5f}, {"D5", 3f}, {"D#5", 3f}, {"E5", 3.5f}, {"F5", 4f}, {"F#5", 4f}, {"G5", 4.5f}, {"G#5", 4.5f}, {"A5", 5f}, {"A#5", 5f},{"B5", 5.5f}, 
 		{"C6", 6f}, {"REST", 0}
     };
-
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
     {
         {-7, Color.white},
@@ -71,23 +80,15 @@ public class GameController : MonoBehaviour
         {4, new Color32(254, 138, 52, 255)}, {5, new Color32(255, 111, 51, 255)},
         {6, Color.white}
     };
-
     internal Dictionary<string, Color> noteColorLookup = new Dictionary<string, Color>()
     {
         {"REST", new Color(.15f, .15f, .15f, 1)}
     };
 
-    private FrequencyGuide fg;
-    private bool warmupMode = false; 
-    private List<string> NotesAllowed;
-
-    public float speedMult = 1f, scrollingInterpolation = 0.01f;
-    public float speedMultLowerLimit = 1f, speedMultUpperLimit = 3f , respawnSpeedPenalty = 0.75f;
-
-    private float elapsedIncorrectTime = 0, elapsedSinceRest = 0;
-    private float maxNoteDuration = 0, minNoteDuration = 0;
     #endregion
-    // Use this for initialization
+
+
+
     void Start()
     {
         if (GameGlobals.GlobalInstance != null)
@@ -108,9 +109,9 @@ public class GameController : MonoBehaviour
             WritingOn = temp.WritingOn;
             bassClefMode = temp.bassClefMode;
             infiniteNoteDensity = temp.NoteDensity;
-			plrRed = temp.plrRed;
-			plrGrn = temp.plrGrn;
-			plrBlu = temp.plrBlu;
+            plrRed = temp.plrRed;
+            plrGrn = temp.plrGrn;
+            plrBlu = temp.plrBlu;
         }
 
         // Initialize tables
@@ -124,8 +125,7 @@ public class GameController : MonoBehaviour
         background = GameObject.Find("Background");
         FillNotesAllowed();
         fg = new FrequencyGuide();
-        //pt.minFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[0], out pt.minFreq) ? pt.minFreq : 75;
-        //pt.maxFreq = pt.guide.noteToFreq.TryGetValue(NoteDetectionRange[1], out pt.maxFreq) ? pt.maxFreq : 1075;
+
         if (infiniteNoteDensity <= 1)
         {
             minNoteDuration = 2;
@@ -138,7 +138,7 @@ public class GameController : MonoBehaviour
         }
         else if (infiniteNoteDensity == 3)
         {
-            minNoteDuration = 1/8;
+            minNoteDuration = 1 / 8;
             maxNoteDuration = 2;
         }
 
@@ -167,7 +167,11 @@ public class GameController : MonoBehaviour
         worldUnitsPerBeat = worldUnitsPerSec * 60 / BPM;
         spawnPosOffset = screenWidthInWorldUnits;
 
-		Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
+        // Add terminating rest to song mode
+        if (SongMode)
+            Song.Add(new Note("REST", screenWidthInWorldUnits));
+
+        Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
 
         if (warmupMode)
             StartWarmup();
@@ -183,6 +187,7 @@ public class GameController : MonoBehaviour
         playAudioCueTime = 0; handleJumpTime = 0; addNoteTime = 0;
         lastSpawnedNoteIndex = 0;
         noteStreak = 0;
+        songIsOver = false;
     }
 
 
@@ -204,7 +209,6 @@ public class GameController : MonoBehaviour
             SpawnPlatform(i, false, 2 * i * worldUnitsPerBeat);
             i++;
         }
-
 
         StartCoroutine("HandleJump");
         StartCoroutine("OscillatePlatformOpacity");
@@ -235,20 +239,17 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CheckKeyInput();
+
         CheckPitch();
         AwardScore();
 
         currTime += Time.deltaTime;
-
         currPos += Time.deltaTime * worldUnitsPerSec;
+
         movePlayerAndCamera();
 
-        CheckKeyInput();
 
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            SceneManager.LoadScene(0);
-        }
     }
 
     void CheckPitch()
@@ -315,14 +316,14 @@ public class GameController : MonoBehaviour
             else if (elapsedIncorrectTime > SustainedGracePeriod)
             {
                 noteStreak = 0;
-				Player.gameObject.layer = 8;
-              //  Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
+                Player.gameObject.layer = 8;
+                //  Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>());
                 isFalling = true;
                 isCorrect = false;
                 //Player.GetComponent<PlayerMovement>().PauseAnimation();
-				Player.SetAnimSpeed(3);
-				Player.StartPlayerSpinning ();
-                
+                Player.SetAnimSpeed(3);
+                Player.StartPlayerSpinning();
+
             }
             // Add elapsed incorrect time
             else
@@ -369,7 +370,7 @@ public class GameController : MonoBehaviour
 
                 char[] newName = new char[3];
                 newName[0] = newNote;
-				newName [1] = 'f';
+                newName[1] = 'f';
                 newName[2] = newOctave;
                 Song[index].name = new String(newName);
             }
@@ -401,7 +402,7 @@ public class GameController : MonoBehaviour
             // Create Note Text for the platform.
             GameObject txtobj = Instantiate(platformText);
             TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
-			if (Song[index].name.Length == 3)
+            if (Song[index].name.Length == 3)
             {
                 char[] name = new char[2];
                 name[0] = Song[index].name[0];
@@ -413,7 +414,7 @@ public class GameController : MonoBehaviour
             if (Song[index].name == "REST")
                 txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
             else
-                txtmsh.color = new Color (platColor.r * .2f, platColor.g * .2f, platColor.b * .2f);
+                txtmsh.color = new Color(platColor.r * .2f, platColor.g * .2f, platColor.b * .2f);
             txtobj.transform.position = plat.transform.position + new Vector3(0.15f, 0.3f, 0);
             //txtobj.transform.position += new Vector3 (0, 1, 0);
             platText.Insert(index, txtmsh);
@@ -450,9 +451,9 @@ public class GameController : MonoBehaviour
 
     void movePlayerAndCamera()
     {
-		Camera.main.transform.position = new Vector3(currPos + CameraOffset, Camera.main.transform.position.y, Camera.main.transform.position.z);
-		Player.transform.position = new Vector3(currPos+Player.GetComponent<SpriteRenderer>().bounds.size.x/2, Player.transform.position.y);
-
+        Player.transform.position = new Vector3(currPos + Player.GetComponent<SpriteRenderer>().bounds.size.x / 2, Player.transform.position.y);
+        if (!songIsOver)
+            Camera.main.transform.position = new Vector3(currPos + CameraOffset, Camera.main.transform.position.y, Camera.main.transform.position.z);
     }
 
     IEnumerator AddNoteFromSong()
@@ -460,8 +461,7 @@ public class GameController : MonoBehaviour
         while (lastSpawnedNoteIndex < (Song.Count - 1))
         {
             // Spawn corresponding platform
-			Song[++lastSpawnedNoteIndex].yOffset = notePosLookup[Song[lastSpawnedNoteIndex].name];
-            SpawnPlatform(lastSpawnedNoteIndex);
+            SpawnPlatform(++lastSpawnedNoteIndex);
 
             // Calculate the timing error (negative if we're ahead, positive if we're behind)
             float error = addNoteTime - currTime;
@@ -471,6 +471,9 @@ public class GameController : MonoBehaviour
             // Add the current error from the next iteration's delay, so that errors don't build up.
             yield return new WaitForSeconds(durInSec + error);
         }
+
+        // When the song is over:
+        yield break;
     }
 
 
@@ -525,7 +528,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator HandleJump()
     {
-        while (currNoteIndex < Song.Count)
+        while (currNoteIndex < Song.Count - 1)
         {
             // Wait till end of note
             float beats = Song[currNoteIndex].duration;
@@ -552,34 +555,21 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
-                if (Song[currNoteIndex + 1].name == "REST")
-                {
-                    float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-                    float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-                    float platHeight = platform.GetComponent<Platform>().height;
-                    Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2);
-                }
-                else
-                {
                     GameObject particle1 = Instantiate(particles);
                     particle1.transform.position = Player.transform.position;
 
                     //particle.GetComponent<ParticleSystem> ().Play ();
                     Destroy(particle1, 1.5f);
 
-                    float jumpHeight = Song[currNoteIndex + 1].yOffset;// - Song[currNoteIndex].yOffset;
-
+                    float jumpHeight = Song[currNoteIndex + 1].yOffset;
                     float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                     float platHeight = platform.GetComponent<Platform>().height;
-                    //Debug.Log("jumpHeight: " + jumpHeight + "\nplatHeight: " + platHeight + "\nplayerHeight: " + playerHeight);
-                    //Debug.Log("new y pos = " + (jumpHeight + playerHeight / 2 + platHeight / 2));
                     Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
                     GameObject particle2 = Instantiate(particles);
                     particle2.transform.position = Player.transform.position;
 
                     //particle.GetComponent<ParticleSystem> ().Play ();
                     Destroy(particle2, 1.5f);
-                }
             }
             if (Song[currNoteIndex].name != "REST")
             {
@@ -597,11 +587,19 @@ public class GameController : MonoBehaviour
             currNoteIndex++;
             singleFire = false;
         }
+
+        // When we reach the end of the song:
+        songIsOver = true;
+        for (int layer = 0; layer < background.transform.childCount; layer++)
+        {
+            background.transform.GetChild(layer).GetComponent<BackgroundScroller>().speed = 0;
+        }
+        yield break;
     }
 
     void PlayNextNote()
     {
-        string nextNote = Song[currNoteIndex+1].name;
+        string nextNote = Song[currNoteIndex + 1].name;
         audioPlayer.PlayNote(nextNote, .5f);
     }
 
@@ -678,11 +676,24 @@ public class GameController : MonoBehaviour
         NotesAllowed.Remove(ms);
     }
 
+    private void showEndScreen()
+    {
+        // TO DO: victory screen
+        // For the moment, just goes back to menu
+        SceneManager.LoadScene(0);
+    }
 
     internal void RespawnPlayer()
     {
+        // When the player runs off screen at the end, show victory screen
+        if (!isFalling && songIsOver)
+        {
+            showEndScreen();
+            return;
+        }
+
         isFalling = false;
-		Player.gameObject.layer = 0;
+        Player.gameObject.layer = 0;
 
         //Slow platform speed by half if greater than 1 with lower bound on speed = 1.
         ChangeScrollingSpeed(speedMult * respawnSpeedPenalty >= speedMultLowerLimit ? respawnSpeedPenalty : speedMultLowerLimit / speedMult);
@@ -695,8 +706,8 @@ public class GameController : MonoBehaviour
         float platformHeight = platform.GetComponent<Platform>().height;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
         //Player.GetComponent<PlayerMovement>().PlayAnimation();
-		Player.SetAnimSpeed(1);
-		Player.ResetPlayerRotation ();
+        Player.SetAnimSpeed(1);
+        Player.ResetPlayerRotation();
 
         // Pay attention to collisions again
         Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
@@ -709,7 +720,7 @@ public class GameController : MonoBehaviour
         IEnumerator coroutine = FlashColor(deathGracePeriod / 4);
         StartCoroutine(coroutine);
 
-		StartCoroutine ("ShakeScreen");
+        StartCoroutine("ShakeScreen");
     }
 
     // FACADE FUNCTION 
@@ -729,24 +740,27 @@ public class GameController : MonoBehaviour
         }
     }
 
-	private IEnumerator ShakeScreen()
-	{
-		Vector3 originalCameraPosition = Camera.main.transform.position;
-		float shakeFactor = .3f;
-		bool isResetting = false;
-		while (shakeFactor > 0)
-		{
-			if (isResetting) {			
-				Camera.main.transform.position = Camera.main.transform.position + ((Vector3)UnityEngine.Random.insideUnitCircle * shakeFactor);
-			} else {
-				Camera.main.transform.position = new Vector3 (currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
-			}
-			shakeFactor -= Time.deltaTime * .33f;
-			isResetting = !isResetting;
-			yield return null;
-		}
-		Camera.main.transform.position = new Vector3 (currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
-	}
+    private IEnumerator ShakeScreen()
+    {
+        Vector3 originalCameraPosition = Camera.main.transform.position;
+        float shakeFactor = .3f;
+        bool isResetting = false;
+        while (shakeFactor > 0)
+        {
+            if (isResetting)
+            {
+                Camera.main.transform.position = Camera.main.transform.position + ((Vector3)UnityEngine.Random.insideUnitCircle * shakeFactor);
+            }
+            else
+            {
+                Camera.main.transform.position = new Vector3(currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
+            }
+            shakeFactor -= Time.deltaTime * .33f;
+            isResetting = !isResetting;
+            yield return null;
+        }
+        Camera.main.transform.position = new Vector3(currPos + CameraOffset, originalCameraPosition.y, originalCameraPosition.z);
+    }
 
     IEnumerator ChangeScrollingSpeedIncremental(float speedMultiplier, Func<float, bool> whileDelegate)
     {
@@ -814,7 +828,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             colIsFlashing = true;
-			Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 102);
+            Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 102);
             Invoke("EndColorFlash", 3 * interval / 4);
             yield return new WaitForSeconds(interval);
         }
@@ -823,7 +837,7 @@ public class GameController : MonoBehaviour
     void EndColorFlash()
     {
         colIsFlashing = false;
-		Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
+        Player.GetComponent<SpriteRenderer>().color = new Color32(plrRed, plrGrn, plrBlu, 255);
     }
 
     void CheckKeyInput()
@@ -836,10 +850,14 @@ public class GameController : MonoBehaviour
         {
             ChangeScrollingSpeed(.8f);
         }
-		else if (Input.GetKeyDown(KeyCode.D))
-		{
-			Debug.Log ("Break");
-		}
+        else if (Input.GetKeyDown(KeyCode.D))
+        {
+            Debug.Log("Break");
+        }
+        else if (Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene(0);
+        }
 
         return;
     }
@@ -861,7 +879,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < notePosLookup.Count; i++)
         {
             if (notes[i] == "REST") continue;
-			if (notePosLookup [notes [i]] > 6) break;
+            if (notePosLookup[notes[i]] > 6) break;
             noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
             //   noteColorLookup.Add(notes[i], Color.black);
         }
@@ -873,11 +891,11 @@ public class GameController : MonoBehaviour
         {
             for (int i = 0; i < platforms.Count; i++)
             {
-                if(i == currNoteIndex && isFalling && Song[i].name != "REST")
+                if (i == currNoteIndex && isFalling && Song[i].name != "REST")
                 {
                     LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
-                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, 0.2f,0.1f));
+                    renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, 0.2f, 0.1f));
                     renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, 0.2f, 0.1f));
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
@@ -890,7 +908,7 @@ public class GameController : MonoBehaviour
                     LineRenderer renderer = platforms[i].gameObject.GetComponent<LineRenderer>();
 
                     renderer.startColor = new Color(renderer.startColor.r, renderer.startColor.g, renderer.startColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
-                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime*2) * .5f) + 0.5f, 0.1f));
+                    renderer.endColor = new Color(renderer.endColor.r, renderer.endColor.g, renderer.endColor.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime * 2) * .5f) + 0.5f, 0.1f));
 
                     SpriteRenderer sr = platforms[i].GetComponentInChildren<SpriteRenderer>();
                     sr.color = new Color(sr.color.r, sr.color.g, sr.color.b, Mathf.Lerp(renderer.startColor.a, Mathf.Abs(Mathf.Sin(currTime) * .5f) + 0.5f, 0.1f));
@@ -902,9 +920,9 @@ public class GameController : MonoBehaviour
 
     private IEnumerator PlayAudioCues()
     {
-        while (true)
+        while (currNoteIndex < Song.Count)
         {
-            string currNote = Song[currNoteIndex].name; 
+            string currNote = Song[currNoteIndex].name;
             audioPlayer.PlayNote(currNote, 1);
             audioPlayer.PlayTick();
 
@@ -914,8 +932,6 @@ public class GameController : MonoBehaviour
             playAudioCueTime += secPerBeat;
             // Add the current error from the next iteration's delay, so that errors don't build up.
             yield return new WaitForSeconds(secPerBeat + error);
-
-   
         }
     }
 }
