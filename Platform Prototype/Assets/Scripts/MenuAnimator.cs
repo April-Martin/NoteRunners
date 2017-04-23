@@ -22,7 +22,6 @@ public class MenuAnimator : MonoBehaviour
     {
         buddy = GameObject.Find("Menu Buddy");
         runner = GameObject.Find("Menu Runner");
-        title = GameObject.Find("Title").GetComponent<TextMesh>();
 
         Invoke("QueRunner", runnerDelay);
     }
