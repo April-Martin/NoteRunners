@@ -21,7 +21,7 @@ public class MenuController : MonoBehaviour {
     public LowNoteSlider lowSlider;
 
 	private int plrRed = 255, plrGrn = 255, plrBlu = 255;
-
+    private AudioCuePlayer player;
 
 	void Start () {
         Tolerance.text = GameGlobals.GlobalInstance.LeniencyRange + "";
@@ -35,6 +35,8 @@ public class MenuController : MonoBehaviour {
         InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
         BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
         TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
+
+        player = GetComponent<AudioCuePlayer>();
 	}
 	
 	// Update is called once per frame
@@ -69,6 +71,22 @@ public class MenuController : MonoBehaviour {
     {
         GameGlobals.GlobalInstance.bassClefMode = false;
         UpdateSliders();
+    }
+
+    /// <summary>
+    /// Play lowest note in range
+    /// </summary>
+    public void playLowestNote()
+    {
+        player.PlayNote(GameGlobals.GlobalInstance.NotesRange[0], 1);
+    }
+
+    /// <summary>
+    /// Play highest note in range
+    /// </summary>
+    public void playHighestNote()
+    {
+        player.PlayNote(GameGlobals.GlobalInstance.NotesRange[1], 1);
     }
 
     private void UpdateSliders()
