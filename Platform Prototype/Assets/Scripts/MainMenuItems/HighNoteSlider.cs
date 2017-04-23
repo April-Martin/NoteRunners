@@ -1,4 +1,10 @@
-﻿using System.Collections;
+﻿/* Note: 
+ * Highest note for bass clef = C4
+ * Highest note for treble clef = A5
+ * */
+
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +17,7 @@ public class HighNoteSlider : MonoBehaviour {
     void Start()
     {
         slider = GetComponent<Slider>();
+        UpdateClef();
         slider.value = GameGlobals.GlobalInstance.getHighNoteIndex();
     }
 
@@ -18,6 +25,14 @@ public class HighNoteSlider : MonoBehaviour {
     void Update()
     {
 
+    }
+
+    public void UpdateClef()
+    {
+        if (GameGlobals.GlobalInstance.bassClefMode)
+            slider.maxValue = 12;
+        else
+            slider.maxValue = 24;
     }
 
     public void changeValue()

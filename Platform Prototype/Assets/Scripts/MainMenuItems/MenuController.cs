@@ -15,6 +15,10 @@ public class MenuController : MonoBehaviour {
     public Button SongMode;
     public Button InfMode;
 	public GameObject SongSelectPanel;
+    public Button BassClef;
+    public Button TrebleClef;
+    public HighNoteSlider highSlider;
+    public LowNoteSlider lowSlider;
 
 	private int plrRed = 255, plrGrn = 255, plrBlu = 255;
 
@@ -29,6 +33,8 @@ public class MenuController : MonoBehaviour {
         HighNote.text = GameGlobals.GlobalInstance.getHighNote();
         SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
         InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
+        BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
+        TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
 	}
 	
 	// Update is called once per frame
@@ -43,6 +49,28 @@ public class MenuController : MonoBehaviour {
         HighNote.text = GameGlobals.GlobalInstance.getHighNote();
         SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
         InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
+        BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
+        TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
+    }
+
+    /// <summary>
+    /// Set bass clef mode to true
+    /// </summary>
+    public void setBassClef()
+    {
+        GameGlobals.GlobalInstance.bassClefMode = true;
+        lowSlider.UpdateClef();
+        highSlider.UpdateClef();
+    }
+
+    /// <summary>
+    /// Set bass clef mode to false
+    /// </summary>
+    public void setTrebleClef()
+    {
+        GameGlobals.GlobalInstance.bassClefMode = false;
+        lowSlider.UpdateClef();
+        highSlider.UpdateClef();
     }
 
 
