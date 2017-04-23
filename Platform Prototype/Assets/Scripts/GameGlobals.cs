@@ -17,8 +17,8 @@ public class GameGlobals : MonoBehaviour {
     public float MaxTimeBetweenRests = 4f;
     public bool WritingOn = false;
 	public bool bassClefMode = false;
-	[Range(0, 255)]
-	public byte plrRed = 255, plrGrn = 255, plrBlu = 255;
+	[Range(0, 1)]
+	public float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
 
 
     private string LowestNote = "E2", HighestNote = "C6";
@@ -173,14 +173,7 @@ public class GameGlobals : MonoBehaviour {
         return highNoteIndex;
     }
 
-	public void setPlayerColor(int r, int g, int b)
-	{
-		plrRed = Convert.ToByte (r);
-		plrGrn = Convert.ToByte (g);
-		plrBlu = Convert.ToByte (b);
-	}
-
-	public void setPlayerColor(byte r, byte g, byte b)
+	public void setPlayerColor(float r, float g, float b)
 	{
 		plrRed = r;
 		plrGrn = g;

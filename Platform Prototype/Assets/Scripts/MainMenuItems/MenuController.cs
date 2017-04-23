@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MenuController : MonoBehaviour {
+public class MenuController : MonoBehaviour
+{
 
     public Text Tolerance;
     public Text GracePeriod;
@@ -14,33 +16,19 @@ public class MenuController : MonoBehaviour {
     public Text HighNote;
     public Button SongMode;
     public Button InfMode;
-	public GameObject SongSelectPanel;
+    public GameObject SongSelectPanel;
     public Button BassClef;
     public Button TrebleClef;
     public HighNoteSlider highSlider;
     public LowNoteSlider lowSlider;
+    public Image runnerDisplay;
+    public Image redIndicator, greenIndicator, blueIndicator;
+    public Slider redSlider, blueSlider, greenSlider;
 
-	private int plrRed = 255, plrGrn = 255, plrBlu = 255;
+    private float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
     private AudioCuePlayer player;
 
-	void Start () {
-        Tolerance.text = GameGlobals.GlobalInstance.LeniencyRange + "";
-        GracePeriod.text = GameGlobals.GlobalInstance.TransitionGracePeriod + "";
-        InfNoteDen.text = GameGlobals.GlobalInstance.NoteDensity + "";
-        ScrollSpeed.text = GameGlobals.GlobalInstance.TimeOnScreen + "";
-        TBtwnRests.text = GameGlobals.GlobalInstance.MaxTimeBetweenRests + "";
-        LowNote.text = GameGlobals.GlobalInstance.getLowNote();
-        HighNote.text = GameGlobals.GlobalInstance.getHighNote();
-        SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
-        InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
-        BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
-        TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
-
-        player = GetComponent<AudioCuePlayer>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    void Awake()
     {
         Tolerance.text = GameGlobals.GlobalInstance.LeniencyRange + "";
         GracePeriod.text = GameGlobals.GlobalInstance.TransitionGracePeriod + "";
@@ -53,6 +41,32 @@ public class MenuController : MonoBehaviour {
         InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
         BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
         TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
+        plrRed = GameGlobals.GlobalInstance.plrRed;
+        plrGrn = GameGlobals.GlobalInstance.plrGrn;
+        plrBlu = GameGlobals.GlobalInstance.plrBlu;
+        redSlider.value = plrRed;
+        greenSlider.value = plrGrn;
+        blueSlider.value = plrBlu;
+        changeColorIndicators();
+
+        player = GetComponent<AudioCuePlayer>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        Tolerance.text = GameGlobals.GlobalInstance.LeniencyRange + "";
+        GracePeriod.text = GameGlobals.GlobalInstance.TransitionGracePeriod + "";
+        InfNoteDen.text = GameGlobals.GlobalInstance.NoteDensity + "";
+        ScrollSpeed.text = GameGlobals.GlobalInstance.TimeOnScreen + "";
+        TBtwnRests.text = GameGlobals.GlobalInstance.MaxTimeBetweenRests + "";
+        LowNote.text = GameGlobals.GlobalInstance.getLowNote();
+        HighNote.text = GameGlobals.GlobalInstance.getHighNote();
+        SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
+        InfMode.interactable = GameGlobals.GlobalInstance.SongMode;
+        BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
+        TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
+        changeColorIndicators();
     }
 
     /// <summary>
@@ -191,35 +205,44 @@ public class MenuController : MonoBehaviour {
         GameGlobals.GlobalInstance.changeSelectedSong(filename);
     }
 
-	public void changeRunnerColorRed(float val)
-	{
-		if (val < 0 || val > 255)
-			return;
-		plrRed = (int)val;
-		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
-	}
+    public void changeRunnerColorRed(float val)
+    {
+        if (val < 0 || val > 1)
+            return;
+        plrRed = val;
+        GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
+    }
 
-	public void changeRunnerColorGreen(float val)
-	{
-		if (val < 0 || val > 255)
-			return;
-		plrGrn = (int)val;
-		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
-	}
+    public void changeRunnerColorGreen(float val)
+    {
+        if (val < 0 || val > 255)
+            return;
+        plrGrn = val;
+        GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
+    }
 
-	public void changeRunnerColorBlue(float val)
-	{
-		if (val < 0 || val > 255)
-			return;
-		plrBlu = (int)val;
-		GameGlobals.GlobalInstance.setPlayerColor (plrRed, plrGrn, plrBlu);
-	}
+    public void changeRunnerColorBlue(float val)
+    {
+        if (val < 0 || val > 255)
+            return;
+        plrBlu = val;
+        GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
+    }
 
-	public void songModeFix()
-	{
-		if (GameGlobals.GlobalInstance.SongMode) 
-		{
-			SongSelectPanel.SetActive (true);
-		}
-	}
+    public void songModeFix()
+    {
+        if (GameGlobals.GlobalInstance.SongMode)
+        {
+            SongSelectPanel.SetActive(true);
+        }
+    }
+
+
+    private void changeColorIndicators()
+    {
+        redIndicator.color = new Color(1f, plrGrn, plrBlu, 1f);
+        greenIndicator.color = new Color(plrRed, 1f, plrBlu, 1f);
+        blueIndicator.color = new Color(plrRed, plrGrn, 1f, 1f);
+        runnerDisplay.color = new Color(plrRed, plrGrn, plrBlu, 1f);
+    }
 }
