@@ -59,8 +59,7 @@ public class MenuController : MonoBehaviour {
     public void setBassClef()
     {
         GameGlobals.GlobalInstance.bassClefMode = true;
-        lowSlider.UpdateClef();
-        highSlider.UpdateClef();
+        UpdateSliders();
     }
 
     /// <summary>
@@ -69,10 +68,20 @@ public class MenuController : MonoBehaviour {
     public void setTrebleClef()
     {
         GameGlobals.GlobalInstance.bassClefMode = false;
-        lowSlider.UpdateClef();
-        highSlider.UpdateClef();
+        UpdateSliders();
     }
 
+    private void UpdateSliders()
+    {
+        lowSlider.UpdateClef();
+        highSlider.UpdateClef();
+
+        float yPos = (GameGlobals.GlobalInstance.bassClefMode) ? (BassClef.transform.position.y) : (TrebleClef.transform.position.y);
+        Transform sliderPos = lowSlider.transform.parent.parent;
+        sliderPos.position = new Vector3(sliderPos.position.x, yPos, sliderPos.position.z);
+        sliderPos = highSlider.transform.parent.parent;
+        sliderPos.position = new Vector3(sliderPos.position.x, yPos, sliderPos.position.z);
+    }
 
     /// <summary>
     /// Update the tolerance level.
