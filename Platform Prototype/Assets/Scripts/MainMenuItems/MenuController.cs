@@ -121,6 +121,7 @@ public class MenuController : MonoBehaviour {
     public void changeLowestNote(float val)
     {
         GameGlobals.GlobalInstance.changeLowestNote(val);
+        highSlider.changeValue();
     }
 
     /// <summary>
@@ -130,6 +131,7 @@ public class MenuController : MonoBehaviour {
     public void changeHighestNote(float val)
     {
         GameGlobals.GlobalInstance.changeHighestNote(val);
+        lowSlider.changeValue();
     }
 
     /// <summary>

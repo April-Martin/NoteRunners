@@ -96,14 +96,14 @@ public class GameGlobals : MonoBehaviour {
         if (trueVal >= highNoteIndex)
         {
             highNoteIndex = trueVal + 1;
-            HighestNote = notes[lowNoteIndex];
+            HighestNote = notes[highNoteIndex];
         }
         lowNoteIndex = (int)val;
         LowestNote = notes[lowNoteIndex];
         NotesRange = new string[] { LowestNote, HighestNote };
         //Debug.Log("Low Note " + LowestNote);
     }
-
+    
     /// <summary>
     /// Change the highest note used,
     /// </summary>
