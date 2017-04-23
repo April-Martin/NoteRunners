@@ -9,7 +9,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HighNoteSlider : MonoBehaviour {
+public class HighNoteSlider : MonoBehaviour
+{
 
     private Slider slider;
 
@@ -17,8 +18,8 @@ public class HighNoteSlider : MonoBehaviour {
     void Start()
     {
         slider = GetComponent<Slider>();
-        UpdateClef();
         slider.value = GameGlobals.GlobalInstance.getHighNoteIndex();
+        UpdateClef();
     }
 
     // Update is called once per frame
@@ -30,9 +31,15 @@ public class HighNoteSlider : MonoBehaviour {
     public void UpdateClef()
     {
         if (GameGlobals.GlobalInstance.bassClefMode)
+        {
             slider.maxValue = 12;
+            slider.minValue = 1;
+        }
         else
-            slider.maxValue = 24;
+        {
+            slider.maxValue = 26;
+            slider.minValue = 8;
+        }
     }
 
     public void changeValue()

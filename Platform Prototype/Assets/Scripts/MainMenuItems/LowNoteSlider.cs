@@ -8,7 +8,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class LowNoteSlider : MonoBehaviour {
+public class LowNoteSlider : MonoBehaviour
+{
 
     private Slider slider;
 
@@ -16,8 +17,8 @@ public class LowNoteSlider : MonoBehaviour {
     void Start()
     {
         slider = GetComponent<Slider>();
-        UpdateClef();
         slider.value = GameGlobals.GlobalInstance.getLowNoteIndex();
+        UpdateClef();
     }
 
     // Update is called once per frame
@@ -29,9 +30,16 @@ public class LowNoteSlider : MonoBehaviour {
     public void UpdateClef()
     {
         if (GameGlobals.GlobalInstance.bassClefMode)
+        {
+            slider.maxValue = 11;
             slider.minValue = 0;
+        }
         else
+        {
+
+            slider.maxValue = 25;
             slider.minValue = 7;
+        }
     }
 
     public void changeValue()
