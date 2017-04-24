@@ -314,7 +314,7 @@ public class GameController : MonoBehaviour
             }
             //Debug.Log("player pitch = " + playerPitch + ",\ntarget note = " + targetNote);
             // If they've stayed incorrect for long enough that it's probably not just noise, drop them.
-            else if (elapsedIncorrectTime > SustainedGracePeriod)
+            else if (elapsedIncorrectTime > SustainedGracePeriod && !isFalling)
             {
                 noteStreak = 0;
                 Player.gameObject.layer = 8;
@@ -324,6 +324,7 @@ public class GameController : MonoBehaviour
                 //Player.GetComponent<PlayerMovement>().PauseAnimation();
                 Player.SetAnimSpeed(3);
                 Player.StartPlayerSpinning();
+                platforms[currNoteIndex].GetComponent<Platform>().PlayParticles();
 
             }
             // Add elapsed incorrect time

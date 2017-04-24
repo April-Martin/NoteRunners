@@ -20,6 +20,7 @@ public class Platform : MonoBehaviour
     private Vector3[] outlineCorners;
     private SpriteRenderer fillSprite;
     private SpriteRenderer modifierSprite;
+    private ParticleSystem vanishingParticles;
     private bool hasModifier = false;
 
     void Awake()
@@ -38,6 +39,17 @@ public class Platform : MonoBehaviour
 
         modifierSprite = transform.GetChild(2).GetComponent<SpriteRenderer>();
         modifierSprite.enabled = false;
+
+        vanishingParticles = transform.GetChild(3).GetComponent<ParticleSystem>();
+    }
+    
+    public void PlayParticles()
+    {
+        var sh = vanishingParticles.shape;
+        sh.radius = width/2;
+        var em = vanishingParticles.emission;
+        em.rateOverTimeMultiplier *= width / 2;
+        vanishingParticles.Play();
     }
 
     public void SetPlatSharp()
@@ -60,6 +72,8 @@ public class Platform : MonoBehaviour
 		outline.startColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 		outline.endColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 		fillSprite.color = c;
+        var main = vanishingParticles.main;
+        main.startColor = c;
         return;
     }
 
