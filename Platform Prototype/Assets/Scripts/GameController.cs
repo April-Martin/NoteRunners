@@ -261,12 +261,12 @@ public class GameController : MonoBehaviour
         // If player isn't singing, or if player's falling:
         if (string.IsNullOrEmpty(playerPitch) || isFalling)
         {
-            Bud.GetComponent<SpriteRenderer>().color = Color.white;
+            Bud.SetColor(Color.white);
         }
         // If player is singing:
         else if (noteColorLookup.ContainsKey(playerPitch))
         {
-            Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[playerPitch];
+            Bud.SetColor(noteColorLookup[playerPitch]);
         }
 
         // Permit grace period
@@ -330,7 +330,7 @@ public class GameController : MonoBehaviour
             // Add elapsed incorrect time
             else
             {
-                Bud.GetComponent<SpriteRenderer>().color = noteColorLookup[targetNote];
+                Bud.SetColor(noteColorLookup[targetNote]);
                 elapsedIncorrectTime += Time.deltaTime;
             }
         }

@@ -72,8 +72,13 @@ public class Platform : MonoBehaviour
 		outline.startColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 		outline.endColor = new Color(c.r * .3f, c.g * .3f, c.b * .3f);
 		fillSprite.color = c;
+
+        Color min = new Color(c.r * .85f, c.g * .85f, c.b * .85f);
+        Color max = new Color(c.r * 1.75f, c.g * 1.75f, c.b * 1.75f);
         var main = vanishingParticles.main;
-        main.startColor = c;
+        ParticleSystem.MinMaxGradient grad = new ParticleSystem.MinMaxGradient(min, max);
+        main.startColor = grad;
+
         return;
     }
 

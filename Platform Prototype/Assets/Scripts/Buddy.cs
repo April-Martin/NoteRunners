@@ -18,7 +18,8 @@ public class Buddy : MonoBehaviour
 
     SpriteRenderer spriteRenderer;
     Transform playerTransform;
-
+    ParticleSystem psInner;
+    ParticleSystem psOuter;
     TrailRenderer trailRenderer;
 
     Color startGoal, endGoal = Color.black;
@@ -29,6 +30,8 @@ public class Buddy : MonoBehaviour
     {
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         gc = GameObject.Find("Game Controller").GetComponent<GameController>();
+        psInner = transform.GetChild(1).GetChild(0).GetComponent<ParticleSystem>();
+        psOuter = transform.GetChild(1).GetChild(1).GetComponent<ParticleSystem>();
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerTransform = GameObject.Find("Player").GetComponent<Transform>();
@@ -94,4 +97,15 @@ public class Buddy : MonoBehaviour
         transform.position = new Vector3(newXPos, newYPos, 0);
 //        transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
     }
+
+    public void SetColor(Color c)
+    {
+        spriteRenderer.color = c;
+
+        var mainInner = psInner.main;
+        mainInner.startColor = new Color(c.r * 1.2f, c.g * 1.2f, c.b * 1.2f);
+
+        return;
+    }
+
 }
