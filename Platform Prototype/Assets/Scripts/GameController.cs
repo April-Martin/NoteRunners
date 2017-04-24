@@ -539,7 +539,7 @@ public class GameController : MonoBehaviour
             // Handle transition grace period, 
             Invoke("StartTransitionGracePeriod", dur - TransitionGracePeriod / 2);
             if (Song[currNoteIndex + 1].name != "REST")
-                Invoke("PlayTeleportParticles", (dur > 1.25f) ? dur - 1.25f : 0);
+                Invoke("PlayTeleportParticles", (dur > .5f) ? dur - .5f : 0);
             // Set up audio cue of next note 
             // Note: it precedes the nect note by either half a beat, or (if that's too long) half of the current note's length.
             //Invoke("PlayNextNote", dur - Mathf.Min(0.5f, 0.5f * beats) * 60 / BPM);
