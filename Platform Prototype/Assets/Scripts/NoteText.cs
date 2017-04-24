@@ -21,8 +21,10 @@ public class NoteText : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (isActive && !string.IsNullOrEmpty (note.MainNote)) {
-			text.text = note.MainNote;
+//		if (isActive && !string.IsNullOrEmpty (note.MainNote)) {
+        if (isActive && note.MainNote != null)
+        {
+            text.text = note.MainNote;
 		} else if (!isActive) {
 			Destroy (this.gameObject);
 		}

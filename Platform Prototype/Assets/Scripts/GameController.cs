@@ -328,7 +328,7 @@ public class GameController : MonoBehaviour
 
             }
             // Add elapsed incorrect time
-            else
+            else if (!isFalling)
             {
                 Bud.SetColor(noteColorLookup[targetNote]);
                 elapsedIncorrectTime += Time.deltaTime;
