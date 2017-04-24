@@ -73,7 +73,7 @@ public class GameController : MonoBehaviour
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
     {
         {-7, Color.white},
-        {-6, new Color32(255, 0, 0, 1)}, {-5, new Color32(210, 155, 188, 255)},
+        {-6, Color.white}, {-5, new Color32(210, 155, 188, 255)},
         {-4, new Color32(210, 146, 190, 255)}, {-3, new Color32(165, 163, 208, 255)},
         {-2, new Color32(134, 193, 230, 255)}, {-1, new Color32(150, 219, 200, 255)},
         {-0, new Color32(191, 245, 145, 255)}, {1, new Color32(216, 251, 118, 255)},

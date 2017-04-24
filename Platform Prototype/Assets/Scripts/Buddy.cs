@@ -20,6 +20,7 @@ public class Buddy : MonoBehaviour
     Transform playerTransform;
     ParticleSystem psInner;
     ParticleSystem psOuter;
+    ParticleSystem psTrail;
     float psInner_startSpeed;
     float psInner_startSize;
     float psOuter_startSpeed;
@@ -45,6 +46,8 @@ public class Buddy : MonoBehaviour
 
         psInner = transform.GetChild(1).GetChild(0).GetComponent<ParticleSystem>();
         psOuter = transform.GetChild(1).GetChild(1).GetComponent<ParticleSystem>();
+        psTrail = transform.GetChild(1).GetChild(2).GetChild(1).GetComponent<ParticleSystem>();
+
         var mainInner = psInner.main;
         psInner_startSize = mainInner.startSizeMultiplier;
         psInner_startSpeed = mainInner.startSpeedMultiplier;
@@ -83,8 +86,8 @@ public class Buddy : MonoBehaviour
                 lastNote = currentNote;
             }
 
-            trailRenderer.endColor = Color.Lerp(trailRenderer.endColor, endGoal, 0.05f);
-            trailRenderer.startColor = Color.Lerp(trailRenderer.startColor, startGoal, 0.05f);
+            //trailRenderer.endColor = Color.Lerp(trailRenderer.endColor, endGoal, 0.05f);
+            //trailRenderer.startColor = Color.Lerp(trailRenderer.startColor, startGoal, 0.05f);
 
 			if (!gc.isFalling)
 			{
@@ -115,6 +118,8 @@ public class Buddy : MonoBehaviour
         mainInner.duration = interval;
         var mainOuter = psOuter.main;
         mainOuter.duration = interval;
+        psInner.Play();
+        psOuter.Play();
     }
 
     public void SetParticleIntensity(float percentageOfDefault)
@@ -133,6 +138,9 @@ public class Buddy : MonoBehaviour
 
         var mainInner = psInner.main;
         mainInner.startColor = new Color(c.r * 1.2f, c.g * 1.2f, c.b * 1.2f);
+
+        var mainTrail = psTrail.main;
+        mainTrail.startColor = new Color(c.r * .5f, c.g * .5f, c.b * .5f, 1);
 
         return;
     }
