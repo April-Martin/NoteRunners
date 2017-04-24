@@ -173,6 +173,7 @@ public class GameController : MonoBehaviour
             Song.Add(new Note("REST", screenWidthInWorldUnits));
 
         Player.GetComponent<SpriteRenderer>().color = new Color(plrRed, plrGrn, plrBlu, 1f);
+        Bud.SetParticleBPM(BPM);
 
         if (warmupMode)
             StartWarmup();
@@ -443,7 +444,10 @@ public class GameController : MonoBehaviour
         if (!isFalling && !colIsFlashing && isCorrect && Song[currNoteIndex].name != "REST")
         {
             Score += (ScorePerSecond * speedMult * Time.deltaTime);
+            Bud.SetParticleIntensity(2);
         }
+        else
+            Bud.SetParticleIntensity(1);
     }
 
 

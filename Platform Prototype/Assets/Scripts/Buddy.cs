@@ -20,6 +20,10 @@ public class Buddy : MonoBehaviour
     Transform playerTransform;
     ParticleSystem psInner;
     ParticleSystem psOuter;
+    float psInner_startSpeed;
+    float psInner_startSize;
+    float psOuter_startSpeed;
+    float psOuter_startSize;
     TrailRenderer trailRenderer;
 
     Color startGoal, endGoal = Color.black;
@@ -30,9 +34,6 @@ public class Buddy : MonoBehaviour
     {
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         gc = GameObject.Find("Game Controller").GetComponent<GameController>();
-        psInner = transform.GetChild(1).GetChild(0).GetComponent<ParticleSystem>();
-        psOuter = transform.GetChild(1).GetChild(1).GetComponent<ParticleSystem>();
-
         spriteRenderer = GetComponent<SpriteRenderer>();
         playerTransform = GameObject.Find("Player").GetComponent<Transform>();
 
@@ -41,6 +42,15 @@ public class Buddy : MonoBehaviour
         trailRenderer.startColor = Color.black;
         trailRenderer.endColor = Color.white;
 		this.GetComponentInChildren<NoteText> ().isActive = gc.isTextActive;
+
+        psInner = transform.GetChild(1).GetChild(0).GetComponent<ParticleSystem>();
+        psOuter = transform.GetChild(1).GetChild(1).GetComponent<ParticleSystem>();
+        var mainInner = psInner.main;
+        psInner_startSize = mainInner.startSizeMultiplier;
+        psInner_startSpeed = mainInner.startSpeedMultiplier;
+        var mainOuter = psOuter.main;
+        psOuter_startSize = mainOuter.startSizeMultiplier;
+        psOuter_startSpeed = mainOuter.startSpeedMultiplier;
     }
 	
 	// Update is called once per frame
@@ -96,6 +106,25 @@ public class Buddy : MonoBehaviour
 		}
         transform.position = new Vector3(newXPos, newYPos, 0);
 //        transform.position = Vector3.Lerp(transform.position, targetPos, InterpolationFactor);
+    }
+
+    public void SetParticleBPM(float BPM)
+    {
+        float interval = 60 / BPM;
+        var mainInner = psInner.main;
+        mainInner.duration = interval;
+        var mainOuter = psOuter.main;
+        mainOuter.duration = interval;
+    }
+
+    public void SetParticleIntensity(float percentageOfDefault)
+    {
+        var mainInner = psInner.main;
+        mainInner.startSizeMultiplier = psInner_startSize * percentageOfDefault;
+        mainInner.startSpeedMultiplier = psInner_startSpeed * percentageOfDefault;
+        var mainOuter = psOuter.main;
+        mainOuter.startSizeMultiplier = psOuter_startSize * percentageOfDefault;
+        mainOuter.startSpeedMultiplier = psOuter_startSpeed * percentageOfDefault;
     }
 
     public void SetColor(Color c)
