@@ -11,6 +11,7 @@ public class GameController : MonoBehaviour
     #region Variables
     // Settings
     public bool DEBUG_InvincibleMode = false;
+    private bool debuggingMode = false;
     public int ScorePerSecond = 100;
     public float Score = 0;
     public float CameraOffset = 7.5f;
@@ -349,9 +350,10 @@ public class GameController : MonoBehaviour
         plat.SetPlatColor(platColor);
 
         // Deal with sharps and flats
-        // If it's a flat, give it a 50/50 chance of being the corresponding flat instead.
         if (Song[index].name[1] == '#')
         {
+            // Give sharps a 50/50 chance of being the corresponding flat instead.
+            // Make sure the label is correct either way
             int rnd = UnityEngine.Random.Range(0, 2);
             if (rnd == 0)
             {
@@ -368,15 +370,18 @@ public class GameController : MonoBehaviour
                 char startOctave = Song[index].name[2];
                 char newOctave = (startNote == 'B') ? (char)(Song[index].name[2] + 1) : Song[index].name[2];
 
-                char[] newName = new char[3];
-                newName[0] = newNote;
-                newName[1] = 'f';
-                newName[2] = newOctave;
-                Song[index].name = new String(newName);
+                char[] newLabel = new char[2];
+                newLabel[0] = newNote;
+                newLabel[1] = newOctave;
+                Song[index].label = new String(newLabel);
             }
             else
             {
                 plat.SetPlatSharp();
+                char[] newLabel = new char[2];
+                newLabel[0] = Song[index].name[0];
+                newLabel[1] = Song[index].name[2];
+                Song[index].label = new String(newLabel);
             }
         }
 
@@ -402,15 +407,7 @@ public class GameController : MonoBehaviour
             // Create Note Text for the platform.
             GameObject txtobj = Instantiate(platformText);
             TextMesh txtmsh = txtobj.GetComponent<TextMesh>();
-            if (Song[index].name.Length == 3)
-            {
-                char[] name = new char[2];
-                name[0] = Song[index].name[0];
-                name[1] = Song[index].name[2];
-                txtmsh.text = new String(name);
-            }
-            else
-                txtmsh.text = Song[index].name;
+            txtmsh.text = Song[index].label;
             if (Song[index].name == "REST")
                 txtmsh.color = Color.white; //new Color (1 - platColor.r, 1 - platColor.g, 1 - platColor.b);
             else
@@ -853,6 +850,7 @@ public class GameController : MonoBehaviour
         else if (Input.GetKeyDown(KeyCode.D))
         {
             Debug.Log("Break");
+            debuggingMode = true;
         }
         else if (Input.GetKey(KeyCode.Escape))
         {

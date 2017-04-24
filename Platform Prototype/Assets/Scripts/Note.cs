@@ -8,6 +8,7 @@ public class Note {
     public float duration;
     public float yOffset;
     public float actualTime;
+    public string label;
 
     public Note(string _name, float _duration)
     {
@@ -15,6 +16,7 @@ public class Note {
         duration = _duration;
         yOffset = 0;
         actualTime = 0;
+        label = _name;
     }
 
 
