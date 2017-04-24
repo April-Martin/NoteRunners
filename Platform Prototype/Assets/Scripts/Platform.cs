@@ -21,6 +21,7 @@ public class Platform : MonoBehaviour
     private SpriteRenderer fillSprite;
     private SpriteRenderer modifierSprite;
     private ParticleSystem vanishingParticles;
+    private ParticleSystem teleportParticles;
     private bool hasModifier = false;
 
     void Awake()
@@ -41,15 +42,22 @@ public class Platform : MonoBehaviour
         modifierSprite.enabled = false;
 
         vanishingParticles = transform.GetChild(3).GetComponent<ParticleSystem>();
+        teleportParticles = transform.GetChild(4).GetComponent<ParticleSystem>();
     }
     
-    public void PlayParticles()
+    public void PlayVanishingParticles()
     {
         var sh = vanishingParticles.shape;
         sh.radius = width/2;
         var em = vanishingParticles.emission;
         em.rateOverTimeMultiplier *= width / 2;
         vanishingParticles.Play();
+    }
+
+    public void PlayTeleportParticles()
+    {
+        teleportParticles.Play();
+        return;
     }
 
     public void SetPlatSharp()
@@ -103,6 +111,8 @@ public class Platform : MonoBehaviour
         float startWidth = fillSprite.bounds.size.x;
 		float targetWidth = width - 2 * outline.startWidth;
         fillSprite.transform.localScale = new Vector3(fillSprite.transform.localScale.x * targetWidth / startWidth, fillSprite.transform.localScale.y, 1);
+
+        teleportParticles.transform.localPosition = new Vector3(-width / 2 + .5f, height / 2 + .75f, 0);
 
         return;
     }

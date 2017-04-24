@@ -325,7 +325,7 @@ public class GameController : MonoBehaviour
                 //Player.GetComponent<PlayerMovement>().PauseAnimation();
                 Player.SetAnimSpeed(3);
                 Player.StartPlayerSpinning();
-                platforms[currNoteIndex].GetComponent<Platform>().PlayParticles();
+                platforms[currNoteIndex].GetComponent<Platform>().PlayVanishingParticles();
 
             }
             // Add elapsed incorrect time
@@ -538,6 +538,8 @@ public class GameController : MonoBehaviour
 
             // Handle transition grace period, 
             Invoke("StartTransitionGracePeriod", dur - TransitionGracePeriod / 2);
+            if (Song[currNoteIndex + 1].name != "REST")
+                Invoke("PlayTeleportParticles", (dur > 1.25f) ? dur - 1.25f : 0);
             // Set up audio cue of next note 
             // Note: it precedes the nect note by either half a beat, or (if that's too long) half of the current note's length.
             //Invoke("PlayNextNote", dur - Mathf.Min(0.5f, 0.5f * beats) * 60 / BPM);
@@ -557,21 +559,20 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
-                    GameObject particle1 = Instantiate(particles);
-                    particle1.transform.position = Player.transform.position;
+                    //GameObject particle1 = Instantiate(particles);
+                    //particle1.transform.position = Player.transform.position;
 
                     //particle.GetComponent<ParticleSystem> ().Play ();
-                    Destroy(particle1, 1.5f);
+                    //Destroy(particle1, 1.5f);
 
                     float jumpHeight = Song[currNoteIndex + 1].yOffset;
                     float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                     float platHeight = platform.GetComponent<Platform>().height;
                     Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
-                    GameObject particle2 = Instantiate(particles);
-                    particle2.transform.position = Player.transform.position;
-
+                    //GameObject particle2 = Instantiate(particles);
+                    //particle2.transform.position = Player.transform.position;
                     //particle.GetComponent<ParticleSystem> ().Play ();
-                    Destroy(particle2, 1.5f);
+                    //Destroy(particle2, 1.5f);
             }
             if (Song[currNoteIndex].name != "REST")
             {
@@ -604,6 +605,12 @@ public class GameController : MonoBehaviour
         string nextNote = Song[currNoteIndex + 1].name;
         audioPlayer.PlayNote(nextNote, .5f);
     }
+
+    void PlayTeleportParticles()
+    {
+        platforms[currNoteIndex + 1].GetComponent<Platform>().PlayTeleportParticles();
+    }
+
 
     void StartTransitionGracePeriod()
     {
