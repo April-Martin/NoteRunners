@@ -20,6 +20,7 @@ public class Platform : MonoBehaviour
     private Vector3[] outlineCorners;
     private SpriteRenderer fillSprite;
     private SpriteRenderer modifierSprite;
+    private Animator modifierAnim;
     private ParticleSystem vanishingParticles;
     private ParticleSystem teleportParticles;
     private bool hasModifier = false;
@@ -39,6 +40,7 @@ public class Platform : MonoBehaviour
 		fillSprite.transform.localScale = new Vector3 (fillSprite.transform.localScale.x, targetHeight / fillSprite.bounds.size.y, 1);
 
         modifierSprite = transform.GetChild(2).GetComponent<SpriteRenderer>();
+        modifierAnim = transform.GetChild(2).GetComponent<Animator>();
         modifierSprite.enabled = false;
 
         vanishingParticles = transform.GetChild(3).GetComponent<ParticleSystem>();
@@ -62,6 +64,7 @@ public class Platform : MonoBehaviour
 
     public void SetPlatSharp()
     {
+        modifierAnim.SetTrigger(1);
         modifierSprite.sprite = sharpImg;
         modifierSprite.enabled = true;
         hasModifier = true;
@@ -69,6 +72,8 @@ public class Platform : MonoBehaviour
 
     public void SetPlatFlat()
     {
+        modifierAnim.SetTrigger(0);
+
         modifierSprite.sprite = flatImg;
         modifierSprite.enabled = true;
         hasModifier = true;
