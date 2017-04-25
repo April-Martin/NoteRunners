@@ -690,6 +690,7 @@ public class GameController : MonoBehaviour
         // When the player runs off screen at the end, show victory screen
         if (!isFalling && songIsOver)
         {
+            GameGlobals.GlobalInstance.score = (int) Score;
             showEndScreen();
             return;
         }

@@ -20,7 +20,7 @@ public class GameGlobals : MonoBehaviour {
 	[Range(0, 1)]
 	public float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
     public float volumeThreshold = .15f;
-
+    public int score = 0;
 
     private string LowestNote = "E2", HighestNote = "C6";
     private int highNoteIndex = 26, lowNoteIndex = 0;
