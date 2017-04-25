@@ -28,6 +28,7 @@ public class MenuController : MonoBehaviour
 
     private float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
     private AudioCuePlayer player;
+    private bool changeSettings = false;
 
     void Awake()
     {
@@ -52,6 +53,7 @@ public class MenuController : MonoBehaviour
         changeColorIndicators();
 
         player = GetComponent<AudioCuePlayer>();
+        changeSettings = true;
     }
 
     // Update is called once per frame
@@ -220,7 +222,7 @@ public class MenuController : MonoBehaviour
 
     public void changeRunnerColorRed(float val)
     {
-        if (val < 0 || val > 1)
+        if (!changeSettings || val < 0 || val > 1)
             return;
         plrRed = val;
         GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
@@ -228,7 +230,7 @@ public class MenuController : MonoBehaviour
 
     public void changeRunnerColorGreen(float val)
     {
-        if (val < 0 || val > 255)
+        if (!changeSettings || val < 0 || val > 1)
             return;
         plrGrn = val;
         GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
@@ -236,7 +238,7 @@ public class MenuController : MonoBehaviour
 
     public void changeRunnerColorBlue(float val)
     {
-        if (val < 0 || val > 255)
+        if (!changeSettings || val < 0 || val > 1)
             return;
         plrBlu = val;
         GameGlobals.GlobalInstance.setPlayerColor(plrRed, plrGrn, plrBlu);
