@@ -19,6 +19,7 @@ public class GameGlobals : MonoBehaviour {
 	public bool bassClefMode = false;
 	[Range(0, 1)]
 	public float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
+    public float volumeThreshold = .15f;
 
 
     private string LowestNote = "E2", HighestNote = "C6";
@@ -67,14 +68,22 @@ public class GameGlobals : MonoBehaviour {
     public void changeNoteDensity(float val)
     {
         NoteDensity = (int) val;
-    } 
+    }
+
+    /// <summary>
+    /// Changes the volume threshold used for filtering out noise.
+    /// </summary>
+    public void changeVolumeThreshold(float val)
+    {
+        volumeThreshold = val / 100;
+    }
 
     /// <summary>
     /// Changes the scroll speed.
     /// </summary>
     public void changeScrollSpeed(float val)
     {
-		TimeOnScreen = val / 10f;
+		TimeOnScreen = val / 20;
     }
 
     /// <summary>

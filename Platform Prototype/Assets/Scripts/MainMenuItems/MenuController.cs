@@ -14,6 +14,7 @@ public class MenuController : MonoBehaviour
     public Text TBtwnRests;
     public Text LowNote;
     public Text HighNote;
+    public Text VolThreshold;
     public Button SongMode;
     public Button InfMode;
     public GameObject SongSelectPanel;
@@ -35,6 +36,7 @@ public class MenuController : MonoBehaviour
         InfNoteDen.text = GameGlobals.GlobalInstance.NoteDensity + "";
         ScrollSpeed.text = GameGlobals.GlobalInstance.TimeOnScreen + "";
         TBtwnRests.text = GameGlobals.GlobalInstance.MaxTimeBetweenRests + "";
+        VolThreshold.text = GameGlobals.GlobalInstance.volumeThreshold + "";
         LowNote.text = GameGlobals.GlobalInstance.getLowNote();
         HighNote.text = GameGlobals.GlobalInstance.getHighNote();
         SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
@@ -60,6 +62,7 @@ public class MenuController : MonoBehaviour
         InfNoteDen.text = GameGlobals.GlobalInstance.NoteDensity + "";
         ScrollSpeed.text = GameGlobals.GlobalInstance.TimeOnScreen + "";
         TBtwnRests.text = GameGlobals.GlobalInstance.MaxTimeBetweenRests + "";
+        VolThreshold.text = GameGlobals.GlobalInstance.volumeThreshold + "";
         LowNote.text = GameGlobals.GlobalInstance.getLowNote();
         HighNote.text = GameGlobals.GlobalInstance.getHighNote();
         SongMode.interactable = !GameGlobals.GlobalInstance.SongMode;
@@ -173,6 +176,16 @@ public class MenuController : MonoBehaviour
     {
         GameGlobals.GlobalInstance.changeHighestNote(val);
         lowSlider.changeValue();
+    }
+
+
+    /// <summary>
+    /// Change the volume threshold used for filtering noise. 
+    /// </summary>
+    /// <param name="val">Integer version of volume threshold (i.e., a value of 1 gives a threshold of .01)</param>
+    public void changeVolumeThreshold(float val)
+    {
+        GameGlobals.GlobalInstance.changeVolumeThreshold(val);
     }
 
     /// <summary>
