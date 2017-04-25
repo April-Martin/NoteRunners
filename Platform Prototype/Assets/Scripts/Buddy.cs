@@ -65,14 +65,15 @@ public class Buddy : MonoBehaviour
         //Remove this line for buddy trail effect. Buddy will struggle to catch up to the player as the player moves faster. Keep this line to lock at xOffset.
 //        transform.position = new Vector3(playerTransform.position.x + xOffset, transform.position.y, 0f);
 
-        Vector3 targetPos;
         float test = Random.RandomRange(0f, 1f);
         if (test < .01f)
         {
             wanderValue = Random.RandomRange(-wanderRandomFactor, wanderRandomFactor);
         }
 
-        float targetXPos = playerTransform.position.x + xOffset + (wanderRange + wanderRange*wanderValue) * ((Mathf.Sin(Time.time * wanderSpeed) + (wanderValue)));
+        float targetXPos = playerTransform.position.x + xOffset + (wanderRange + wanderRange * wanderValue) * ((Mathf.Sin(Time.time * wanderSpeed) + (wanderValue)));
+       // float targetXPos = playerTransform.position.x + xOffset + wanderRange * Mathf.Sin(Time.time * wanderSpeed);
+       // float targetXPos = playerTransform.position.x + xOffset;
         float targetYPos = 1f;
 
         if (!string.IsNullOrEmpty(pt.MainNote))
@@ -101,7 +102,7 @@ public class Buddy : MonoBehaviour
             
         }
  //       transform.position = new Vector3(xPos, transform.position.y, 0f);
-		float newYPos = newYPos = Mathf.Lerp(transform.position.y, transform.position.y, InterpolationFactorY);
+		float newYPos = Mathf.Lerp(transform.position.y, transform.position.y, InterpolationFactorY);
 		float newXPos = Mathf.Lerp(transform.position.x, targetXPos, InterpolationFactorX);
 		if (!gc.isFalling)
 		{

@@ -8,6 +8,8 @@ public class PlayerMovement : MonoBehaviour {
     public float LerpSpeed = 1f;
     private Animator anim;
 	private bool isSpinning = false;
+    public GameObject deathParticlePrefab;
+    private ParticleSystem deathParticle;
 
     internal Dictionary<string, float> NotePosLookup;
 
@@ -21,6 +23,7 @@ public class PlayerMovement : MonoBehaviour {
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         anim = GetComponent<Animator>();
         FillNoteLookup();
+        deathParticle = GameObject.Instantiate(deathParticlePrefab).GetComponent<ParticleSystem>();
 	}
 	
 	// Update is called once per frame
@@ -65,6 +68,8 @@ public class PlayerMovement : MonoBehaviour {
 
     void OnBecameInvisible()
     {
+        deathParticle.transform.position = new Vector3(transform.position.x, transform.position.y - 1);
+        deathParticle.Play();
         gc.RespawnPlayer();
     }
 
