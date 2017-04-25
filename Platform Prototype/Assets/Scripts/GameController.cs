@@ -36,7 +36,7 @@ public class GameController : MonoBehaviour
     // Dependencies
     public PlayerMovement Player;
     public Buddy Bud;
-    public GameObject platform, platformText, particles, background;
+    public GameObject platform, platformText, background;
     private PitchTester pt;
     private AudioCuePlayer audioPlayer;
     private FrequencyGuide fg;
@@ -559,20 +559,10 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
-                    //GameObject particle1 = Instantiate(particles);
-                    //particle1.transform.position = Player.transform.position;
-
-                    //particle.GetComponent<ParticleSystem> ().Play ();
-                    //Destroy(particle1, 1.5f);
-
                     float jumpHeight = Song[currNoteIndex + 1].yOffset;
                     float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
                     float platHeight = platform.GetComponent<Platform>().height;
                     Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
-                    //GameObject particle2 = Instantiate(particles);
-                    //particle2.transform.position = Player.transform.position;
-                    //particle.GetComponent<ParticleSystem> ().Play ();
-                    //Destroy(particle2, 1.5f);
             }
             if (Song[currNoteIndex].name != "REST")
             {
@@ -714,12 +704,12 @@ public class GameController : MonoBehaviour
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
         float platformHeight = platform.GetComponent<Platform>().height;
         Player.gameObject.transform.position = new Vector3(currPos, Song[currNoteIndex].yOffset + playerHeight / 2 + platformHeight / 2);
-        //Player.GetComponent<PlayerMovement>().PlayAnimation();
         Player.SetAnimSpeed(1);
         Player.ResetPlayerRotation();
 
         // Pay attention to collisions again
-        Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
+        //Physics2D.IgnoreCollision(platforms[currNoteIndex], Player.GetComponent<Collider2D>(), false);
+        Player.gameObject.layer = 0;
 
         // Grant brief invulnerability
         float deathGracePeriod = 60 / BPM * 2;
