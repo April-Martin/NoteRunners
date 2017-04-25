@@ -72,6 +72,15 @@ public class MenuController : MonoBehaviour
         BassClef.interactable = !GameGlobals.GlobalInstance.bassClefMode;
         TrebleClef.interactable = GameGlobals.GlobalInstance.bassClefMode;
         changeColorIndicators();
+
+        if (Input.GetKey(KeyCode.Escape))
+            Exit();
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
+        UnityEditor.EditorApplication.isPlaying = false;
     }
 
     /// <summary>
