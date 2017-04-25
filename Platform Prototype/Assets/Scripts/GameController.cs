@@ -40,6 +40,7 @@ public class GameController : MonoBehaviour
     private PitchTester pt;
     private AudioCuePlayer audioPlayer;
     private FrequencyGuide fg;
+    public GameObject deathParticlePrefab;
 
     // Status-tracking  vars
     internal float currPos = 0, currTime = 0;
@@ -53,6 +54,7 @@ public class GameController : MonoBehaviour
     // Utility vars
     private float spawnPosOffset = 0, worldUnitsPerSec = 0, worldUnitsPerBeat = 0;
     private float maxNoteDuration = 0, minNoteDuration = 0;
+    private ParticleSystem deathParticle;
 
     // Time check variables (for keeping the coroutines honest)
     private float playAudioCueTime = 0, handleJumpTime = 0, addNoteTime = 0;
@@ -126,6 +128,8 @@ public class GameController : MonoBehaviour
         background = GameObject.Find("Background");
         FillNotesAllowed();
         fg = new FrequencyGuide();
+        deathParticle = GameObject.Instantiate(deathParticlePrefab).GetComponent<ParticleSystem>();
+
 
         if (infiniteNoteDensity <= 1)
         {
@@ -677,9 +681,8 @@ public class GameController : MonoBehaviour
 
     private void showEndScreen()
     {
-        // TO DO: victory screen
-        // For the moment, just goes back to menu
-        SceneManager.LoadScene(0);
+        // Go to victory/score scene
+        SceneManager.LoadScene(2);
     }
 
     internal void RespawnPlayer()
@@ -699,6 +702,10 @@ public class GameController : MonoBehaviour
 
         // Halt momentum of player
         Player.gameObject.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+
+        // Show particle effect
+        deathParticle.transform.position = new Vector3(transform.position.x, transform.position.y - 1);
+        deathParticle.Play();
 
         // Respawn player
         float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
