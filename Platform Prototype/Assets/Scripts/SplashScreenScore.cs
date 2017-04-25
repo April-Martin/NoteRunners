@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ScoreDisplay : MonoBehaviour {
+public class SplashScreenScore : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
