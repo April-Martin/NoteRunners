@@ -930,16 +930,20 @@ public class GameController : MonoBehaviour
     {
         while (currNoteIndex < Song.Count)
         {
-            string currNote = Song[currNoteIndex].name;
-            audioPlayer.PlayNote(currNote, 1);
+            Note currNote = Song[currNoteIndex];
+            audioPlayer.PlayNote(currNote.name, 1);
             audioPlayer.PlayTick();
 
             // Calculate the timing error (negative if we're ahead, positive if we're behind)
             float error = playAudioCueTime - currTime;
             float secPerBeat = 60 / BPM;
-            playAudioCueTime += secPerBeat;
-            // Add the current error from the next iteration's delay, so that errors don't build up.
-            yield return new WaitForSeconds(secPerBeat + error);
+
+            // Determine how long the next delay should be
+            float delay = secPerBeat * Mathf.Min(1, currNote.duration);
+            playAudioCueTime += delay;
+
+            //Add the current error from the next iteration's delay, so that errors don't build up.
+            yield return new WaitForSeconds(delay + error);
         }
     }
 }
