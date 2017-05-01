@@ -13,11 +13,13 @@ public class AudioCuePlayer : MonoBehaviour {
         A5, Asharp5, B5, C6, TICK;
     private Dictionary<string, AudioClip> noteAudioLookup;
     private AudioSource src;
+    private AudioSource tickSrc;
 
 
 	// Use this for initialization
 	void Awake () {
         src = GetComponent<AudioSource>();
+
         noteAudioLookup = new Dictionary<string, AudioClip>
 	    {
 		    {"E2", E2}, {"F2", F2}, {"F#2", Fsharp2}, {"G2", G2}, {"G#2", Gsharp2}, {"A2", A2}, {"A#2", Asharp2}, {"B2", B2}, {"C3", C3}, {"C#3", Csharp3}, {"D3", D3}, {"D#3", Dsharp3},
@@ -37,8 +39,16 @@ public class AudioCuePlayer : MonoBehaviour {
         src.PlayOneShot(noteAudioLookup[noteName], vol);
     }
 
-    public void PlayTick()
+    public void PlayTick(string noteName)
     {
-        src.PlayOneShot(TICK);
+        if (noteName != "REST")
+        {
+            src.PlayOneShot(TICK, 0.25f);
+        }
+        else
+        {
+            src.PlayOneShot(TICK, 1f);
+        }
+        
     }
 }

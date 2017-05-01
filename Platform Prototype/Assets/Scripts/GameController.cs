@@ -935,7 +935,7 @@ public class GameController : MonoBehaviour
         {
             Note currNote = Song[currNoteIndex];
             audioPlayer.PlayNote(currNote.name, 1);
-            audioPlayer.PlayTick();
+            audioPlayer.PlayTick(currNote.name);
 
             // Calculate the timing error (negative if we're ahead, positive if we're behind)
             float error = playAudioCueTime - currTime;
