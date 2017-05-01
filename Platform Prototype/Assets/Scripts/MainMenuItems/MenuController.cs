@@ -29,6 +29,7 @@ public class MenuController : MonoBehaviour
     private float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
     private AudioCuePlayer player;
     private bool changeSettings = false;
+    private PitchTester pt;
 
     void Awake()
     {
@@ -54,6 +55,7 @@ public class MenuController : MonoBehaviour
 
         player = GetComponent<AudioCuePlayer>();
         changeSettings = true;
+        pt = GameObject.Find("PitchTester").GetComponent<PitchTester>();
     }
 
     // Update is called once per frame
@@ -80,7 +82,7 @@ public class MenuController : MonoBehaviour
     public void Exit()
     {
         Application.Quit();
-        UnityEditor.EditorApplication.isPlaying = false;
+        //UnityEditor.EditorApplication.isPlaying = false;
     }
 
     /// <summary>
@@ -197,6 +199,7 @@ public class MenuController : MonoBehaviour
     public void changeVolumeThreshold(float val)
     {
         GameGlobals.GlobalInstance.changeVolumeThreshold(val);
+        pt.volThreshold = GameGlobals.GlobalInstance.volumeThreshold;
     }
 
     /// <summary>

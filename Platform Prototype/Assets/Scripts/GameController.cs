@@ -32,6 +32,7 @@ public class GameController : MonoBehaviour
     private int infiniteNoteDensity;
     private float plrRed = 1f, plrGrn = 1f, plrBlu = 1f;
     private float scrollingInterpolation = 0.01f;
+    private float volumeThreshold = 0.15f;
 
     // Dependencies
     public PlayerMovement Player;
@@ -115,6 +116,7 @@ public class GameController : MonoBehaviour
             plrRed = temp.plrRed;
             plrGrn = temp.plrGrn;
             plrBlu = temp.plrBlu;
+            volumeThreshold = temp.volumeThreshold;
         }
 
         // Initialize tables
@@ -124,6 +126,7 @@ public class GameController : MonoBehaviour
         fillNoteColorLookup();
 
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
+        pt.volThreshold = volumeThreshold;
         audioPlayer = GetComponent<AudioCuePlayer>();
         background = GameObject.Find("Background");
         FillNotesAllowed();

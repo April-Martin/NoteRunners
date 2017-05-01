@@ -1,9 +1,12 @@
 fileFormatVersion: 2
 guid: 0302ffd175e9d934c98b317de94e4c36
-timeCreated: 1492976333
+timeCreated: 1493675142
 licenseType: Free
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: 256px-Speaker_Icon.svg_0
+    21300002: 256px-Speaker_Icon.svg_1
+    21300004: 256px-Speaker_Icon.svg_2
   serializedVersion: 4
   mipmaps:
     mipMapMode: 0
@@ -34,7 +37,7 @@ TextureImporter:
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
-  spriteMode: 1
+  spriteMode: 2
   spriteExtrude: 1
   spriteMeshType: 1
   alignment: 0
@@ -76,7 +79,46 @@ TextureImporter:
     overridden: 0
   spriteSheet:
     serializedVersion: 2
-    sprites: []
+    sprites:
+    - serializedVersion: 2
+      name: 256px-Speaker_Icon.svg_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 6
+        width: 152
+        height: 250
+      alignment: 9
+      pivot: {x: 0.9993486, y: 0.49712142}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 256px-Speaker_Icon.svg_1
+      rect:
+        serializedVersion: 2
+        x: 153
+        y: 6
+        width: 103
+        height: 250
+      alignment: 9
+      pivot: {x: -0.003077727, y: 0.5028785}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
+    - serializedVersion: 2
+      name: 256px-Speaker_Icon.svg_2
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 6
+        width: 256
+        height: 250
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      tessellationDetail: 0
     outline: []
   spritePackingTag: 
   userData: 
