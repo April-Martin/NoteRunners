@@ -119,12 +119,6 @@ public class GameController : MonoBehaviour
             volumeThreshold = temp.volumeThreshold;
         }
 
-        // Initialize tables
-        if (bassClefMode)
-            BassClefTransformation();
-        fillGapsInPosColorLookup();
-        fillNoteColorLookup();
-
         pt = GameObject.Find("Pitch Tester").GetComponent<PitchTester>();
         pt.volThreshold = volumeThreshold;
         audioPlayer = GetComponent<AudioCuePlayer>();
@@ -149,8 +143,6 @@ public class GameController : MonoBehaviour
             minNoteDuration = 1 / 8;
             maxNoteDuration = 2;
         }
-
-
         // If we're in Song mode, read in file information
         if (SongMode)
         {
@@ -168,6 +160,12 @@ public class GameController : MonoBehaviour
             }
         }
 
+        // Initialize tables
+        if (bassClefMode)
+            BassClefTransformation();
+        fillGapsInPosColorLookup();
+        fillNoteColorLookup();
+
         // Calculate conversion factors
         float screenWidthInWorldUnits = Camera.main.ScreenToWorldPoint(new Vector3(Camera.main.pixelWidth, 0, 10)).x
                                          - Camera.main.ScreenToWorldPoint(new Vector3(0, 0, 10)).x;
@@ -177,7 +175,10 @@ public class GameController : MonoBehaviour
 
         // Add terminating rest to song mode
         if (SongMode)
+        {
             Song.Add(new Note("REST", screenWidthInWorldUnits));
+            Song[Song.Count - 1].yOffset = Song[Song.Count - 2].yOffset;
+        }
 
         Player.GetComponent<SpriteRenderer>().color = new Color(plrRed, plrGrn, plrBlu, 1f);
         Bud.SetParticleBPM(BPM);
