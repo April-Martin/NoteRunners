@@ -67,11 +67,11 @@ public class GameController : MonoBehaviour
     private List<string> NotesAllowed;
     internal Dictionary<string, float> notePosLookup = new Dictionary<string, float>
     {
-        {"E2", -7f}, {"F2", -6.5f}, {"F#2", -6.5f}, {"G2", -6f}, {"G#2", -6f}, {"A2", -5.5f}, {"A#2", -5.5f}, {"B2", -5f}, 
-        {"C3", -4.5f}, {"C#3", -4.5f}, {"D3", -4f}, {"D#3", -4f}, {"E3", -3.5f}, {"F3", -3f}, {"F#3", -3f}, {"G3", -2.5f}, {"G#3", -2.5f}, {"A3", -2f}, {"A#3", -2f}, {"B3", -1.5f}, 
-        {"C4", -1f}, {"C#4", -1f}, {"D4", -.5f}, {"D#4", -.5f}, {"E4", 0f}, {"F4", .5f}, {"F#4", .5f}, {"G4", 1f}, {"G#4", 1f}, {"A4", 1.5f}, {"A#4", 1.5f}, {"B4", 2f}, 
-        {"C5", 2.5f}, {"C#5", 2.5f}, {"D5", 3f}, {"D#5", 3f}, {"E5", 3.5f}, {"F5", 4f}, {"F#5", 4f}, {"G5", 4.5f}, {"G#5", 4.5f}, {"A5", 5f}, {"A#5", 5f},{"B5", 5.5f}, 
-		{"C6", 6f}, {"REST", 0}
+        {"E2", -7f}, {"F2", -6.5f}, {"F#2", -6.5f}, {"G2", -6f}, {"G#2", -6f}, {"A2", -5.5f}, {"A#2", -5.5f}, {"B2", -5f},
+        {"C3", -4.5f}, {"C#3", -4.5f}, {"D3", -4f}, {"D#3", -4f}, {"E3", -3.5f}, {"F3", -3f}, {"F#3", -3f}, {"G3", -2.5f}, {"G#3", -2.5f}, {"A3", -2f}, {"A#3", -2f}, {"B3", -1.5f},
+        {"C4", -1f}, {"C#4", -1f}, {"D4", -.5f}, {"D#4", -.5f}, {"E4", 0f}, {"F4", .5f}, {"F#4", .5f}, {"G4", 1f}, {"G#4", 1f}, {"A4", 1.5f}, {"A#4", 1.5f}, {"B4", 2f},
+        {"C5", 2.5f}, {"C#5", 2.5f}, {"D5", 3f}, {"D#5", 3f}, {"E5", 3.5f}, {"F5", 4f}, {"F#5", 4f}, {"G5", 4.5f}, {"G#5", 4.5f}, {"A5", 5f}, {"A#5", 5f},{"B5", 5.5f},
+        {"C6", 6f}, {"REST", 0}
     };
     internal Dictionary<float, Color> posColorLookup = new Dictionary<float, Color>
     {
@@ -566,10 +566,10 @@ public class GameController : MonoBehaviour
             // Handle jump
             if (!isFalling)
             {
-                    float jumpHeight = Song[currNoteIndex + 1].yOffset;
-                    float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
-                    float platHeight = platform.GetComponent<Platform>().height;
-                    Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
+                float jumpHeight = Song[currNoteIndex + 1].yOffset;
+                float playerHeight = Player.GetComponent<SpriteRenderer>().bounds.size.y;
+                float platHeight = platform.GetComponent<Platform>().height;
+                Player.transform.position = new Vector3(Player.transform.position.x, jumpHeight + playerHeight / 2 + platHeight / 2 + .2f);
             }
             if (Song[currNoteIndex].name != "REST")
             {
@@ -693,7 +693,7 @@ public class GameController : MonoBehaviour
         // When the player runs off screen at the end, show victory screen
         if (!isFalling && songIsOver)
         {
-            GameGlobals.GlobalInstance.score = (int) Score;
+            GameGlobals.GlobalInstance.score = (int)Score;
             showEndScreen();
             return;
         }
@@ -890,8 +890,17 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < notePosLookup.Count; i++)
         {
             if (notes[i] == "REST") continue;
-            if (notePosLookup[notes[i]] > 6) break;
-            noteColorLookup.Add(notes[i], posColorLookup[notePosLookup[notes[i]]]);
+            //if (notePosLookup[notes[i]] > 6) break;
+
+            Color colorToAdd;
+            if (posColorLookup.TryGetValue(notePosLookup[notes[i]], out colorToAdd))
+            {
+                noteColorLookup.Add(notes[i], colorToAdd);
+            }
+            else
+            {
+                noteColorLookup.Add(notes[i], Color.white);
+            }
             //   noteColorLookup.Add(notes[i], Color.black);
         }
     }
