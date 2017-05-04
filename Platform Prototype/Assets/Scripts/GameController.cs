@@ -147,17 +147,6 @@ public class GameController : MonoBehaviour
         if (SongMode)
         {
             ReaderWriter.ReadSong(ref Song, filename, ref BPM, ref bassClefMode);
-            for (int i = 1; i < Song.Count; i++)
-            {
-                if (Song[i].name == "REST")
-                {
-                    Song[i].yOffset = Song[i - 1].yOffset;
-                }
-                else
-                {
-                    Song[i].yOffset = notePosLookup[Song[i].name];
-                }
-            }
         }
 
         // Initialize tables
@@ -176,6 +165,18 @@ public class GameController : MonoBehaviour
         // Add terminating rest to song mode
         if (SongMode)
         {
+            for (int i = 1; i < Song.Count; i++)
+            {
+                if (Song[i].name == "REST")
+                {
+                    Song[i].yOffset = Song[i - 1].yOffset;
+                }
+                else
+                {
+                    Song[i].yOffset = notePosLookup[Song[i].name];
+                }
+            }
+
             Song.Add(new Note("REST", screenWidthInWorldUnits));
             Song[Song.Count - 1].yOffset = Song[Song.Count - 2].yOffset;
         }
