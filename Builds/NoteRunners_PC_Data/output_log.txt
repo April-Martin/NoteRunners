@@ -1,0 +1,127 @@
+Initialize engine version: 5.5.1f1 (88d00a7498cd)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce GTX 970M (ID=0x13d8)
+    Vendor:   NVIDIA
+    VRAM:     3037 MB
+    Driver:   20.19.15.4474
+Begin MonoManager ReloadAssembly
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\Assembly-UnityScript.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\Assembly-UnityScript.dll into Unity Child Domain
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
+Loading C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
+- Completed reload, in  0.047 seconds
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: C:\Users\April\Desktop\NoteRunners\Builds\NoteRunners_PC_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 1920x1080 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 2.087111 ms
+Unloading 5 Unused Serialized files (Serialized files now loaded: 0)
+UnloadTime: 5.526125 ms
+
+Unloading 67 unused Assets to reduce memory usage. Loaded Objects now: 745.
+Total: 0.584691 ms (FindLiveObjects: 0.050172 ms CreateObjectMapping: 0.046617 ms MarkObjects: 0.423506 ms  DeleteObjects: 0.064000 ms)
+
+Setting up 2 worker threads for Enlighten.
+  Thread -> id: 328c -> priority: 1 
+  Thread -> id: 3c5c -> priority: 1 
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+SF = False
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Unloading 3 Unused Serialized files (Serialized files now loaded: 0)
+NullReferenceException
+  at (wrapper managed-to-native) UnityEngine.Component:GetComponentFastPath (System.Type,intptr)
+  at UnityEngine.Component.GetComponent[Platform] () [0x00000] in <filename unknown>:0 
+  at GameController+<ChangeScrollingSpeedIncremental>c__Iterator4.MoveNext () [0x00000] in <filename unknown>:0 
+  at UnityEngine.SetupCoroutine.InvokeMoveNext (IEnumerator enumerator, IntPtr returnValueAddress) [0x00000] in <filename unknown>:0 
+UnityEngine.MonoBehaviour:StartCoroutine_Auto_Internal(IEnumerator)
+UnityEngine.MonoBehaviour:StartCoroutine(IEnumerator)
+GameController:ChangeScrollingSpeed(Single)
+GameController:RespawnPlayer()
+PlayerMovement:OnBecameInvisible()
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at PlatformText.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at PlatformText.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at PlatformText.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at Platform.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at PlatformText.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+NullReferenceException: Object reference not set to an instance of an object
+  at Platform.OnBecameInvisible () [0x00000] in <filename unknown>:0 
+ 
+(Filename:  Line: -1)
+
+UnloadTime: 32.524654 ms
+
+Unloading 84 unused Assets to reduce memory usage. Loaded Objects now: 1108.
+Total: 1.360593 ms (FindLiveObjects: 0.093629 ms CreateObjectMapping: 0.065580 ms MarkObjects: 0.875062 ms  DeleteObjects: 0.325926 ms)
+

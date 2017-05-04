@@ -1,0 +1,7 @@
+60
+TREBLE
+REST,5
+D4,1
+C5,3
+REST,2
+D4,3
